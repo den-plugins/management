@@ -13,9 +13,9 @@ table#allocations_fixed_table tr td { text-overflow: clip; overflow: hidden; whi
 table#allocations_fixed_table_clone tr td { text-overflow: clip; overflow: hidden; white-space: nowrap; text-align: center; }
 table#allocation_week tr td, table#allocation_week tr th { text-align: center; text-overflow: ellipsis; overflow: hidden; }
 
-#programme_dashboard div.singleCol-wide .auto_scroll_y {height: 710px; }
+#programme_dashboard div.singleCol-wide .auto_scroll_y {height: 450px; }
 div.singleCol { float: left; width: 32%; margin: 3px 6px; }
-div.singleCol-wide {float: left; width: 65%; height: 799px; margin: 3px 6px; }
+div.singleCol-wide {float: left; width: 65%; height: 530px; margin: 3px 6px; }
 div.singleCol-wide .box {height: 100%;min-height: 60px;}
 div.singleCol-wide div.singleCol {float: left; width: 49%; margin: 0; padding: 0 }
 div.box { padding: 3px 5px; margin-bottom: 10px; background-color: #F6F6F6; color: #505050; line-height: 1.5em; border: 1px solid #E4E4E4; }
@@ -100,6 +100,7 @@ table#project_health_table tr td { vertical-align: middle; border: 1px solid whi
 #programme_dashboard .auto_scroll_x { height: 350px; width: 100%; overflow-x: auto; overflow-y: hidden; }
 #chartpseudotooltip { position: absolute; font-size: 8pt; background-color: #ffffff;
                       border: 1px solid #e6e6fa; display: none; }
+
 
 
 
