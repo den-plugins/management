@@ -1,0 +1,18 @@
+<%= render :partial => 'resource_managements/header' %>
+
+<div id='resource_allocation'>
+  <h4>Resource Allocation</h4>
+
+</div>
+
+<% content_for :header_tags do %>
+  <%= javascript_include_tag 'jquery_tools', :plugin => 'management' %>
+  <%= stylesheet_link_tag 'management', :plugin => 'management' %>
+<% end %>
+
+
+<script>
+  j = jQuery.noConflict();
+  jQuery(".movable_table_container").scrollable({circular: false, mousewheel: true});
+</script>
+
