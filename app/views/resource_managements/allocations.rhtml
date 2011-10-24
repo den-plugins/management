@@ -23,6 +23,15 @@
             </tr>
         <% end %>
         <% reset_cycle('resources') %>
+        <tr><th colspan="5" style="text-align: right;">Project Category (Count)</th></tr>
+        <% project_categories.each do |category| %>
+          <tr style="background-color: #eee;">
+            <td colspan="5" style="text-align: right;"><%= category %></td>
+          </tr>
+        <% end %>
+        <tr style="background-color: #eee;"><td colspan="5" style="text-align: right;">Uncategorized</td></tr>
+        <tr style="background-color: #eee;"><td colspan="5" style="text-align: right;">Total Allocated</td></tr>
+        <tr style="background-color: #eee;"><td colspan="5" style="text-align: right;">Current Total Resources</td></tr>
       </table>
     </div>
     <div class='movable_table_container' style="width: 34%" %>

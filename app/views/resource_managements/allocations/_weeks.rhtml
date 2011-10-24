@@ -1,7 +1,11 @@
 <% start_date, end_date = Date.today - 1.month, Date.today + 5.months %>
 <% weeks = get_weeks_range(start_date, end_date) %>
+<% categories = project_categories %>
 <div id='floating_tables_holder' style="width: <%= weeks.count * 85 %>px">
   <% weeks.each do |week| %>
+    <% categories_count = set_categories_count(categories) %>
+    <% total_allocated = 0 %>
+    <% current_total_resources = 0 %>
     <div class='floating_table'>
       <table id="allocation_week" class="list fixed">
         <tr>
@@ -11,8 +15,21 @@
           <tr class="<%= cycle('even', 'odd', :name => 'week_days') %>">
             <td><%= member.days_and_cost(week).to_f %></td>
           </tr>
+          <% categ = member.project.project_type.to_s %>
+          <% categories_count[categ] += 1 unless categories_count[categ].nil? %>
+          <% total_allocated += 1 unless member.resource_allocations.empty? %>
+          <% current_total_resources += 1 %>
         <% end %>
         <% reset_cycle('week_days') %>
+        <tr style="background-color: #eee;"><th>&nbsp;</th></tr>
+        <% categories.each do |category| %>
+          <tr style="background-color: #eee;">
+            <td><%= categories_count[category] %></td>
+          </tr>
+        <% end %>
+        <tr style="background-color: #eee;"><td><%= categories_count[""] %></td></tr>
+        <tr style="background-color: #eee;"><td><%= total_allocated %></td></tr>
+        <tr style="background-color: #eee;"><td><%= current_total_resources %></td></tr>
       </table>
     </div>
   <% end %>

@@ -13,7 +13,7 @@ class ResourceManagementsController < ApplicationController
     @projects = Project.active.find(:all, :order => 'name ASC')
     @members = []
     @projects.each do |project|
-      @members += project.members.project_team
+      @members += project.members.select {|m| m.user.is_engineering}
     end
   end
   

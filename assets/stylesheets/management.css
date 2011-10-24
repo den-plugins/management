@@ -1,6 +1,6 @@
 div.tables_container { width: 100%; padding: 0; margin: 0; }
 div.fixed_table_container { float: left; white-space: nowrap; border-right: 1px solid black;}
-div.movable_table_container { float: left; position: relative; overflow-x: hidden; }
+div.movable_table_container { float: left; position: relative; overflow-x: auto; }
 div#floating_tables_holder { position: relative; }
 div.floating_table { float: left; display: inline-block; table-layout: fixed; width: 85px; }
 table.fixed { table-layout: fixed; }
