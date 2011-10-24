@@ -7,8 +7,11 @@ Redmine::Plugin.register :management do
   description 'This is a plugin for Redmine that serves as a dashboard for Management Tools'
   version '0.0.1'
 
+  project_module :management do
+    permission :manage_resources, {:resource_managements => [:index, :get, :allocations]}, :public => false
+  end
 
- menu  :top_menu,
+  menu :top_menu,
               :resource_management,
             {:controller => "resource_managements", :action => "index" },
               :caption => "Management",
