@@ -10,7 +10,7 @@ class ResourceManagementsController < ApplicationController
   end
   
   def allocations
-    @projects = Project.active.find(:all, :order => 'name ASC').select {|project| project.project_type.eql?('Development')}
+    @projects = Project.active.find(:all, :order => 'name ASC').select {|project| project.project_type.eql?('Development Project')}
     @members = []
     @projects.each{|project| @members += project.members.select {|m| m.user.is_engineering}}
   end

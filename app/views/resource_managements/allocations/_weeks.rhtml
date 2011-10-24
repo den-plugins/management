@@ -5,6 +5,7 @@
   <% weeks.each do |week| %>
     <% categories_count = set_categories_count(categories) %>
     <% total_allocated = 0 %>
+    <% total_allocated_percent = 0.0 %>
     <% current_total_resources = 0 %>
     <div class='floating_table'>
       <table id="allocation_week" class="list fixed">
@@ -17,8 +18,8 @@
             <td><%= member_days_cost %></td>
           </tr>
           <% categ = member.project.project_type.to_s %>
-          <% categories_count[categ] += 1 unless categories_count[categ].nil? %>
-          <% total_allocated += 1 unless member_days_cost.zero? %>
+          <% categories_count[categ] += 1 if !categories_count[categ].nil? and !member_days_cost.zero? %>
+          <% total_allocated += 1 if !member_days_cost.zero? %>
           <% current_total_resources += 1 %>
         <% end %>
         <% reset_cycle('week_days') %>
@@ -31,6 +32,20 @@
         <tr style="background-color: #eee;"><td><%= categories_count[""] %></td></tr>
         <tr style="background-color: #eee;"><td><%= total_allocated %></td></tr>
         <tr style="background-color: #eee;"><td><%= current_total_resources %></td></tr>
+        <tr style="background-color: #eee;"><th>&nbsp;</th></tr>
+        <% categories.each do |category| %>
+          <tr style="background-color: #eee;">
+            <% project_categ_percent = (current_total_resources.zero? ? 0.0 : (categories_count[category] / current_total_resources).to_f) * 100 %>
+            <td><%= project_categ_percent %></td>
+            <% total_allocated_percent += project_categ_percent %>
+          </tr>
+        <% end %>
+        <tr style="background-color: #eee;"><td><%= (current_total_resources.zero? ? 0.0 : (categories_count[""] / current_total_resources).to_f) * 100 %></td></tr>
+        <tr style="background-color: #eee;">
+          <td>
+            <%= total_allocated_percent + (current_total_resources.zero? ? 0.0 : (categories_count[""] / current_total_resources)).to_f %>
+          </td>
+        </tr>
       </table>
     </div>
   <% end %>

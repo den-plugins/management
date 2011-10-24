@@ -2,7 +2,7 @@
 
 <div id='resource_allocation'>
   <h4>Resource Allocation</h4>
-  
+  <% categories = project_categories %>
   <div class='tables_container'>
     <div class='fixed_table_container' style="width: 43%;">
       <table id='allocations_fixed_table' class="list fixed">
@@ -16,7 +16,7 @@
         <% @members.each do |member| %>
             <tr class="<%= cycle('even', 'odd', :name => 'resources') %>">
               <td style="text-align: left"><%= member.project.name %></td>
-              <td><%= member.project.category.gsub('Project', '') unless member.project.category.nil? %></td>
+              <td><%= member.project.project_type.gsub('Project', '') unless member.project.project_type.nil? %></td>
               <td><%= acronym member.project.accounting_type %></td>
               <td style="text-align: left"><%= member.name %></td>
               <td><%= member.pmrole %></td>
@@ -24,7 +24,7 @@
         <% end %>
         <% reset_cycle('resources') %>
         <tr><th colspan="5" style="text-align: right;">Project Category (Count)</th></tr>
-        <% project_categories.each do |category| %>
+        <% categories.each do |category| %>
           <tr style="background-color: #eee;">
             <td colspan="5" style="text-align: right;"><%= category %></td>
           </tr>
@@ -32,6 +32,14 @@
         <tr style="background-color: #eee;"><td colspan="5" style="text-align: right;">Uncategorized</td></tr>
         <tr style="background-color: #eee;"><td colspan="5" style="text-align: right;">Total Allocated</td></tr>
         <tr style="background-color: #eee;"><td colspan="5" style="text-align: right;">Current Total Resources</td></tr>
+        <tr><th colspan="5" style="text-align: right;">Project Category (Percentage)</th></tr>
+        <% categories.each do |category| %>
+          <tr style="background-color: #eee;">
+            <td colspan="5" style="text-align: right;"><%= category %></td>
+          </tr>
+        <% end %>
+        <tr style="background-color: #eee;"><td colspan="5" style="text-align: right;">Uncategorized</td></tr>
+        <tr style="background-color: #eee;"><td colspan="5" style="text-align: right;">Total Allocated</td></tr>
       </table>
     </div>
     <div class="movable_table_container" style="width: 56%" %>
