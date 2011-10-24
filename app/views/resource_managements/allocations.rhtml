@@ -2,7 +2,33 @@
 
 <div id='resource_allocation'>
   <h4>Resource Allocation</h4>
-
+  
+  <div class='tables_container'>
+    <div class='fixed_table_container' style="width: 64%;">
+      <table id='allocations_fixed_table' class="list fixed">
+        <tr>
+          <th width='20%'>Project</th>
+          <th width='20%'>Category</th>
+          <th width='10%'>Project Type</th>
+          <th width='25%'>Resource</th>
+          <th width='20%'>Role</th>
+        </tr>
+        <% @members.each do |member| %>
+            <tr class="<%= cycle('even', 'odd', :name => 'resources') %>">
+              <td><%= member.project.name %></td>
+              <td><%= member.project.project_type %></td>
+              <td><%= member.project.accounting_type %></td>
+              <td><%= member.name %></td>
+              <td><%= member.pmrole %></td>
+            </tr>
+        <% end %>
+        <% reset_cycle('resources') %>
+      </table>
+    </div>
+    <div class='movable_table_container' style="width: 34%" %>
+      <%= render :partial => 'resource_managements/allocations/weeks' %>
+    </div>
+  </div>
 </div>
 
 <% content_for :header_tags do %>

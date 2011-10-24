@@ -1,6 +1,9 @@
 require 'redmine'
 require 's3_attachment/s3_send_file'
 
+require 'pm_member_patch'
+require 'pm_project_patch'
+
 Redmine::Plugin.register :management do
   name 'Redmine Management Plugin'
   author 'Exist Den Team'
