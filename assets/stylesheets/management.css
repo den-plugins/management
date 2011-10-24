@@ -4,6 +4,6 @@ div.movable_table_container { float: left; position: relative; overflow-x: auto;
 div#floating_tables_holder { position: relative; }
 div.floating_table { float: left; display: inline-block; table-layout: fixed; width: 85px; }
 table.fixed { table-layout: fixed; }
-table#allocations_fixed_table tr th { text-align: left; }
-table#allocations_fixed_table tr td { text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
-table#allocation_week tr td, table#allocation_week tr th { text-align: center; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+table.list tr th { height: 30px; white-space: normal; }
+table#allocations_fixed_table tr td { text-overflow: clip; overflow: hidden; white-space: nowrap; text-align: center; }
+table#allocation_week tr td, table#allocation_week tr th { text-align: center; text-overflow: ellipsis; overflow: hidden; }
