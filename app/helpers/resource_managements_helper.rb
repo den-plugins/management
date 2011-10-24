@@ -11,4 +11,8 @@ module ResourceManagementsHelper
       weeks
     end
   end
+  
+  def acronym(name)
+    name.sub('-', ' ').split.collect {|word| word.chars.first.upcase}.to_s if name
+  end
 end
