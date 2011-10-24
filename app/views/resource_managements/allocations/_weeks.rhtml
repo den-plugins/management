@@ -13,11 +13,12 @@
         </tr>
         <% @members.each do |member| %>
           <tr class="<%= cycle('even', 'odd', :name => 'week_days') %>">
-            <td><%= member.days_and_cost(week).to_f %></td>
+            <% member_days_cost = member.days_and_cost(week).to_f %>
+            <td><%= member_days_cost %></td>
           </tr>
           <% categ = member.project.project_type.to_s %>
           <% categories_count[categ] += 1 unless categories_count[categ].nil? %>
-          <% total_allocated += 1 unless member.resource_allocations.empty? %>
+          <% total_allocated += 1 unless member_days_cost.zero? %>
           <% current_total_resources += 1 %>
         <% end %>
         <% reset_cycle('week_days') %>
