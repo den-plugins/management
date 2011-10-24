@@ -29,4 +29,8 @@ module ResourceManagementsHelper
   def acronym(name)
     name.sub('-', ' ').split.collect {|word| word.chars.first.upcase}.to_s if name
   end
+
+  def get_float(num)
+    ("%.2f" % num).to_f
+  end
 end

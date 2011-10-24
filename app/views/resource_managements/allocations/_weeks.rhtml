@@ -35,15 +35,19 @@
         <tr style="background-color: #eee;"><th>&nbsp;</th></tr>
         <% categories.each do |category| %>
           <tr style="background-color: #eee;">
-            <% project_categ_percent = (current_total_resources.zero? ? 0.0 : (categories_count[category] / current_total_resources).to_f) * 100 %>
-            <td><%= project_categ_percent %></td>
+            <% project_categ_percent = (current_total_resources.zero? ? 0.00 : (get_float(categories_count[category]) / get_float(current_total_resources))) * 100 %>
+            <td><%= project_categ_percent.round(2) %></td>
             <% total_allocated_percent += project_categ_percent %>
           </tr>
         <% end %>
-        <tr style="background-color: #eee;"><td><%= (current_total_resources.zero? ? 0.0 : (categories_count[""] / current_total_resources).to_f) * 100 %></td></tr>
         <tr style="background-color: #eee;">
           <td>
-            <%= total_allocated_percent + (current_total_resources.zero? ? 0.0 : (categories_count[""] / current_total_resources)).to_f %>
+            <%= (current_total_resources.zero? ? 0.00 : (get_float(categories_count[""]) / get_float(current_total_resources))) * 100 %>
+          </td>
+        </tr>
+        <tr style="background-color: #eee;">
+          <td>
+            <%= (total_allocated_percent + (current_total_resources.zero? ? 0.00 : (get_float(categories_count[""]) / get_float(current_total_resources)))).round(2) %>
           </td>
         </tr>
       </table>
