@@ -16,7 +16,7 @@
         <% @members.each do |member| %>
             <tr class="<%= cycle('even', 'odd', :name => 'resources') %>">
               <td style="text-align: left"><%= member.project.name %></td>
-              <td><%= member.project.project_type.gsub('Project', '') unless member.project.project_type.nil? %></td>
+              <td><%= member.project.category.gsub('Project', '') unless member.project.category.nil? %></td>
               <td><%= acronym member.project.accounting_type %></td>
               <td style="text-align: left"><%= member.name %></td>
               <td><%= member.pmrole %></td>
