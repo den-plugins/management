@@ -4,12 +4,12 @@
   <h4>Resource Forecast Summary</h4>
   
   <div class='tables_container'>
-    <div class='fixed_table_container' style="width: 31%;">
+    <div class='fixed_table_container' style="width: 25%;">
       <table id='allocations_fixed_table' class="list fixed">
         <tr>
-          <th width='15%'>Location</th>
+          <th width='20%'>Location</th>
           <th width='50%'>Resource</th>
-          <th width='35%'>Role</th>
+          <th width='30%'>Role</th>
         </tr>
         <% @resources.each do |resource| %>
             <tr class="<%= cycle('even', 'odd', :name => 'resources') %>">
@@ -21,10 +21,12 @@
         <% reset_cycle('resources') %>
       </table>
     </div>
-    <div class='movable_table_container' style="width: 68%" %>
+    <div class='movable_table_container' style="width: 74%" %>
       <%= render :partial => 'resource_managements/forecasts/weeks' %>
     </div>
   </div>
+  <div style="clear: both"></div>
+  <p class="pagination"><%= pagination_links_full @resource_pages, @resource_count %></p>
 </div>
 
 <% content_for :header_tags do %>

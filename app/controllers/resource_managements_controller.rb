@@ -17,10 +17,18 @@ class ResourceManagementsController < ApplicationController
   end
   
   def forecasts
-    @resources = User.active.engineers.select do |resource| 
-       projects = resource.memberships
-       projects.any? &&  !projects.reject{|m| !m.project.active?}.empty?
-    end
+    limit = per_page_option
+    active_project = "select id, status from projects where projects.id = members.project_id and projects.status = 1"
+    statement = "exists (select user_id, project_id from members where members.user_id = users.id and exists (#{active_project}))"
+    @resource_count = User.active.engineers.count(:all, :include => [:projects, :members], :conditions => statement)
+    @resource_pages = Paginator.new self, @resource_count, limit, params['page']
+    @resources = User.active.engineers.find :all,
+                                        :include => [:projects, :members],
+                                        :conditions => statement,
+                                        :limit => limit,
+                                        :offset => @resource_pages.current.offset,
+                                        :order => "firstname ASC, lastname ASC"
+      render :template => 'resource_managements/forecasts.rhtml', :layout => !request.xhr?
   end
   
   private
