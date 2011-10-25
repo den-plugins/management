@@ -14,7 +14,7 @@ module ResourceManagementsHelper
 
   def project_categories
     proj_categories = CustomField.find(:first, :conditions => "type = 'ProjectCustomField' and name = 'Category'")
-    return proj_categories.possible_values
+    return (proj_categories.nil? ? [] : proj_categories.possible_values)
   end
 
   def set_categories_count(categories)
