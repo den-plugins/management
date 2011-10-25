@@ -19,7 +19,7 @@
               <td><%= member.project.project_type.gsub('Project', '') unless member.project.project_type.nil? %></td>
               <td><%= acronym member.project.accounting_type %></td>
               <td style="text-align: left"><%= member.name %></td>
-              <td><%= member.pmrole %></td>
+              <td><%= member.user.skill %></td>
             </tr>
         <% end %>
         <% reset_cycle('resources') %>

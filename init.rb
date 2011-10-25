@@ -1,8 +1,14 @@
 require 'redmine'
 require 's3_attachment/s3_send_file'
+require 'dispatcher'
 
 require 'pm_member_patch'
 require 'pm_project_patch'
+require 'management_user_patch'
+
+Dispatcher.to_prepare do
+  User.send(:include, Management::UserPatch)
+end
 
 Redmine::Plugin.register :management do
   name 'Redmine Management Plugin'
@@ -19,7 +25,7 @@ Redmine::Plugin.register :management do
             {:controller => "resource_managements", :action => "index" },
               :caption => "Management",
               :before => :administration,
-              :if => Proc.new { User.current.allowed_to?(:manage_resources, nil, :global => true) }
+              :if => Proc.new { User.current.allowed_to?(:manage_resources, nil, :global => true) || User.admin? }
 
   Redmine::MenuManager.map :resource_management do |menu|
     menu.push :dashboard, {:controller => 'resource_managements', :action => 'index' }
