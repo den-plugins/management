@@ -24,6 +24,12 @@ module Management
         s = custom_values.find(:first, :include => [:custom_field], :conditions => "custom_fields.name = 'Skill or Role'")
         s.nil? ? nil : s.value
       end
+
+      def is_resigned
+        r = custom_values.find(:first, :include => [:custom_field], :conditions => "custom_fields.name = 'Resigned Date'")
+        date = r.nil? ? nil : r.value
+        return (date.nil? or date.blank?)? false : true
+      end
     end
   end
 end
