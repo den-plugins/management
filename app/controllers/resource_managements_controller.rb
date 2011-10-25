@@ -18,12 +18,15 @@ class ResourceManagementsController < ApplicationController
   
   def forecasts
     limit = per_page_option
-    active_project = "select id, status from projects where projects.id = members.project_id and projects.status = 1"
+    dev_projects = Project.all.collect {|p| p.id if p.project_type.eql?('Development')}.compact.uniq.join(', ')
+    development = " and projects.id IN (#{dev_projects})"
+    active_project = "select id, status from projects where projects.id = members.project_id and projects.status = 1 #{development}"
     statement = "exists (select user_id, project_id from members where members.user_id = users.id and exists (#{active_project}))"
-    @resource_count = User.active.engineers.count(:all, :include => [:projects, :members], :conditions => statement)
+    puts statement
+    @resource_count = User.active.engineers.count(:all, :include => [:projects, :custom_values, :members], :conditions => statement)
     @resource_pages = Paginator.new self, @resource_count, limit, params['page']
     @resources = User.active.engineers.find :all,
-                                        :include => [:projects, :members],
+                                        :include => [:projects, :custom_values, :members],
                                         :conditions => statement,
                                         :limit => limit,
                                         :offset => @resource_pages.current.offset,
