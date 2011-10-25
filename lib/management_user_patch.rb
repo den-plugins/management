@@ -12,6 +12,8 @@ module Management
         has_many :pm_dashboard_issues, :foreign_key => :owner
         
         named_scope :engineers, :conditions => ["is_engineering = true"], :order => 'firstname'
+
+        before_save :set_non_engr_on
       end
     end
     
@@ -19,6 +21,14 @@ module Management
     end
     
     module InstanceMethods
+
+      def set_non_engr_on
+        if !self.is_engineering
+          self.non_engr_on = Date.today
+        else
+          self.non_engr_on = nil
+        end
+      end
     
       def skill
         s = custom_values.find(:first, :include => [:custom_field], :conditions => "custom_fields.name = 'Skill or Role' or custom_fields.id = 19")
@@ -26,7 +36,7 @@ module Management
       end
 
       def is_resigned
-        r = custom_values.find(:first, :include => [:custom_field], :conditions => "custom_fields.name = 'Resigned Date'")
+        r = custom_values.find(:first, :include => [:custom_field], :conditions => "custom_fields.name = 'Employment End'")
         date = r.nil? ? nil : r.value
         return (date.nil? or date.blank?)? false : true
       end

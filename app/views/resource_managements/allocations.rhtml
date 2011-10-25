@@ -14,13 +14,15 @@
           <th width='16%'>Role</th>
         </tr>
         <% @members.each do |member| %>
-            <tr class="<%= cycle('even', 'odd', :name => 'resources') %>">
-              <td style="text-align: left"><%= member.project.name %></td>
-              <td><%= member.project.category.gsub('Project', '') unless member.project.category.nil? %></td>
-              <td><%= acronym member.project.accounting_type %></td>
-              <td style="text-align: left"><%= member.name %></td>
-              <td><%= member.user.skill %></td>
-            </tr>
+          <% if member.user.is_engineering %>
+              <tr class="<%= cycle('even', 'odd', :name => 'resources') %>">
+                <td style="text-align: left"><%= member.project.name %></td>
+                <td><%= member.project.category.gsub('Project', '') unless member.project.category.nil? %></td>
+                <td><%= acronym member.project.accounting_type %></td>
+                <td style="text-align: left"><%= member.name %></td>
+                <td><%= member.user.skill %></td>
+              </tr>
+          <% end %>
         <% end %>
         <% reset_cycle('resources') %>
         <tr><th colspan="5" style="text-align: right;">Project Category (Count)</th></tr>
