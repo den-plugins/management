@@ -1,0 +1,40 @@
+<%= render :partial => 'header' %>
+
+<div id='dashboard'>
+  <h4>Resource Forecast Summary</h4>
+  
+  <div class='tables_container'>
+    <div class='fixed_table_container' style="width: 31%;">
+      <table id='allocations_fixed_table' class="list fixed">
+        <tr>
+          <th width='15%'>Location</th>
+          <th width='50%'>Resource</th>
+          <th width='35%'>Role</th>
+        </tr>
+        <% @resources.each do |resource| %>
+            <tr class="<%= cycle('even', 'odd', :name => 'resources') %>">
+              <td><%= resource.location %></td>
+              <td style="text-align: left"><%= resource.name %></td>
+              <td><%= resource.skill %></td>
+            </tr>
+        <% end %>
+        <% reset_cycle('resources') %>
+      </table>
+    </div>
+    <div class='movable_table_container' style="width: 68%" %>
+      <%= render :partial => 'resource_managements/forecasts/weeks' %>
+    </div>
+  </div>
+</div>
+
+<% content_for :header_tags do %>
+  <%= javascript_include_tag 'jquery_tools', :plugin => 'management' %>
+  <%= stylesheet_link_tag 'management', :plugin => 'management' %>
+<% end %>
+
+
+<script>
+  j = jQuery.noConflict();
+  jQuery(".movable_table_container").scrollable({circular: false, mousewheel: true});
+</script>
+

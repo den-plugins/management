@@ -2,6 +2,7 @@ class ResourceManagementsController < ApplicationController
 
   menu_item :dashboard
   menu_item :allocations, :only => :allocations
+  menu_item :forecasts, :only => :forecasts
 
   before_filter :require_management
   helper :resource_costs
@@ -13,6 +14,13 @@ class ResourceManagementsController < ApplicationController
     @projects = Project.active.find(:all, :order => 'name ASC').select {|project| project.project_type.eql?('Development')}
     @members = []
     @projects.each{|project| @members += project.members.select {|m| m.user.is_engineering and !m.user.is_resigned}}
+  end
+  
+  def forecasts
+    @resources = User.active.engineers.select do |resource| 
+       projects = resource.memberships
+       projects.any? &&  !projects.reject{|m| !m.project.active?}.empty?
+    end
   end
   
   private

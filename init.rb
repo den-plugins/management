@@ -30,6 +30,7 @@ Redmine::Plugin.register :management do
   Redmine::MenuManager.map :resource_management do |menu|
     menu.push :dashboard, {:controller => 'resource_managements', :action => 'index' }
     menu.push :allocations, {:controller => 'resource_managements', :action =>'allocations' }, :caption => 'Resource Allocation'
+    menu.push :forecasts, {:controller => 'resource_managements', :action =>'forecasts' }, :caption => 'Resource Forecast Summary'
   end
 
 end

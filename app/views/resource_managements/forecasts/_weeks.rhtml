@@ -1,0 +1,20 @@
+<% start_date, end_date = Date.today - 1.month, Date.today + 6.months %>
+<% weeks = get_weeks_range(start_date, end_date) %>
+<div id='floating_tables_holder' style="width: <%= weeks.count * 85 %>px">
+  <% weeks.each do |week| %>
+    <div class='floating_table'>
+      <table id="allocation_week" class="list fixed">
+        <tr>
+            <th><%= display_week(week) %></th>
+        </tr>
+        <% @resources.each do |resource| %>
+          <tr class="<%= cycle('even', 'odd', :name => 'week_days') %>">
+            <td><%= resource.allocations(week).to_f %></td>
+          </tr>
+        <% end %>
+        <% reset_cycle('week_days') %>
+      </table>
+    </div>
+  <% end %>
+</div>
+
