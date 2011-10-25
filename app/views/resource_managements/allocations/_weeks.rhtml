@@ -19,7 +19,7 @@
           </tr>
           <% categ = member.project.category.to_s %>
           <% categories_count[categ] += member_days_cost if !categories_count[categ].nil? and !member_days_cost.zero? %>
-          <% total_allocated += 1 if !member_days_cost.zero? %>
+          <%# total_allocated += member_days_cost if !member_days_cost.zero? %>
           <% current_total_resources += 1 %>
         <% end %>
         <% reset_cycle('week_days') %>
@@ -27,6 +27,7 @@
         <% categories.each do |category| %>
           <tr style="background-color: #eee;">
             <td><%= categories_count[category] / 5 %></td>
+            <% total_allocated += (categories_count[category] / 5) %>
           </tr>
         <% end %>
         <% bench = current_total_resources - total_allocated %>
