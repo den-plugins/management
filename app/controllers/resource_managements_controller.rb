@@ -10,7 +10,7 @@ class ResourceManagementsController < ApplicationController
   end
   
   def allocations
-    @projects = Project.active.find(:all, :order => 'name ASC').select {|project| project.project_type.eql?('Development Project')}
+    @projects = Project.active.find(:all, :order => 'name ASC').select {|project| project.project_type.eql?('Development')}
     @members = []
     @projects.each{|project| @members += project.members.select {|m| m.user.is_engineering}}
   end
@@ -18,7 +18,7 @@ class ResourceManagementsController < ApplicationController
   private
   def require_management
     return unless require_login
-    if !User.current.allowed_to?(:manage_resources, nil, :global => true)
+    if !User.current.allowed_to?(:manage_resources, nil, :global => true) && !User.current.admin?
       render_403
       return false
     end

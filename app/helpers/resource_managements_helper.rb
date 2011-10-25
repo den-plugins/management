@@ -13,8 +13,8 @@ module ResourceManagementsHelper
   end
 
   def project_categories
-    proj_categories = CustomField.find(:first, :conditions => "type = 'ProjectCustomField' and name = 'Project Type'")
-    return proj_categories.custom_values.map {|c| c.value if !c.value.blank? and !c.value.eql?("Admin Project") }.uniq.compact
+    proj_categories = CustomField.find(:first, :conditions => "type = 'ProjectCustomField' and name = 'Category'")
+    return proj_categories.possible_values
   end
 
   def set_categories_count(categories)

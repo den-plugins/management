@@ -25,7 +25,7 @@ Redmine::Plugin.register :management do
             {:controller => "resource_managements", :action => "index" },
               :caption => "Management",
               :before => :administration,
-              :if => Proc.new { User.current.allowed_to?(:manage_resources, nil, :global => true) || User.admin? }
+              :if => Proc.new { User.current.allowed_to?(:manage_resources, nil, :global => true) || User.current.admin? }
 
   Redmine::MenuManager.map :resource_management do |menu|
     menu.push :dashboard, {:controller => 'resource_managements', :action => 'index' }
