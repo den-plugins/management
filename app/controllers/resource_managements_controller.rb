@@ -25,6 +25,7 @@ class ResourceManagementsController < ApplicationController
     puts statement
     @resource_count = User.active.engineers.count(:all, :include => [:projects, :custom_values, :members], :conditions => statement)
     @resource_pages = Paginator.new self, @resource_count, limit, params['page']
+    @resources_no_limit = User.active.engineers.find(:all, :include => [:projects, :custom_values, :members], :conditions => statement)
     @resources = User.active.engineers.find :all,
                                         :include => [:projects, :custom_values, :members],
                                         :conditions => statement,

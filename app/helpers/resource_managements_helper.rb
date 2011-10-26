@@ -17,6 +17,11 @@ module ResourceManagementsHelper
     return (proj_categories.nil? ? [] : proj_categories.possible_values)
   end
 
+  def resource_skills
+    res_skills = CustomField.find(:first, :conditions => "type = 'UserCustomField' and name = 'Skill or Role'")
+    return (res_skills.nil? ? [] : res_skills.possible_values)
+  end
+
   def set_categories_count(categories)
     temp = {}
     categories.each do |category|
@@ -24,6 +29,16 @@ module ResourceManagementsHelper
     end
     temp[""] = 0
     return temp
+  end
+
+  def resource_countby(skill, week=nil)
+    count = 0
+    unless week
+      @resources_no_limit.each {|r| count += 1 if r.skill == skill}
+    else
+      @resources_no_limit.each {|r| count += 1 if r.skill == skill and !r.allocations(week).to_f.zero?}
+    end
+    count
   end
   
   def acronym(name)

@@ -13,6 +13,13 @@
           </tr>
         <% end %>
         <% reset_cycle('week_days') %>
+        <% skill_set = resource_skills %>
+        <tr><th>&nbsp;</th></tr>
+        <% skill_set.each do |skill| %>
+          <tr style="background-color: #eee;">
+            <td><%= resource_countby(skill, week) %></td>
+          </tr>
+        <% end %>
       </table>
     </div>
   <% end %>

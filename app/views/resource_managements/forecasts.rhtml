@@ -19,6 +19,14 @@
             </tr>
         <% end %>
         <% reset_cycle('resources') %>
+        <% skill_set = resource_skills %>
+        <tr><th colspan="3" style="text-align: right;">Resource Availbility per skill set</th></tr>
+        <% skill_set.each do |skill| %>
+          <tr style="background-color: #eee;">
+            <td colspan="2" style="text-align: right;"><%= skill %></td>
+            <td><%= resource_countby(skill) %></td>
+          </tr>
+        <% end %>
       </table>
     </div>
     <div class='movable_table_container' style="width: 74%" %>
