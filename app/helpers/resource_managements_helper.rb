@@ -33,4 +33,9 @@ module ResourceManagementsHelper
   def get_float(num)
     ("%.2f" % num).to_f
   end
+  
+  def monday_last_week(format)
+     date = (Date.today - 1.week).monday
+     h date.strftime(format)
+  end
 end

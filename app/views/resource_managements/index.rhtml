@@ -2,4 +2,33 @@
 
 <div id='dashboard'>
   <h4>Resource Management Dashboard</h4>
+  <h6 style="text-indent: 10px">Reporting Date: <%= monday_last_week "%B %d" %></h6>
+  
+  <div class="singleCol">
+    <div class="box">
+      <h3>Resource Inventory</h3>
+    </div>
+    <div class="box">
+      <h3>Resource Allocation as of <%= monday_last_week "%d-%b" %></h3>
+    </div>
+  </div>
+  <div class="singleCol">
+    <div class="box">
+      <h3>Resource Billability Forecast</h3>
+    </div>
+    <div class="box">
+      <h3>Billability Forecast by Skill Set</h3>
+    </div>
+  </div>
+  <div class="singleCol">
+    <div class="box">
+      <h3>Billability by Skill as of <%= monday_last_week "%d-%b" %></h3>
+    </div>
+  </div>
 </div>
+
+<% content_for :header_tags do %>
+  <%= stylesheet_link_tag 'management', :plugin => 'management' %>
+<% end %>
+
+
