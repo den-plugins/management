@@ -14,12 +14,23 @@
         <% end %>
         <% reset_cycle('week_days') %>
         <% skill_set = resource_skills %>
+        <% current_total_res_available = 0 %>
         <tr><th>&nbsp;</th></tr>
         <% skill_set.each do |skill| %>
           <tr style="background-color: #eee;">
-            <td><%= resource_countby(skill, week) %></td>
+            <% resource_count = resource_countby(skill, week) %>
+            <td><%= resource_count %></td>
+            <% current_total_res_available += resource_count %>
           </tr>
         <% end %>
+        <tr style="background-color: #eee;"><td>&nbsp;</td></tr>
+        <tr style="background-color: #eee;">
+          <td><%= current_total_res_available %></td>
+        </tr>
+        <% percent_allocated = (get_float(current_total_res_available) / get_float(total_res_available)) * 100 %>
+        <% percent_unallocated = (get_float(total_res_available - current_total_res_available) / get_float(total_res_available)) * 100 %>
+        <tr style="background-color: #eee;"><td><%= percent_unallocated.round(2) %>%</td></tr>
+        <tr style="background-color: #eee;"><td><%= percent_allocated.round(2) %>%</td></tr>
       </table>
     </div>
   <% end %>
