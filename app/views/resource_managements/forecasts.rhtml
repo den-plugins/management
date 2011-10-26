@@ -7,7 +7,7 @@
     <div style="padding: 10px;">
       <% form_tag({}, :id => 'project_accounting_select') do %>
         Project Accounting: <%= select_tag 'acctg', options_for_select(%w(Billable Non-billable Both), (params[:acctg] || 'Billable')),
-                                                                          :onclick => "$(project_accounting_select).submit();" %>
+                                                                          :onchange => "$('project_accounting_select').submit();" %>
       <% end %>
     </div>
     <div class='tables_container'>

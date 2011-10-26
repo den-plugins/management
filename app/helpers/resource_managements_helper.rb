@@ -32,15 +32,19 @@ module ResourceManagementsHelper
   end
 
   def resource_countby(skill, week=nil)
-    unless week
-      @resources_no_limit.select {|r| r.skill == skill and !r.is_resigned}.count
-    else
-      @resources_no_limit.select {|r| r.skill == skill and !r.is_resigned and !r.allocations(week).to_f.zero?}.count
+    if @resources_no_limit
+      unless week
+        @resources_no_limit.select {|r| r.skill == skill and !r.is_resigned}.count
+      else
+        @resources_no_limit.select {|r| r.skill == skill and !r.is_resigned and !r.allocations(week).to_f.zero?}.count
+      end
     end
   end
 
   def count_resigned
-    @resources_no_limit.select {|r| r.is_resigned}.count
+    if @resources_no_limit
+      @resources_no_limit.select {|r| r.is_resigned}.count
+    end
   end
   
   def acronym(name)
