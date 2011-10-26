@@ -7,9 +7,11 @@
         <tr>
             <th><%= display_week(week) %></th>
         </tr>
+        <% resource_allocations = 0.0 %>
         <% @resources.each do |resource| %>
           <tr class="<%= cycle('even', 'odd', :name => 'week_days') %>">
-            <td><%= resource.allocations(week, nil, params[:acctg]).to_f %></td>
+            <% resource_allocations = resource.allocations(week, nil, params[:acctg]).to_f %>
+            <td><%= resource_allocations %></td>
           </tr>
         <% end %>
         <% reset_cycle('week_days') %>
@@ -18,7 +20,7 @@
         <tr><th>&nbsp;</th></tr>
         <% skill_set.each do |skill| %>
           <tr style="background-color: #eee;">
-            <% resource_count = resource_countby(skill, week) %>
+            <% resource_count = resource_countby(skill, resource_allocations) %>
             <td><%= resource_count %></td>
             <% current_total_res_available += resource_count %>
           </tr>
