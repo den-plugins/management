@@ -9,7 +9,7 @@
         </tr>
         <% @resources.each do |resource| %>
           <tr class="<%= cycle('even', 'odd', :name => 'week_days') %>">
-            <td><%= resource.allocations(week).to_f %></td>
+            <td><%= resource.allocations(week, nil, params[:acctg]).to_f %></td>
           </tr>
         <% end %>
         <% reset_cycle('week_days') %>
@@ -35,4 +35,3 @@
     </div>
   <% end %>
 </div>
-

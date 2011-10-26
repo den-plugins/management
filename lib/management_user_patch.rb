@@ -46,18 +46,25 @@ module Management
         s.nil? ? nil : s.value
       end
       
-      def allocations(week, rate=nil)
+      def allocations(week, rate=nil, acctg=nil)
         days, cost = 0, 0
-        projects = memberships.reject {|m| !m.project.active?}
-        projects.each do |p|
-          if rate
-            sub_days, sub_cost = p.days_and_cost(week, rate).collect
-            days += sub_days
-            cost += sub_cost
+        project_allocations = ResourceAllocation.find(:all, :include => [:member], :conditions => ["members.user_id = ?", id]).select do |alloc|
+          project = alloc.member.project
+          if acctg && acctg.eql?('Both')
+            project.project_type.eql?('Development') && (project.accounting_type.eql?('Billable') || project.accounting_type.eql?('Non-billable'))
           else
-            days += p.days_and_cost(week)
+            project.project_type.eql?('Development') &&  project.accounting_type.eql?(acctg || 'Billable')
           end
         end
+        week.each do |day|
+          allocations = project_allocations.select{ |a| a.start_date <= day && a.end_date >= day}.uniq
+          if allocations.any?
+            allocations.each do |allocation|
+              days += (1 * (allocation.resource_allocation.to_f/100).to_f) unless allocation.resource_allocation.eql? 0
+            end
+          end
+        end
+        cost = days * (rate.to_f)
         rate ? [days, cost] : days
       end
     end
