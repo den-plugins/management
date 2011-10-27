@@ -32,17 +32,21 @@ class ResourceManagementsController < ApplicationController
       development = "and projects.id IN (#{dev_projects})"
       active_project = "select id, status from projects where projects.id = members.project_id and projects.status = 1 #{development}"
       statement = "exists (select user_id, project_id from members where members.user_id = users.id and exists (#{active_project}))"
-      @resources_no_limit = User.active.engineers.find(:all, :select => "users.id", :include => [:projects, :custom_values, :members], :conditions => statement)
+      @resources_no_limit = User.active.engineers.find(:all,
+                                                                :include => [:projects, :custom_values, :members],
+                                                                :conditions => statement,
+                                                                :order => "firstname ASC, lastname ASC")
       @resource_count = @resources_no_limit.count
       @resource_pages = Paginator.new self, @resource_count, limit, params['page']
-      @resources = User.active.engineers.find :all,
-                                          :include => [:projects, :custom_values, :members],
-                                          :conditions => statement,
-                                          :limit => limit,
-                                          :offset => @resource_pages.current.offset,
-                                          :order => "firstname ASC, lastname ASC"
+      offset = @resource_pages.current.offset
+      @resources = []
+      ## modified offset, limit approach through array rather than query
+      (offset ... (offset + limit)).each do |i|
+        break if @resources_no_limit[i].nil?
+        @resources << @resources_no_limit[i]
       end
-      render :template => 'resource_managements/forecasts.rhtml', :layout => !request.xhr?
+    end
+    render :template => 'resource_managements/forecasts.rhtml', :layout => !request.xhr?
   end
   
   private
