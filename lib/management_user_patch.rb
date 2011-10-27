@@ -31,18 +31,21 @@ module Management
       end
     
       def skill
-        s = custom_values.find(:first, :include => [:custom_field], :conditions => "custom_fields.name = 'Skill or Role' or custom_fields.id = 19")
+        s = custom_values.find(:first, :select => "custom_values.value", 
+                                   :include => [:custom_field], :conditions => "custom_fields.name = 'Skill or Role' or custom_fields.id = 19")
         s.nil? ? nil : s.value
       end
 
       def is_resigned
-        r = custom_values.find(:first, :include => [:custom_field], :conditions => "custom_fields.name = 'Employment End'")
+        r = custom_values.find(:first, :select => "custom_values.value",
+                                   :include => [:custom_field], :conditions => "custom_fields.name = 'Employment End' or custom_fields.id = 24")
         date = r.nil? ? nil : r.value
         return (date.nil? or date.blank?)? false : true
       end
       
       def location
-        s = custom_values.find(:first, :include => [:custom_field], :conditions => "custom_fields.name = 'Location' or custom_fields.id = 16")
+        s = custom_values.find(:first, :select => "custom_values.value", 
+                                   :include => [:custom_field], :conditions => "custom_fields.name = 'Location' or custom_fields.id = 16")
         s.nil? ? nil : s.value
       end
       
