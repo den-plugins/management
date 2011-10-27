@@ -32,7 +32,7 @@ class ResourceManagementsController < ApplicationController
       development = "and projects.id IN (#{dev_projects})"
       active_project = "select id, status from projects where projects.id = members.project_id and projects.status = 1 #{development}"
       statement = "exists (select user_id, project_id from members where members.user_id = users.id and exists (#{active_project}))"
-      @resources_no_limit = User.active.engineers.find(:all,
+      @resources_no_limit = User.active.engineers.find(:all, :select => "users.firstname, users.lastname, users.id",
                                                                 :include => [:projects, :custom_values, :members],
                                                                 :conditions => statement,
                                                                 :order => "firstname ASC, lastname ASC")
