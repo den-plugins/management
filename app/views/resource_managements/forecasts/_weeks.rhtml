@@ -1,16 +1,29 @@
 <% start_date, end_date = Date.today - 1.month, Date.today + 6.months %>
 <% weeks = get_weeks_range(start_date, end_date) %>
+<% total_days = 0 %>
+<% res_count_per_work_days = 0.0 %>
+<% res_allocations_skill = {} %>
 <div id='floating_tables_holder' style="width: <%= weeks.count * 85 %>px">
   <% weeks.each do |week| %>
+    <% total_days = week.count %>
+    <% weekly_resources_count = 0 %>
     <div class='floating_table'>
       <table id="allocation_week" class="list fixed">
         <tr>
             <th><%= display_week(week) %></th>
         </tr>
         <% @resources.each do |resource| %>
-          <tr class="<%= cycle('even', 'odd', :name => 'week_days') %>">
-            <td><%= resource.allocations(week, nil, params[:acctg]).to_f %></td>
-          </tr>
+          <% if resource.is_engineering %>
+            <tr class="<%= cycle('even', 'odd', :name => 'week_days') %>">
+              <% res_allocations = resource.allocations(week, nil, params[:acctg]).to_f %>
+              <% res_allocations_skill[resource.skill] = 0 if res_allocations_skill[resource.skill].nil? %>
+              <td><%= res_allocations %></td>
+              <% res_allocations_skill[resource.skill] += res_allocations %>
+            </tr>
+            <% weekly_resources_count += 1 %>
+          <% else %>
+            <% weekly_resources_count += 1 if (resource.non_engr_on and week.last < resource.non_engr_on.to_date) %>
+          <% end %>
         <% end %>
         <% reset_cycle('week_days') %>
         <% skill_set = resource_skills %>
@@ -31,6 +44,20 @@
         <% percent_unallocated = (get_float(total_res_available - current_total_res_available) / get_float(total_res_available)) * 100 %>
         <tr style="background-color: #eee;"><td><%= percent_unallocated.round(2) %>%</td></tr>
         <tr style="background-color: #eee;"><td><%= percent_allocated.round(2) %>%</td></tr>
+        <tr><th><%= total_days %></th></tr>
+        <% current_res_allocated = 0.0 %>
+        <% skill_set.each do |skill| %>
+          <tr style="background-color: #eee;">
+            <% res_count_per_work_days = res_allocations_skill[skill] ? (get_float(res_allocations_skill[skill])/get_float(total_days)) : 0.0 %>
+            <td><%= res_count_per_work_days %></td>
+            <% current_res_allocated += res_count_per_work_days %>
+          </tr>
+        <% end %>
+        <tr style="background-color: #eee;"><td>&nbsp;</td></tr>
+        <tr style="background-color: #eee;"><td><%= current_res_allocated.round(2) %></td></tr>
+        <tr style="background-color: #eee;"><td><%= weekly_resources_count %></td></tr>
+        <% total_allocated_percent = (current_res_allocated / get_float(weekly_resources_count)) * 100 %>
+        <tr style="background-color: #eee;"><td><%= total_allocated_percent.round(2) %>%</td></tr>
       </table>
     </div>
   <% end %>
