@@ -25,6 +25,8 @@ module Management
     end
     
     module InstanceMethods
+      
+      #TODO: Call this method every initialization of an instance of Project
       def custom_field_values
         self.project_type = field_project_type
         self.accounting_type = field_accounting_type

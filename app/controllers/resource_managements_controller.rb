@@ -61,7 +61,7 @@ class ResourceManagementsController < ApplicationController
   end
   
   def get_projects_members
-    @projects = Project.active.development
+    @projects = Project.active.development.each {|d| d.custom_field_values}
     @members = []
     @projects.each{|project| @members += project.members.select {|m| !m.user.is_resigned}}
   end
