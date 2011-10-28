@@ -26,10 +26,9 @@
           <% end %>
         <% end %>
         <% reset_cycle('week_days') %>
-        <% skill_set = resource_skills %>
         <% current_total_res_available = 0 %>
         <tr><th>&nbsp;</th></tr>
-        <% skill_set.each do |skill| %>
+        <% @skill_set.each do |skill| %>
           <tr style="background-color: #eee;">
             <% resource_count = resource_countby(skill, week, params[:acctg]) %>
             <td><%= resource_count %></td>
@@ -46,7 +45,7 @@
         <tr style="background-color: #eee;"><td><%= percent_allocated.round(2) %>%</td></tr>
         <tr><th><%= total_days %></th></tr>
         <% current_res_allocated = 0.0 %>
-        <% skill_set.each do |skill| %>
+        <% @skill_set.each do |skill| %>
           <tr style="background-color: #eee;">
             <% res_count_per_work_days = res_allocations_skill[skill] ? (get_float(res_allocations_skill[skill])/get_float(total_days)) : 0.0 %>
             <td><%= res_count_per_work_days %></td>

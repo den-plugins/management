@@ -3,7 +3,6 @@
 <div id='resource_allocation'>
   <h4>Resource Allocation</h4>
   <% if @members.any? %>
-    <% categories = project_categories %>
     <div class='tables_container'>
       <div class='fixed_table_container' style="width: 43%;">
         <table id='allocations_fixed_table' class="list fixed">
@@ -27,7 +26,7 @@
           <% end %>
           <% reset_cycle('resources') %>
           <tr><th colspan="5" style="text-align: right;">Project Category (Count)</th></tr>
-          <% categories.each do |category| %>
+          <% @categories.each do |category| %>
             <tr style="background-color: #eee;">
               <td colspan="5" style="text-align: right;"><%= category %></td>
             </tr>
@@ -37,7 +36,7 @@
           <tr style="background-color: #eee;"><td colspan="5" style="text-align: right;">Total Allocated</td></tr>
           <tr style="background-color: #eee;"><td colspan="5" style="text-align: right;">Current Total Resources</td></tr>
           <tr><th colspan="5" style="text-align: right;">Project Category (Percentage)</th></tr>
-          <% categories.each do |category| %>
+          <% @categories.each do |category| %>
             <tr style="background-color: #eee;">
               <td colspan="5" style="text-align: right;"><%= category %></td>
             </tr>

@@ -4,9 +4,11 @@ require 'dispatcher'
 
 require 'pm_member_patch'
 require 'pm_project_patch'
+require 'management_project_patch'
 require 'management_user_patch'
 
 Dispatcher.to_prepare do
+  Project.send(:include, Management::ProjectPatch)
   User.send(:include, Management::UserPatch)
 end
 

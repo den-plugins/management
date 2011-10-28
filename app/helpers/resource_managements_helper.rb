@@ -12,16 +12,6 @@ module ResourceManagementsHelper
     end
   end
 
-  def project_categories
-    proj_categories = CustomField.find(:first, :conditions => "type = 'ProjectCustomField' and name = 'Category'")
-    return (proj_categories.nil? ? [] : proj_categories.possible_values)
-  end
-
-  def resource_skills
-    res_skills = CustomField.find(:first, :conditions => "type = 'UserCustomField' and name = 'Skill or Role'")
-    return (res_skills.nil? ? [] : res_skills.possible_values)
-  end
-
   def set_categories_count(categories)
     temp = {}
     categories.each do |category|
