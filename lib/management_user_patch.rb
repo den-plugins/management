@@ -7,6 +7,8 @@ module Management
       base.send(:include, InstanceMethods)
       base.class_eval do
         unloadable
+        
+        attr_accessor :location, :skill
         has_many :assumptions, :foreign_key => :owner
         has_many :risks, :foreign_key => :owner
         has_many :pm_dashboard_issues, :foreign_key => :owner
@@ -25,7 +27,12 @@ module Management
     end
     
     module InstanceMethods
-
+    
+      def custom_field_values
+        self.location = field_location
+        self.skill = field_skill
+      end
+      
       def set_non_engr_on
         if !self.is_engineering
           self.non_engr_on = Date.today
@@ -34,7 +41,7 @@ module Management
         end
       end
     
-      def skill
+      def field_skill
         s = custom_values.find(:first, :select => "custom_values.value", 
                                    :include => [:custom_field], :conditions => "custom_fields.name = 'Skill or Role' or custom_fields.id = 19")
         s.nil? ? nil : s.value
@@ -47,7 +54,7 @@ module Management
         return (date.nil? or date.blank?)? false : true
       end
       
-      def location
+      def field_location
         s = custom_values.find(:first, :select => "custom_values.value", 
                                    :include => [:custom_field], :conditions => "custom_fields.name = 'Location' or custom_fields.id = 16")
         s.nil? ? nil : s.value

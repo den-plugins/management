@@ -1,8 +1,8 @@
 function plot_resource_allocation(id, data, series) {
   var plot = jQuery.jqplot(id, data, {
     axes: {
-      xaxis: {label: 'Weeks', renderer: jQuery.jqplot.DateAxisRenderer, tickOptions: {fontSize: '8pt'}},
-      yaxis: {label: "Allocation Count", labelRenderer: jQuery.jqplot.CanvasAxisLabelRenderer, min: 0}
+      xaxis: {label: 'Weeks', renderer: jQuery.jqplot.DateAxisRenderer, tickOptions: {showMark: false, fontSize: '8pt'}},
+      yaxis: {label: "Allocation Count", labelRenderer: jQuery.jqplot.CanvasAxisLabelRenderer, min: 0, max: 5}
     },
     legend: {show: false},
     cursor: {show: true, zoom: true},
