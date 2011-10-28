@@ -48,6 +48,8 @@
         <% current_res_allocated = 0.0 %>
         <% @skill_set.each do |skill| %>
           <tr style="background-color: #eee;">
+            <% res_allocations_skill[skill] = 0 if res_allocations_skill[skill].nil? %>
+            <% res_allocations_skill[skill] += get_total_allocations_per_skill(skill, week, params[:acctg]) %>
             <% res_count_per_work_days = res_allocations_skill[skill] ? (get_float(res_allocations_skill[skill])/get_float(total_days)) : 0.0 %>
             <td><%= res_count_per_work_days %></td>
             <% current_res_allocated += res_count_per_work_days %>

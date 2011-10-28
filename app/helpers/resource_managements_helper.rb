@@ -32,6 +32,15 @@ module ResourceManagementsHelper
     end
   end
 
+  def get_total_allocations_per_skill(skill, week, acctg)
+    total_alloc_per_skill = 0.0
+    if @resources_no_limit
+      resources = @resources_no_limit - @resources
+      resources.each {|r|  total_alloc_per_skill += r.allocations(week, nil, acctg) if r.skill == skill and !r.is_resigned}
+    end
+    total_alloc_per_skill
+  end
+
   def count_resigned
     if @resources_no_limit
       @resources_no_limit.select {|r| r.is_resigned}.count
