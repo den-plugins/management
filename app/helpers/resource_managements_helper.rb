@@ -23,10 +23,11 @@ module ResourceManagementsHelper
 
   def resource_countby(skill, week=nil, acctg=nil)
     if @resources_no_limit
+      resources = @resources_no_limit - @resources
       if week.nil?
-        @resources_no_limit.select {|r| r.skill == skill and !r.is_resigned}.count
+        resources.select {|r| r.skill == skill and !r.is_resigned}.count
       else
-        @resources_no_limit.select {|r| r.skill == skill and !r.is_resigned and !r.allocations(week, nil, acctg).zero?}.count
+        resources.select {|r| r.skill == skill and !r.is_resigned and !r.allocations(week, nil, acctg).zero?}.count
       end
     end
   end
