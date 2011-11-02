@@ -49,4 +49,28 @@ module ResourceManagementsHelper
      date = (Date.today - 1.week).monday
      h date.strftime(format)
   end
+
+  def count_user_skill(user)
+    skill_set = []
+    skill_name = []
+    counter = 0
+    user.each do |u|
+      unless u.is_resigned
+        unless u.skill.nil?
+          skill_name[counter] = u.skill
+          counter += 1
+        end
+      end
+    end
+    ary = skill_name.uniq{|sname| s}
+    ctr = 0
+    ary.each do |q|
+     num = skill_name.count q.to_s
+     skill_set[ctr] = [q,num]
+     logger.info skill_set[ctr].to_s "-=------------------------------"
+     ctr += 1
+    end
+    return skill_set.to_json
+  end
+
 end

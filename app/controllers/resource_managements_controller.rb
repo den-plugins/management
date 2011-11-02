@@ -8,6 +8,7 @@ class ResourceManagementsController < ApplicationController
   helper :resource_costs
   
   def index
+    @user = User.find(:all, :conditions => ["is_engineering = ? and status = ?", true, 1])
   end
   
   def allocations

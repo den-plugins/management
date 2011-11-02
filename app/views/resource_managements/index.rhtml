@@ -1,4 +1,10 @@
 <%= render :partial => 'header' %>
+  <%= stylesheet_link_tag 'jquery.jqplot.css', :plugin => 'redmine_burndown' %>
+
+  <%= javascript_include_tag 'jquery.min.js', :plugin => 'redmine_burndown' %>
+  <%= javascript_include_tag 'jquery.jqplot.js', :plugin => 'redmine_burndown' %>
+  <%= javascript_include_tag 'chart.js', :plugin => 'redmine_burndown' %>
+  <%= javascript_include_tag 'plugins/jqplot.pieRenderer.min.js', :plugin => 'redmine_burndown' %>
 
 <div id='dashboard'>
   <h4>Resource Management Dashboard</h4>
@@ -7,7 +13,27 @@
   <div class="singleCol">
     <div class="box">
       <h3>Resource Inventory</h3>
-    </div>
+        <div id="chart1"></div>
+            <script type="text/javascript">
+              //$(document).ready(function(){
+                  var data = <%= count_user_skill(@user) %>;
+                  var plot1 = jQuery.jqplot ('chart1', [data],
+                    {
+                      seriesDefaults: {
+                    // Make this a pie chart.
+                    renderer: jQuery.jqplot.PieRenderer,
+                    rendererOptions: {
+                      // Put data labels on the pie slices.
+                      // By default, labels show the percentage of the slice.
+                      showDataLabels: true
+                    }
+                      },
+                      legend: { show:true, location: 'e' }
+                    }
+                  );
+              //});
+            </script>
+        </div>
     <div class="box">
       <h3>Resource Allocation as of <%= monday_last_week "%d-%b" %></h3>
     </div>
