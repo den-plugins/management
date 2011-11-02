@@ -16,6 +16,7 @@
                       seriesDefaults: {
                     // Make this a pie chart.
                     renderer: jQuery.jqplot.PieRenderer,
+		    seriesColors: [ "#7ea5e2", "#e57e7c", "#bdde85", "#9b81bd", "#79cdea", "#fba665", "#a0bcec", "#f3a8a6", "#fd7f2ac", "#c7b6e2"],
                     rendererOptions: {
                       // Put data labels on the pie slices.
                       // By default, labels show the percentage of the slice.
@@ -41,6 +42,16 @@
     </div>
     <div class="box">
       <h3>Billability Forecast by Skill Set</h3>
+	  <% resource_count = {} %>
+ 	  <% @skill_set = User.resource_skills %>
+          <table>
+	  <% @skill_set.each do |skill| %>
+            <tr style="background-color: #eee;">
+              <td colspan="2" style="text-align: right;"><%= skill %></td>
+              <td><%= resource_count[skill] %></td>
+            </tr>
+          <% end %>
+          </table>
     </div>
   </div>
   <div class="singleCol">
