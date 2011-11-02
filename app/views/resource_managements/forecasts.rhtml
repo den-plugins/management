@@ -18,24 +18,26 @@
             <th width='50%'>Resource</th>
             <th width='30%'>Role</th>
           </tr>
+          <% resource_count = {} %>
           <% @resources.each do |resource| %>
-            <% if resource.is_engineering %>
             <tr class="<%= cycle('even', 'odd', :name => 'resources') %>">
+              <% resource.custom_field_values %>
               <td><%= resource.location %></td>
               <td style="text-align: left"><%= resource.name %></td>
               <td><%= resource.skill %></td>
+              <% resource_count[resource.skill] = 0 if resource_count[resource.skill].nil? %>
+              <% resource_count[resource.skill] += 1 %>
             </tr>
-            <% end %>
           <% end %>
           <% reset_cycle('resources') %>
           <% total_res_available = 0 %>
-          <% resource_count = {} %>
           <% resigned_resources_count = count_resigned %>
           <tr><th colspan="3" style="text-align: right;">Resource Availbility per skill set</th></tr>
           <% @skill_set.each do |skill| %>
             <tr style="background-color: #eee;">
               <td colspan="2" style="text-align: right;"><%= skill %></td>
-              <% resource_count[skill] = resource_countby(skill) %>
+              <% resource_count[skill] = 0 if resource_count[skill].nil? %>
+              <% resource_count[skill] += resource_countby(skill) %>
               <td><%= resource_count[skill] %></td>
               <% total_res_available += resource_count[skill] %>
             </tr>

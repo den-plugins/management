@@ -36,6 +36,9 @@
         </div>
     <div class="box">
       <h3>Resource Allocation as of <%= monday_last_week "%d-%b" %></h3>
+      <div id="resource_allocation_chart"></div>
+      <% data = @resource_allocation_chart.json_weeks_allocations %>
+      <%= content_tag :script, "plot_resource_allocation('resource_allocation_chart', #{data}, #{@categories.to_json})" %>
     </div>
   </div>
   <div class="singleCol">
@@ -55,6 +58,15 @@
 
 <% content_for :header_tags do %>
   <%= stylesheet_link_tag 'management', :plugin => 'management' %>
+  <%= javascript_include_tag 'dashboard.js', :plugin => 'management' %>
+  <%= javascript_include_tag 'jquery.min.js', :plugin => 'redmine_burndown' %>
+  <%= javascript_include_tag 'jquery.jqplot.js', :plugin => 'redmine_burndown' %>
+  <%= javascript_include_tag 'plugins/jqplot.canvasTextRenderer.min.js', :plugin => 'redmine_burndown' %>
+  <%= javascript_include_tag 'plugins/jqplot.canvasAxisLabelRenderer.min.js', :plugin => 'redmine_burndown' %>
+  <%= javascript_include_tag 'plugins/jqplot.cursor.min.js', :plugin => 'redmine_burndown' %>
+  <%= javascript_include_tag 'plugins/jqplot.dateAxisRenderer.min.js', :plugin => 'redmine_burndown' %>
+  <%= javascript_include_tag 'plugins/jqplot.highlighter.min.js', :plugin => 'redmine_burndown' %>
+  <%= javascript_include_tag 'chart.js', :plugin => 'redmine_burndown' %>
 <% end %>
 
 

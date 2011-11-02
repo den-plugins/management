@@ -5,22 +5,25 @@ class ResourceManagementsController < ApplicationController
   menu_item :forecasts, :only => :forecasts
 
   before_filter :require_management
+  before_filter :get_projects_members, :only => [:index, :allocations]
   helper :resource_costs
   
   def index
+<<<<<<< HEAD
     @user = User.find(:all, :conditions => ["is_engineering = ? and status = ?", true, 1])
+=======
+    @categories = Project.project_categories.sort
+    @resource_allocation_chart = DashboardChart.new({:resources => @members, :categories => @categories})
+>>>>>>> 2fa0de975d0f98587ae0c3870d70396544d5d799
   end
   
   def allocations
-    @projects = Project.active.find(:all, :order => 'name ASC').select {|project| project.project_type.eql?('Development')}
-    @members = []
-    @projects.each{|project| @members += project.members.select {|m| !m.user.is_resigned}}
     @categories = Project.project_categories
   end
   
   def forecasts
     limit = per_page_option
-    dev_projects = Project.development
+    dev_projects = Project.development.each {|d| d.custom_field_values}
     if params[:acctg] && params[:acctg].eql?('Both')
       projects = dev_projects.collect {|p| p.id if (p.accounting_type.eql?('Billable') || p.accounting_type.eql?('Non-billable'))}.compact.uniq.join(', ')
     else
@@ -59,5 +62,11 @@ class ResourceManagementsController < ApplicationController
       return false
     end
     true
+  end
+  
+  def get_projects_members
+    @projects = Project.active.development.each {|d| d.custom_field_values}
+    @members = []
+    @projects.each{|project| @members += project.members.select {|m| !m.user.is_resigned}}
   end
 end

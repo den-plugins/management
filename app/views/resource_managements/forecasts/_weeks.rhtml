@@ -1,6 +1,7 @@
 <% start_date, end_date = Date.today - 1.month, Date.today + 6.months %>
 <% weeks = get_weeks_range(start_date, end_date) %>
 <% total_days = 0 %>
+<% resource_count = {} %>
 <% res_count_per_work_days = 0.0 %>
 <% res_allocations_skill = {} %>
 <div id='floating_tables_holder' style="width: <%= weeks.count * 85 %>px">
@@ -13,26 +14,26 @@
             <th><%= display_week(week) %></th>
         </tr>
         <% @resources.each do |resource| %>
-          <% if resource.is_engineering %>
-            <tr class="<%= cycle('even', 'odd', :name => 'week_days') %>">
-              <% res_allocations = resource.allocations(week, nil, params[:acctg]).to_f %>
-              <% res_allocations_skill[resource.skill] = 0 if res_allocations_skill[resource.skill].nil? %>
-              <td><%= res_allocations %></td>
-              <% res_allocations_skill[resource.skill] += res_allocations %>
-            </tr>
-            <% weekly_resources_count += 1 %>
-          <% else %>
-            <% weekly_resources_count += 1 if (resource.non_engr_on and week.last < resource.non_engr_on.to_date) %>
-          <% end %>
+          <tr class="<%= cycle('even', 'odd', :name => 'week_days') %>">
+            <% res_allocations = resource.allocations(week, nil, params[:acctg]).to_f %>
+            <% res_allocations_skill[resource.skill] = 0 if res_allocations_skill[resource.skill].nil? %>
+            <% resource_count[resource.skill] = 0 if resource_count[resource.skill].nil? %>
+            <td><%= res_allocations %></td>
+            <% res_allocations_skill[resource.skill] += res_allocations if !resource.is_resigned %>
+            <% resource_count[resource.skill] += 1 if !res_allocations.zero? and !resource.is_resigned %>
+          </tr>
+          <% weekly_resources_count += 1 %>
         <% end %>
         <% reset_cycle('week_days') %>
         <% current_total_res_available = 0 %>
         <tr><th>&nbsp;</th></tr>
         <% @skill_set.each do |skill| %>
           <tr style="background-color: #eee;">
-            <% resource_count = resource_countby(skill, week, params[:acctg]) %>
-            <td><%= resource_count %></td>
-            <% current_total_res_available += resource_count ? resource_count : 0.0 %>
+            <% resource_count[skill] = 0 if resource_count[skill].nil? %>
+            <% resource_count[skill] += resource_countby(skill, week, params[:acctg]) %>
+            <td><%= resource_count[skill] %></td>
+            <% current_total_res_available += resource_count[skill] ? resource_count[skill] : 0.0 %>
+            <% resource_count[skill] = 0 %>
           </tr>
         <% end %>
         <tr style="background-color: #eee;"><td>&nbsp;</td></tr>
@@ -47,9 +48,12 @@
         <% current_res_allocated = 0.0 %>
         <% @skill_set.each do |skill| %>
           <tr style="background-color: #eee;">
+            <% res_allocations_skill[skill] = 0 if res_allocations_skill[skill].nil? %>
+            <% res_allocations_skill[skill] += get_total_allocations_per_skill(skill, week, params[:acctg]) %>
             <% res_count_per_work_days = res_allocations_skill[skill] ? (get_float(res_allocations_skill[skill])/get_float(total_days)) : 0.0 %>
             <td><%= res_count_per_work_days %></td>
             <% current_res_allocated += res_count_per_work_days %>
+            <% res_allocations_skill[skill] = 0.0 %>
           </tr>
         <% end %>
         <tr style="background-color: #eee;"><td>&nbsp;</td></tr>
