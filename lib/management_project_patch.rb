@@ -27,7 +27,7 @@ module Management
     module InstanceMethods
       
       #TODO: Call this method every initialization of an instance of Project
-      def custom_field_values
+      def mgt_project_custom
         self.project_type = field_project_type
         self.accounting_type = field_accounting_type
         self.category = field_category

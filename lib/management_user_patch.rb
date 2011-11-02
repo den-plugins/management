@@ -28,7 +28,7 @@ module Management
     
     module InstanceMethods
     
-      def custom_field_values
+      def mgt_user_custom
         self.location = field_location
         self.skill = field_skill
       end

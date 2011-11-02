@@ -20,7 +20,7 @@ class ResourceManagementsController < ApplicationController
   
   def forecasts
     limit = per_page_option
-    dev_projects = Project.development.each {|d| d.custom_field_values}
+    dev_projects = Project.development.each {|d| d.mgt_project_custom}
     if params[:acctg] && params[:acctg].eql?('Both')
       projects = dev_projects.collect {|p| p.id if (p.accounting_type.eql?('Billable') || p.accounting_type.eql?('Non-billable'))}.compact.uniq.join(', ')
     else
@@ -62,7 +62,7 @@ class ResourceManagementsController < ApplicationController
   end
   
   def get_projects_members
-    @projects = Project.active.development.each {|d| d.custom_field_values}
+    @projects = Project.active.development.each {|d| d.mgt_project_custom}
     @members = []
     @projects.each{|project| @members += project.members.select {|m| !m.user.is_resigned}}
   end
