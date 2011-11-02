@@ -9,12 +9,9 @@ class ResourceManagementsController < ApplicationController
   helper :resource_costs
   
   def index
-<<<<<<< HEAD
     @user = User.find(:all, :conditions => ["is_engineering = ? and status = ?", true, 1])
-=======
     @categories = Project.project_categories.sort
     @resource_allocation_chart = DashboardChart.new({:resources => @members, :categories => @categories})
->>>>>>> 2fa0de975d0f98587ae0c3870d70396544d5d799
   end
   
   def allocations
