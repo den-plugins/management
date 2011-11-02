@@ -64,7 +64,7 @@ module Management
         days, cost = 0, 0
         project_allocations = ResourceAllocation.find(:all, :include => [:member], :conditions => ["members.user_id = ?", id]).select do |alloc|
           project = alloc.member.project
-          project.custom_field_values
+          project.mgt_project_custom #project.custom_field_values
           if acctg && acctg.eql?('Both')
             project.project_type.eql?('Development') && (project.accounting_type.eql?('Billable') || project.accounting_type.eql?('Non-billable'))
           else
