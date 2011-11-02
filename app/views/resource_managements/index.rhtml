@@ -1,10 +1,4 @@
 <%= render :partial => 'header' %>
-  <%# stylesheet_link_tag 'jquery.jqplot.css', :plugin => 'redmine_burndown' %>
-
-  <%# javascript_include_tag 'jquery.min.js', :plugin => 'redmine_burndown' %>
-  <%# javascript_include_tag 'jquery.jqplot.js', :plugin => 'redmine_burndown' %>
-  <%# javascript_include_tag 'chart.js', :plugin => 'redmine_burndown' %>
-  <%# javascript_include_tag 'plugins/jqplot.pieRenderer.min.js', :plugin => 'redmine_burndown' %>
 
 <div id='dashboard'>
   <h4>Resource Management Dashboard</h4>
@@ -68,6 +62,8 @@
   <%= javascript_include_tag 'plugins/jqplot.highlighter.min.js', :plugin => 'redmine_burndown' %>
   <%= javascript_include_tag 'plugins/jqplot.pieRenderer.min.js', :plugin => 'redmine_burndown' %>
   <%= javascript_include_tag 'chart.js', :plugin => 'redmine_burndown' %>
+  <%= stylesheet_link_tag 'jquery.jqplot.css', :plugin => 'redmine_burndown' %>
+  <%= javascript_include_tag 'plugins/jqplot.pieRenderer.min.js', :plugin => 'redmine_burndown' %>
 <% end %>
 
 

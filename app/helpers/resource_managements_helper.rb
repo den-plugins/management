@@ -66,8 +66,8 @@ module ResourceManagementsHelper
     counter = 0
     user.each do |u|
       unless u.is_resigned
-        unless u.skill.nil?
-          skill_name[counter] = u.skill
+        unless u.field_skill.nil?
+          skill_name[counter] = u.field_skill
           counter += 1
         end
       end
@@ -77,7 +77,6 @@ module ResourceManagementsHelper
     ary.each do |q|
      num = skill_name.count q.to_s
      skill_set[ctr] = [q,num]
-     logger.info skill_set[ctr].to_s "-=------------------------------"
      ctr += 1
     end
     return skill_set.to_json
