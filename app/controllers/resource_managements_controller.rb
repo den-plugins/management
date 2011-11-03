@@ -10,6 +10,7 @@ class ResourceManagementsController < ApplicationController
   
   def index
     @user = User.find(:all, :conditions => ["is_engineering = ? and status = ?", true, 1])
+    @skill_set = User.resource_skills
     @categories = Project.project_categories.sort
     @resource_allocation_chart = DashboardChart.new({:resources => @members, :categories => @categories})
   end

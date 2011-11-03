@@ -1,90 +1,26 @@
 <% start_date, end_date = Date.today - 1.month, Date.today + 6.months %>
-<% qa,architect,pmba,interactive,java,sysad,ror,mobile,techsup,techwrt,other = [],[],[],[],[],[],[],[],[],[],[]%>
 <% weeks = get_weeks_range(start_date, end_date) %>
 <% total_days = 0 %>
+<% temp = {} %>
 <% resource_count = {} %>
 <% res_count_per_work_days = 0.0 %>
 <% res_allocations_skill = {} %>
-<% @skill_set = User.resource_skills %>
-<% case_count = 0%>
-<% skill_ctr = 0 %>
-  <% weeks.each do |week| %>
-    <% total_days = week.count %>
-    <% weekly_resources_count = 0 %>
-      <% w = display_week(week) %>
-	<% a = week.to_a %>
-         <% @skill_set.each do |skill| %>
-            <% resource_count[skill] = 0 if resource_count[skill].nil? %>
-	    <% if case_count.eql? 0 %>
-	      <% qa[skill_ctr] = [a.last.to_s,resource_count[skill]]%>
-	      <%# skill_ctr += 1 %>
-	    <% elsif case_count.eql? 1 %>
-	      <% architect[skill_ctr] = [a.last.to_s,resource_count[skill]]%>
-	      <%# skill_ctr += 1 %>
-	    <% elsif case_count.eql? 2 %>
-	      <% pmba[skill_ctr] = [a.last.to_s,resource_count[skill]]%>
-	      <%# skill_ctr += 1 %>
-	    <% elsif case_count.eql? 3 %>
-	      <% interactive[skill_ctr] = [a.last.to_s,resource_count[skill]]%>
-	      <%# skill_ctr += 1 %>
-	    <% elsif case_count.eql? 4 %>
-	      <% java[skill_ctr] = [a.last.to_s,resource_count[skill]]%>
-	      <%# skill_ctr += 1 %>
-	    <% elsif case_count.eql? 5 %>
-	      <% sysad[skill_ctr] = [a.last.to_s,resource_count[skill]]%>
-	      <%# skill_ctr += 1 %>
-	    <% elsif case_count.eql? 6 %>
-	      <% ror[skill_ctr] = [a.last.to_s,resource_count[skill]]%>
-	      <%# skill_ctr += 1 %>
-	    <% elsif case_count.eql? 7 %>
-	      <% mobile[skill_ctr] = [a.last.to_s,resource_count[skill]]%>
-	      <%# skill_ctr += 1 %>
-	    <% elsif case_count.eql? 8 %>
-	      <% techsup[skill_ctr] = [a.last.to_s,resource_count[skill]]%>
-	      <%# skill_ctr += 1 %>
-	    <% elsif case_count.eql? 9 %>
-	      <% techwrt[skill_ctr] = [a.last.to_s,resource_count[skill]]%>
-	      <%# skill_ctr += 1 %>
-	    <% else %>
-	      <% other[skill_ctr] = [a.last.to_s,resource_count[skill]]%>      
-	    <% end %>
-	<% if case_count < 10 %>
-	  <% case_count += 1 %>
-	<% else %>
-	  <% case_count = 0 %>
-	<% end %>
-        <% end %>
-          <% skill_ctr += 1 %>
+<% weeks.each do |week| %>
+  <% total_days = week.count %>
+  <% weekly_resources_count = 0 %>
+  <% w = display_week(week) %>
+  <% a = week.to_a %>
+  <% @skill_set.each do |skill| %>
+    <% resource_count[skill] = 0 if resource_count[skill].nil? %>
+      <% temp[skill] = [] if temp[skill].nil? %>
+      <% temp[skill] << [a.last.to_s,resource_count[skill]] %>
   <% end %>
+<% end %>
+<%
+jdata = []
+temp.each {|k,v| jdata << v}
+jdata.to_json
+%>
 <script type="text/javascript">
-
-  var qaPoints = <%= qa.to_json %>;
-  var arcPoints = <%= architect.to_json %>;
-  var pmbaPoints = <%= pmba.to_json %>;
-  var intPoints = <%= interactive.to_json %>;
-  var javaPoints = <%= java.to_json %>;
-  var sysPoints = <%= sysad.to_json %>;
-  var rorPoints = <%= ror.to_json %>;
-  var mobPoints = <%= mobile.to_json %>;
-  var tsPoints = <%= techsup.to_json %>;
-  var twPoints = <%= techwrt.to_json %>;
-  var otherPoints = <%= other.to_json %>;
-
-plot_skill_set('chart3', [qaPoints, arcPoints, pmbaPoints, intPoints, javaPoints, sysPoints, rorPoints, mobPoints, tsPoints, twPoints, otherPoints])
-
-function plot_skill_set(id, data) {
-  var plot = jQuery.jqplot(id, data, {
-    axes: {
-      xaxis: {renderer: jQuery.jqplot.DateAxisRenderer, tickOptions: {showMark: false, fontSize: '8pt'}},
-      yaxis: {labelRenderer: jQuery.jqplot.CanvasAxisLabelRenderer, min: 0, max: 50}
-    },
-    legend: {show: false},
-    cursor: {show: true, zoom: true},
-    highlighter: {show: true, sizeAdjust: 7.5}
-  });
-  //jQuery('.button-reset').click(function() { plot.resetZoom() });
-}
-
-
-
+plot_skill_set('chart3', <%= jdata.to_json %>)
 </script>
