@@ -7,50 +7,54 @@
 <% res_allocations_skill = {} %>
 <% @skill_set = User.resource_skills %>
 <% case_count = 0%>
+<% skill_ctr = 0 %>
   <% weeks.each do |week| %>
     <% total_days = week.count %>
     <% weekly_resources_count = 0 %>
       <% w = display_week(week) %>
 	<% a = week.to_a %>
-         <% skill_ctr = 0 %>
          <% @skill_set.each do |skill| %>
             <% resource_count[skill] = 0 if resource_count[skill].nil? %>
 	    <% if case_count.eql? 0 %>
 	      <% qa[skill_ctr] = [a.last.to_s,resource_count[skill]]%>
-	      <% skill_ctr += 1 %>
+	      <%# skill_ctr += 1 %>
 	    <% elsif case_count.eql? 1 %>
 	      <% architect[skill_ctr] = [a.last.to_s,resource_count[skill]]%>
-	      <% skill_ctr += 1 %>
+	      <%# skill_ctr += 1 %>
 	    <% elsif case_count.eql? 2 %>
 	      <% pmba[skill_ctr] = [a.last.to_s,resource_count[skill]]%>
-	      <% skill_ctr += 1 %>
+	      <%# skill_ctr += 1 %>
 	    <% elsif case_count.eql? 3 %>
 	      <% interactive[skill_ctr] = [a.last.to_s,resource_count[skill]]%>
-	      <% skill_ctr += 1 %>
+	      <%# skill_ctr += 1 %>
 	    <% elsif case_count.eql? 4 %>
 	      <% java[skill_ctr] = [a.last.to_s,resource_count[skill]]%>
-	      <% skill_ctr += 1 %>
+	      <%# skill_ctr += 1 %>
 	    <% elsif case_count.eql? 5 %>
 	      <% sysad[skill_ctr] = [a.last.to_s,resource_count[skill]]%>
-	      <% skill_ctr += 1 %>
+	      <%# skill_ctr += 1 %>
 	    <% elsif case_count.eql? 6 %>
 	      <% ror[skill_ctr] = [a.last.to_s,resource_count[skill]]%>
-	      <% skill_ctr += 1 %>
+	      <%# skill_ctr += 1 %>
 	    <% elsif case_count.eql? 7 %>
 	      <% mobile[skill_ctr] = [a.last.to_s,resource_count[skill]]%>
-	      <% skill_ctr += 1 %>
+	      <%# skill_ctr += 1 %>
 	    <% elsif case_count.eql? 8 %>
 	      <% techsup[skill_ctr] = [a.last.to_s,resource_count[skill]]%>
-	      <% skill_ctr += 1 %>
+	      <%# skill_ctr += 1 %>
 	    <% elsif case_count.eql? 9 %>
 	      <% techwrt[skill_ctr] = [a.last.to_s,resource_count[skill]]%>
-	      <% skill_ctr += 1 %>
+	      <%# skill_ctr += 1 %>
 	    <% else %>
-	      <% other[skill_ctr] = [a.last.to_s,resource_count[skill]]%>
-	      <% skill_ctr += 1 %>
+	      <% other[skill_ctr] = [a.last.to_s,resource_count[skill]]%>      
 	    <% end %>
+	<% if case_count < 10 %>
+	  <% case_count += 1 %>
+	<% else %>
+	  <% case_count = 0 %>
+	<% end %>
         <% end %>
-	<% case_count += 1 %>
+          <% skill_ctr += 1 %>
   <% end %>
 <script type="text/javascript">
 
