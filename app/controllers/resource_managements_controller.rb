@@ -12,7 +12,6 @@ class ResourceManagementsController < ApplicationController
     @user = User.find(:all, :conditions => ["is_engineering = ? and status = ?", true, 1])
     @skill_set = User.resource_skills
     @categories = Project.project_categories.sort
-    @resource_allocation_chart = DashboardChart.new({:resources => @members, :categories => @categories})
   end
   
   def allocations
@@ -65,6 +64,6 @@ class ResourceManagementsController < ApplicationController
   def get_projects_members
     @projects = Project.active.development.each {|d| d.mgt_project_custom}
     @members = []
-    @projects.each{|project| @members += project.members.select {|m| !m.user.is_resigned}}
+    @projects.each{|project| @members += project.members.all(:include => [:user], :order => "users.firstname ASC, users.lastname ASC").select {|m| !m.user.is_resigned}}
   end
 end

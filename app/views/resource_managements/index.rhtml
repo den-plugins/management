@@ -27,8 +27,7 @@
     <div class="box">
       <h3>Resource Allocation as of <%= monday_last_week "%d-%b" %></h3>
       <div id="resource_allocation_chart"></div>
-      <% data = @resource_allocation_chart.json_weeks_allocations %>
-      <%= content_tag :script, "plot_resource_allocation('resource_allocation_chart', #{data}, #{@categories.to_json})" %>
+      <%= render :partial => "resource_managements/charts/resource_allocation" %>
     </div>
   </div>
   <div class="singleCol">
@@ -38,7 +37,7 @@
     <div class="box">
       <h3>Billability Forecast by Skill Set</h3>
 	  <div id="chart3"></div>
-         <%= render :partial => "line_graph"%>
+     <%= render :partial => "resource_managements/charts/line_graph" %>
     </div>
   </div>
   <div class="singleCol">
