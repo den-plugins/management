@@ -13,13 +13,14 @@
               var plot1 = jQuery.jqplot ('chart1', [data],
                 {
                   seriesDefaults: {
-                renderer: jQuery.jqplot.PieRenderer,
-                seriesColors: [ "#7ea5e2", "#e57e7c", "#bdde85", "#9b81bd", "#79cdea", "#fba665", "#a0bcec", "#f3a8a6", "#fd7f2ac", "#c7b6e2"],
-                rendererOptions: {
-                  showDataLabels: true
-                }
+                    renderer: jQuery.jqplot.PieRenderer,
+                    seriesColors: [ "#7ea5e2", "#e57e7c", "#bdde85", "#9b81bd", "#79cdea", "#fba665", "#a0bcec", "#f3a8a6", "#fd7f2ac", "#c7b6e2"],
+                    rendererOptions: {
+                      diameter: 250,
+                      showDataLabels: true
+                    }
                   },
-                  legend: { show:true, location: 'e' }
+                  legend: { show:true,rendererOptions: {numberColumns: 2}, location: 'e' }
                 }
               );
             </script>
