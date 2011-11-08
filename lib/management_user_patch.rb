@@ -60,16 +60,11 @@ module Management
         s.nil? ? nil : s.value
       end
       
-      def allocations(week, rate=nil, acctg=nil)
+      def allocations(week, filtered_projects, rate=nil)
         days, cost = 0, 0
         project_allocations = ResourceAllocation.find(:all, :include => [:member], :conditions => ["members.user_id = ?", id]).select do |alloc|
           project = alloc.member.project
-          project.mgt_project_custom
-          if acctg && acctg.eql?('Both')
-            project.project_type.eql?('Development') && (project.accounting_type.eql?('Billable') || project.accounting_type.eql?('Non-billable'))
-          else
-            project.project_type.eql?('Development') &&  project.accounting_type.eql?(acctg || 'Billable')
-          end
+          filtered_projects.include? project.id
         end
         
         unless project_allocations.empty?

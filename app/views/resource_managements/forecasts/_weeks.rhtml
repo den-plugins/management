@@ -15,7 +15,7 @@
         </tr>
         <% @resources.each do |resource| %>
           <tr class="<%= cycle('even', 'odd', :name => 'week_days') %>">
-            <% res_allocations = resource.allocations(week, nil, params[:acctg]).to_f %>
+            <% res_allocations = resource.allocations(week, @projects) %>
             <% res_allocations_skill[resource.skill] = 0 if res_allocations_skill[resource.skill].nil? %>
             <% resource_count[resource.skill] = 0 if resource_count[resource.skill].nil? %>
             <td><%= res_allocations %></td>

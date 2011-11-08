@@ -22,15 +22,15 @@ class ResourceManagementsController < ApplicationController
     limit = per_page_option
     dev_projects = Project.development.each {|d| d.mgt_project_custom}
     if params[:acctg] && params[:acctg].eql?('Both')
-      projects = dev_projects.collect {|p| p.id if (p.accounting_type.eql?('Billable') || p.accounting_type.eql?('Non-billable'))}.compact.uniq.join(', ')
+      @projects = dev_projects.collect {|p| p.id if (p.accounting_type.eql?('Billable') || p.accounting_type.eql?('Non-billable'))}.compact.uniq
     else
-      projects = dev_projects.collect {|p| p.id if (p.accounting_type.eql?( params[:acctg] || 'Billable'))}.compact.uniq.join(', ')
+      @projects = dev_projects.collect {|p| p.id if (p.accounting_type.eql?( params[:acctg] || 'Billable'))}.compact.uniq
     end
 
-    if projects.empty?
+    if @projects.empty?
       @resources = []
     else
-      development = "and projects.id IN (#{projects})"
+      development = "and projects.id IN (#{@projects.join(', ')})"
       active_project = "select id, status from projects where projects.id = members.project_id and projects.status = 1 #{development}"
       statement = "exists (select user_id, project_id from members where members.user_id = users.id and exists (#{active_project}))"
       @resources_no_limit = User.active.engineers.find(:all, :select => "users.firstname, users.lastname, users.id",
