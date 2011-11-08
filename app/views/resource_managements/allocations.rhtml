@@ -17,10 +17,10 @@
             <% if member.user.is_engineering %>
                 <tr class="<%= cycle('even', 'odd', :name => 'resources') %>">
                   <td style="text-align: left"><%= member.project.name %></td>
-                  <td><%= member.project.category.gsub('Project', '') unless member.project.category.nil? %></td>
-                  <td><%= acronym member.project.accounting_type %></td>
+                  <td><%= member.project.field_category.gsub('Project', '') unless member.project.field_category.nil? %></td>
+                  <td><%= acronym member.project.field_accounting_type %></td>
                   <td style="text-align: left"><%= member.name %></td>
-                  <td><%= member.user.skill %></td>
+                  <td><%= member.user.field_skill %></td>
                 </tr>
             <% end %>
           <% end %>

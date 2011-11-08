@@ -1,0 +1,38 @@
+<% if @categories && @members %>
+<% start_date, end_date = Date.today - 1.month, Date.today + 6.months %>
+<% week_range = get_weeks_range(start_date, end_date) %>
+<% data = {} %>
+  <% @categories.each {|category| data[category] = Array.new} %>
+  <% week_range.each do |week| %>
+    <% @categories.each do |category| %>
+      <% total_allocation = 0 %>
+      <% @members.select{|m| m.project.field_category.eql?(category)}.each {|r| total_allocation += r.days_and_cost(week)} %>
+      <% data[category] << [week.first.end_of_week, (total_allocation.to_f/5).to_f] %>
+    <% end %>
+  <% end %>
+<% end %>
+<% jdata = [] %>
+<% data.sort.each {|k,v| jdata << v} %>
+
+<script>
+  var plot = jQuery.jqplot('resource_allocation_chart', <%= jdata.to_json %>, {
+    series: [
+      <% @categories.each do |category| %>
+        <% if @categories.last == category %>
+          {label: '<%= category %>'}
+        <% else %>
+          {label: '<%= category %>'},
+        <% end %>
+      <% end %>
+    ],
+    axes: {
+      xaxis: {label: 'Weeks', autoscale: true, renderer: jQuery.jqplot.DateAxisRenderer, tickOptions: {showMark: false, fontSize: '8pt', formatString: '%m/%d/%y'}},
+      yaxis: {label: "Allocation Count", labelRenderer: jQuery.jqplot.CanvasAxisLabelRenderer, min: 0}
+    },
+    legend: {show: true, location: 'se'},
+    cursor: {show: true, zoom: true},
+    highlighter: {show: true, sizeAdjust: 7.5}
+  });
+</script>
+
+
