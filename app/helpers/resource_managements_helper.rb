@@ -25,9 +25,9 @@ module ResourceManagementsHelper
     if @resources_no_limit
       resources = @resources_no_limit - @resources
       if week.nil?
-        resources.select {|r| r.field_skill == skill and !r.is_resigned}.count
+        resources.select {|r| r.skill == skill and !r.is_resigned}.count
       else
-        resources.select {|r| r.field_skill == skill and !r.is_resigned and !r.allocations(week, @projects).zero?}.count
+        resources.select {|r| r.skill == skill and !r.is_resigned and !r.allocations(week, @projects).zero?}.count
       end
     end
   end
@@ -36,7 +36,7 @@ module ResourceManagementsHelper
     total_alloc_per_skill = 0.0
     if @resources_no_limit
       resources = @resources_no_limit - @resources
-      resources.each {|r| total_alloc_per_skill += r.allocations(week, @projects) if r.field_skill == skill and !r.is_resigned}
+      resources.each {|r| total_alloc_per_skill += r.allocations(week, @projects) if r.skill == skill and !r.is_resigned}
     end
     total_alloc_per_skill
   end
@@ -66,8 +66,8 @@ module ResourceManagementsHelper
     counter = 0
     user.each do |u|
       unless u.is_resigned
-        unless u.field_skill.nil?
-          skill_name[counter] = u.field_skill
+        unless u.skill.nil?
+          skill_name[counter] = u.skill
           counter += 1
         end
       end

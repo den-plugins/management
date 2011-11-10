@@ -17,7 +17,7 @@
               <% member_days_cost = member.days_and_cost(week).to_f %>
               <td><%= member_days_cost %></td>
             </tr>
-            <% categ = member.project.field_category.to_s %>
+            <% categ = member.project.category.to_s %>
             <% categories_count[categ] += member_days_cost if !categories_count[categ].nil? and !member_days_cost.zero? %>
             <% current_total_resources += 1 %>
           <% else %>

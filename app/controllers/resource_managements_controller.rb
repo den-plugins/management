@@ -20,7 +20,7 @@ class ResourceManagementsController < ApplicationController
   
   def forecasts
     limit = per_page_option
-    dev_projects = Project.development.each {|d| d.mgt_project_custom}
+    dev_projects = Project.development.find(:all, :include => [:accounting])
     if params[:acctg] && params[:acctg].eql?('Both')
       @projects = dev_projects.collect {|p| p.id if (p.accounting_type.eql?('Billable') || p.accounting_type.eql?('Non-billable'))}.compact.uniq
     else
@@ -34,7 +34,7 @@ class ResourceManagementsController < ApplicationController
       active_project = "select id, status from projects where projects.id = members.project_id and projects.status = 1 #{development}"
       statement = "exists (select user_id, project_id from members where members.user_id = users.id and exists (#{active_project}))"
       @resources_no_limit = User.active.engineers.find(:all, :select => "users.firstname, users.lastname, users.id",
-                                                                :include => [:projects, :custom_values, :members],
+                                                                :include => [:projects, :members],
                                                                 :conditions => statement,
                                                                 :order => "firstname ASC, lastname ASC")
       @resource_count = @resources_no_limit.count
@@ -62,7 +62,7 @@ class ResourceManagementsController < ApplicationController
   end
   
   def get_projects_members
-    @projects = Project.active.development.each {|d| d.mgt_project_custom}
+    @projects = Project.active.development.find(:all, :include => [:accounting])
     @members = []
     @projects.each{|project| @members += project.members.all(:include => [:user], :order => "users.firstname ASC, users.lastname ASC").select {|m| !m.user.is_resigned}}
   end

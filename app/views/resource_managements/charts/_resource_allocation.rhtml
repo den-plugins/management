@@ -6,7 +6,7 @@
   <% week_range.each do |week| %>
     <% @categories.each do |category| %>
       <% total_allocation = 0 %>
-      <% @members.select{|m| m.project.field_category.eql?(category)}.each {|r| total_allocation += r.days_and_cost(week)} %>
+      <% @members.select{|m| m.project.category.eql?(category)}.each {|r| total_allocation += r.days_and_cost(week)} %>
       <% data[category] << [week.first.end_of_week, (total_allocation.to_f/5).to_f] %>
     <% end %>
   <% end %>
