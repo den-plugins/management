@@ -53,21 +53,17 @@ module Management
       
       def allocations(week, filtered_projects, rate=nil)
         days, cost = 0, 0
-        project_allocations = ResourceAllocation.find(:all, :include => [:member], :conditions => ["members.user_id = ?", id]).select do |alloc|
-          project = alloc.member.project
-          filtered_projects.include? project.id
+        project_allocations = members.collect(&:resource_allocations).flatten.select do |alloc|
+          filtered_projects.include? alloc.member.project_id
         end
         
-        unless project_allocations.empty?
-          week.each do |day|
-            allocations = project_allocations.select{ |a| a.start_date <= day && a.end_date >= day}.uniq
-            if allocations.any?
-              allocations.each do |allocation|
-                days += (1 * (allocation.resource_allocation.to_f/100).to_f) unless allocation.resource_allocation.eql? 0
-              end
-            end
+        week.each do |day|
+          if allocations = project_allocations.select {|a| a.start_date <= day && a.end_date >= day}.uniq
+            allocations.each do |alloc|
+              days += (1 * (alloc.resource_allocation.to_f/100).to_f)
+            end unless allocations.empty?
           end
-        end
+        end unless project_allocations.empty?
         cost = days * (rate.to_f)
         rate ? [days, cost] : days
       end
