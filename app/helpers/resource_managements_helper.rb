@@ -81,5 +81,26 @@ module ResourceManagementsHelper
     end
     return skill_set.to_json
   end
+  
+  def count_billabilty_skill(set, users, projects)
+    projects = projects.collect {|p| p.id if (p.accounting_type.eql?('Billable') || p.accounting_type.eql?('Non-billable'))}
+    users = users.reject do |user|
+      user.members.select {|m| m.project.active? && projects.include?(m.project.id)}.empty?
+    end
+    
+    reports, totals = [], []
+    report_date =  (Date.today - 1.week).monday
+    week = report_date .. (report_date + 4.days)
+    set.each do |skill|
+      report_count, total_count = 0
+      if skill_users = users.select {|u| u.skill.eql?(skill) && !u.is_resigned}
+        skill_users.each {|u| report_count += u.allocations(week, projects)}
+        total_count = skill_users.count
+      end
+      reports << [report_count.to_f/5, skill]
+      totals << [total_count.to_i, skill]
+    end if set.is_a? Array
+    [reports, totals].to_json
+  end
 
 end

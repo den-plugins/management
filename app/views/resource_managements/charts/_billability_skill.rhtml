@@ -1,0 +1,24 @@
+<% if @skill_set && @users %>
+  <% jdata = count_billabilty_skill(@skill_set, @users, @projects) %>
+<% end %>
+
+<script>
+  var plot = jQuery.jqplot('billability_skill_chart', <%= jdata %>, {
+    seriesDefaults: {
+      renderer:jQuery.jqplot.BarRenderer,
+      pointLabels: { show: true, location: 'e'},
+      rendererOptions: {barDirection: 'horizontal', shadowOffset: 0, barPadding: -3, barWidth: 11}
+    },
+    series: [
+      {label: "<%= monday_last_week '%d-%b' %> count"},
+      {label: "Resource count"}
+    ],
+    axes: {
+      yaxis: {renderer: jQuery.jqplot.CategoryAxisRenderer}
+    },
+    legend: {show: true, location: 'ne'},
+    highlighter: {show: true, sizeAdjust: 7.5},
+    grid: {gridLineColor: '#f2f2f2'}
+  });
+</script>
+

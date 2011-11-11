@@ -9,7 +9,7 @@ class ResourceManagementsController < ApplicationController
   helper :resource_costs
   
   def index
-    @user = User.find(:all, :conditions => ["is_engineering = ? and status = ?", true, 1])
+    @users = User.active.engineers
     @skill_set = User.resource_skills
     @categories = Project.project_categories.sort
   end
