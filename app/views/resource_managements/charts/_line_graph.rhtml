@@ -10,10 +10,12 @@
   <% weekly_resources_count = 0 %>
   <% w = display_week(week) %>
   <% a = week.to_a %>
+  <% ary_last = a.last %>
+  <% ary_last = start_date.beginning_of_week + 4 if a.last.nil? %>
   <% @skill_set.each do |skill| %>
     <% resource_count[skill] = 0 if resource_count[skill].nil? %>
       <% temp[skill] = [] if temp[skill].nil? %>
-      <% temp[skill] << [a.last.to_s,resource_count[skill]] %>
+      <% temp[skill] << [ary_last.to_s,resource_count[skill]] %>
   <% end %>
 <% end %>
 <%
