@@ -6,7 +6,6 @@ class ResourceManagementsController < ApplicationController
 
   before_filter :require_management
   before_filter :get_projects_members, :only => [:index, :allocations]
-  helper :resource_costs
   
   def index
     @users = User.active.engineers

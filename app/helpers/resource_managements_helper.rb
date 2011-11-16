@@ -11,7 +11,13 @@ module ResourceManagementsHelper
       weeks
     end
   end
-
+  
+  def display_week(range)
+    from, to = range.first, range.last
+    s = "%s/" % from.mon + "%s" % from.day + " - " +
+           "%s/" % to.mon + "%s" % to.day
+  end
+  
   def set_categories_count(categories)
     temp = {}
     categories.each do |category|
