@@ -47,7 +47,20 @@ class ResourceManagementsController < ApplicationController
       end
     end
     @skill_set = User.resource_skills
+    User.tmp_resources_no_limit = @resources_no_limit
+    User.tmp_resources = @resources
+    Project.tmp_projects = @projects
+    User.tmp_skillset = @skill_set
     render :template => 'resource_managements/forecasts.rhtml', :layout => !request.xhr?
+  end
+
+  def load_weekly_forecasts
+    @resources_no_limit = User.tmp_resources_no_limit
+    @resources = User.tmp_resources
+    @projects = Project.tmp_projects
+    @skill_set = User.tmp_skillset
+    render :partial => 'resource_managements/forecasts/weeks', 
+         :locals => {:total_res_available => params[:total_res_available].to_i}
   end
   
   private

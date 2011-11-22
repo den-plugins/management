@@ -15,6 +15,7 @@ module Management
         named_scope :engineers, :conditions => ["is_engineering = true"], :order => 'firstname'
 
         before_save :set_non_engr_on
+        cattr_accessor :tmp_resources, :tmp_resources_no_limit, :tmp_skillset
       end
     end
     

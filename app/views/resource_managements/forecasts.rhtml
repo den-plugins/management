@@ -1,5 +1,4 @@
 <%= render :partial => 'header' %>
-
 <div id='dashboard'>
   <h4>Resource Forecast Summary</h4>
 
@@ -70,9 +69,15 @@
           <tr style="background-color: #eee;"><td colspan="2" style="font-weight: bold; text-align: right;">Total Allocation %</td><td>&nbsp;</td></tr>
         </table>
       </div>
-      <div class='movable_table_container' style="width: 74%" %>
-        <%= render :partial => 'resource_managements/forecasts/weeks', :locals => {:total_res_available => total_res_available} %>
+      <div id='weekly_forecasts_panel' class='movable_table_container' style="width: 74%" %>
+        <%# render :partial => 'resource_managements/forecasts/weeks', :locals => {:total_res_available => total_res_available} %>
       </div>
+      <div class="clear"></div>
+      <% remote_form_for :forecasts, :update => "weekly_forecasts_panel", :url => {:controller => 'resource_managements', :action => 'load_weekly_forecasts',
+                               :total_res_available => total_res_available, :page => params[:page], :acctg => params[:acctg]},
+                               :html => {:id => "load_forecasts_form"} do |f| %>
+         <%# submit_tag "Go" %>
+      <% end %>
     </div>
     <div style="clear: both"></div>
     <p class="pagination"><%= pagination_links_full @resource_pages, @resource_count %></p>
@@ -88,5 +93,8 @@
 
 <script>
   j = jQuery.noConflict();
+  jQuery(document).ready(function(){
+    jQuery("#load_forecasts_form").submit();
+  });
   jQuery(".movable_table_container").scrollable({circular: false, mousewheel: true});
 </script>

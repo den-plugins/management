@@ -7,7 +7,7 @@ module Management
       base.send(:include, InstanceMethods)
       base.class_eval do
         unloadable
-        
+        cattr_accessor :tmp_projects
         named_scope :development, :select => "id",
                                   :joins => "LEFT OUTER JOIN custom_fields ON custom_fields.id=custom_values.custom_field_id",
                                   :include => [:custom_values],
