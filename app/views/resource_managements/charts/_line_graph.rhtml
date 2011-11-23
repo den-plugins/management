@@ -1,28 +1,24 @@
-<% start_date, end_date = Date.today - 1.month, Date.today + 6.months %>
-<% weeks = get_weeks_range(start_date, end_date) %>
-<% total_days = 0 %>
-<% temp = {} %>
-<% resource_count = {} %>
-<% res_count_per_work_days = 0.0 %>
-<% res_allocations_skill = {} %>
-<% weeks.each do |week| %>
-  <% total_days = week.count %>
-  <% weekly_resources_count = 0 %>
-  <% w = display_week(week) %>
-  <% a = week.to_a %>
-  <% ary_last = a.last %>
-  <% ary_last = start_date.beginning_of_week + 4 if a.last.nil? %>
-  <% @skill_set.each do |skill| %>
-    <% resource_count[skill] = 0 if resource_count[skill].nil? %>
-      <% temp[skill] = [] if temp[skill].nil? %>
-      <% temp[skill] << [ary_last.to_s,resource_count[skill]] %>
-  <% end %>
+<% if @skill_set && @users %>
+  <% jdata = count_billabilty_skill_set(@skill_set, @users, @projects) %>
 <% end %>
-<%
-jdata = []
-temp.each {|k,v| jdata << v}
-jdata.to_json
-%>
-<script type="text/javascript">
-plot_skill_set('chart3', <%= jdata.to_json %>)
+
+<script type='text/javascript'>
+  var skill_set_plot = jQuery.jqplot('chart3', <%= jdata %>, {
+    series: [
+      <% @skill_set.each do |skill| %>
+        <% if @skill_set.last == skill %>
+          {label: '<%= skill %>'}
+        <% else %>
+          {label: '<%= skill %>'},
+        <% end %>
+      <% end %>
+    ],
+    axes: {
+      xaxis: {label: 'Weeks', autoscale: true, renderer: jQuery.jqplot.DateAxisRenderer, tickOptions: {showMark: false, fontSize: '8pt', formatString: '%m/%d/%y'}},
+      yaxis: {label: "Allocation Count", labelRenderer: jQuery.jqplot.CanvasAxisLabelRenderer, min: 0}
+    },
+    legend: {show: true, location: 'se'},
+    cursor: {show: true, zoom: true},
+    highlighter: {show: true, sizeAdjust: 7.5}
+  });
 </script>

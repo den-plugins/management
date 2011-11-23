@@ -14,7 +14,7 @@
 <% jdata = [] %>
 <% data.sort.each {|k,v| jdata << v} %>
 
-<script>
+<script type='text/javascript'>
   var plot = jQuery.jqplot('resource_allocation_chart', <%= jdata.to_json %>, {
     series: [
       <% @categories.each do |category| %>

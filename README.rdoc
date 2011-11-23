@@ -1,5 +1,12 @@
 Resource Management
 
-Resource Management Allocation
-Resource Forecaste Allocation
-Resource Management Dashboard
+## Dashboard
+
+## Resource Allocation
+  - filters: active & development (project type) projects;
+                 not resigned members
+
+## Resource Cost Forecast
+ - filters: active & is_engineering users with
+                members with
+                active & development (project type) projects

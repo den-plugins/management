@@ -108,7 +108,32 @@ module ResourceManagementsHelper
     end if set.is_a? Array
     [reports, totals].to_json
   end
-
+  
+  def count_billabilty_skill_set(set, users, projects)
+    projects = projects.collect {|p| p.id if (p.accounting_type.eql?('Billable') || p.accounting_type.eql?('Non-billable'))}
+    users = users.reject do |user|
+      user.members.select {|m| m.project.active? && projects.include?(m.project.id)}.empty?
+    end
+    
+    weeks = get_weeks_range(Date.today - 1.month, Date.today + 6.months)
+    resource_count = {}
+    
+    set.each do |skill|
+      temp, resource_count[skill] = [], []
+      if skill_users = users.select {|u| u.skill.eql?(skill) && !u.is_resigned}
+        weeks.each do |week|
+          report_count = 0
+          skill_users.each {|u| report_count += u.allocations(week, projects)}
+          temp = [week.last, report_count/5]
+          resource_count[skill] << temp
+        end
+      end
+    end if set.is_a? Array
+    jdata = []
+    resource_count.sort.each {|r, v| jdata << v }
+    jdata.to_json
+  end
+  
   def get_resource_billability_forecast
     start_date, end_date = Date.today - 1.month, Date.today + 6.months 
     weeks = get_weeks_range(start_date, end_date) 

@@ -9,7 +9,7 @@ class ResourceManagementsController < ApplicationController
   
   def index
     @users = User.active.engineers
-    @skill_set = User.resource_skills
+    @skill_set = User.resource_skills.sort
     @categories = Project.project_categories.sort
   end
   
