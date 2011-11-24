@@ -189,10 +189,10 @@ module ResourceManagementsHelper
                 <th>#{display_week(week)}</th>
             </tr>"
             resources.each do |resource|
-              str += "<tr class='#{cycle('even', 'odd', :name => 'week_days')}'>"
                 res_allocations = resource.allocations(week, projects)
                 res_allocations_skill[resource.skill] = 0 if res_allocations_skill[resource.skill].nil?
                 resource_count[resource.skill] = 0 if resource_count[resource.skill].nil?
+                str += "<tr class='#{cycle('even', 'odd', :name => 'week_days')} #{allocation_to_class(res_allocations)}'>"
                 str += "<td>#{res_allocations}</td>"
                 res_allocations_skill[resource.skill] += res_allocations if !resource.is_resigned
                 resource_count[resource.skill] += 1 if !res_allocations.zero? and !resource.is_resigned
@@ -240,6 +240,14 @@ module ResourceManagementsHelper
         </div>"
       end
       str += "</div>"
+  end
+  
+  def allocation_to_class(allocation)
+    case allocation
+      when 0 ... 2.5; "lblue"
+      when 2.5 .. 5; "lgreen"
+      else; "lred"
+    end
   end
 
 end
