@@ -61,7 +61,8 @@ module Management
         week.each do |day|
           if allocations = project_allocations.select {|a| a.start_date <= day && a.end_date >= day}.uniq
             allocations.each do |alloc|
-              days += (1 * (alloc.resource_allocation.to_f/100).to_f)
+              holiday = alloc.location.nil? ? 0 : Holiday.count(:all, :conditions => ["event_date=? and location=?", day, alloc.location])
+              days += (1 * (alloc.resource_allocation.to_f/100).to_f) if holiday.eql?(0)
             end unless allocations.empty?
           end
         end unless project_allocations.empty?
