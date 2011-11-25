@@ -13,8 +13,8 @@
         </tr>
         <% @members.each do |member| %>
           <% if member.user.is_engineering %>
-            <tr class="<%= cycle('even', 'odd', :name => 'week_days') %>">
-              <% member_days_cost = member.days_and_cost(week).to_f %>
+            <% member_days_cost = member.days_and_cost(week).to_f %>
+            <tr class="<%= cycle('even', 'odd', :name => 'week_days') %> <%= allocation_to_class(member_days_cost) %>">
               <td><%= member_days_cost %></td>
             </tr>
             <% categ = member.project.category.to_s %>
