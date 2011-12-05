@@ -29,13 +29,17 @@ class ResourceManagementsController < ApplicationController
     if @projects.empty?
       @resources = []
     else
-      development = "and projects.id IN (#{@projects.join(', ')})"
-      active_project = "select id, status from projects where projects.id = members.project_id and projects.status = 1 #{development}"
-      statement = "exists (select user_id, project_id from members where members.user_id = users.id and exists (#{active_project}))"
-      @resources_no_limit = User.active.engineers.find(:all, :select => "users.firstname, users.lastname, users.id",
-                                                                :include => [:projects, :members],
-                                                                :conditions => statement,
-                                                                :order => "firstname ASC, lastname ASC")
+      #development = "and projects.id IN (#{@projects.join(', ')})"
+      #active_project = "select id, status from projects where projects.id = members.project_id and projects.status = 1 #{development}"
+      #statement = "exists (select user_id, project_id from members where members.user_id = users.id and exists (#{active_project}))"
+      #@resources_no_limit = User.active.engineers.find(:all, :select => "users.firstname, users.lastname, users.id",
+      #                                                          :include => [:projects, :members],
+      #                                                          :conditions => statement,
+      #                                                          :order => "firstname ASC, lastname ASC")
+      
+      @resources_no_limit = User.active.engineers.find(:all, :order => "firstname ASC, lastname ASC", :include => [:projects, :members]).select do |resource|
+        resource unless resource.memberships.select {|m| m.project.active? and @projects.include?(m.project_id) }.empty?
+      end
       @resource_count = @resources_no_limit.count
       @resource_pages = Paginator.new self, @resource_count, limit, params['page']
       offset = @resource_pages.current.offset
