@@ -244,7 +244,8 @@ module ResourceManagementsHelper
   
   def allocation_to_class(allocation)
     case allocation
-      when 0 ... 2.5; "lblue"
+      when 0; ""
+      when 0 .. 2.5; "lblue"
       when 2.5 .. 5; "lgreen"
       else; "lred"
     end
