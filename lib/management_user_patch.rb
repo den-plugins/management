@@ -52,6 +52,16 @@ module Management
         return (date.nil? or date.blank?) ? false : true
       end
       
+      def hired_date
+        c = custom_values.detect {|v| v.mgt_custom "Hired Date"}
+        c ? c.value : nil
+      end
+      
+      def organization
+        c = custom_values.detect {|v| v.mgt_custom "Organization"}
+        c ? c.value : nil
+      end
+      
       def allocations(week, filtered_projects, rate=nil)
         days, cost = 0, 0
         project_allocations = members.collect(&:resource_allocations).flatten.select do |alloc|
@@ -61,13 +71,20 @@ module Management
         week.each do |day|
           if allocations = project_allocations.select {|a| a.start_date <= day && a.end_date >= day}.uniq
             allocations.each do |alloc|
-              holiday = alloc.location.nil? ? 0 : Holiday.count(:all, :conditions => ["event_date=? and location=?", day, alloc.location])
+              holiday = alloc.nil? ? 0 : detect_holidays_in_week(alloc.location, day)
               days += (1 * (alloc.resource_allocation.to_f/100).to_f) if holiday.eql?(0)
             end unless allocations.empty?
           end
         end unless project_allocations.empty?
         cost = days * (rate.to_f)
         rate ? [days, cost] : days
+      end
+      
+      def detect_holidays_in_week(location, day)
+        locations = [6]
+        locations << location if location
+        locations << 3 if location.eql?(1) || location.eql?(2)
+        Holiday.count(:all, :conditions => ["event_date=? and location in (#{locations.join(', ')})", day])
       end
     end
   end
