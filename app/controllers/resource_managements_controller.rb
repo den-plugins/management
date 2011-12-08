@@ -67,9 +67,9 @@ class ResourceManagementsController < ApplicationController
     #sort_update %w(login firstname lastname skill location hired_date organization is_engineering)
     sort_update %w(login firstname lastname is_engineering)
     
-    if f = params[:filters]
-      c << "LOWER(users.lastname) LIKE '#{f[:lastname].strip.downcase}'" unless f[:lastname].blank?
-      c << "users.is_engineering is true" if !f[:is_engineering].blank? and f[:is_engineering].to_i.eql?(1)
+    if filters = params[:filters]
+      # temporarily put in the controller
+      c = User.generate_user_mgt_condition(filters)
       
       limit = per_page_option
       @users_count  = User.count(:all, :conditions => c.conditions)

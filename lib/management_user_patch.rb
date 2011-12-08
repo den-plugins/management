@@ -24,6 +24,22 @@ module Management
         res_skills = CustomField.find(:first, :conditions => "type = 'UserCustomField' and name = 'Skill or Role'")
         return (res_skills.nil? ? [] : res_skills.possible_values)
       end
+
+      def generate_user_mgt_condition(filters)
+        custom_values_join = "left outer join custom_values on users.id=custom_values.customized_id and custom_values.customized_type='User' "
+        custom_fields_join = "left outer join custom_fields on custom_fields.id=custom_values.custom_field_id"
+
+        c = ARCondition.new("status = 1")
+        c << "LOWER(users.lastname) LIKE '#{filters[:lastname].strip.downcase}'" unless filters[:lastname].blank?
+        c << "users.is_engineering is true" if !filters[:is_engineering].blank? and filters[:is_engineering].to_i.eql?(1)
+        c << "users.id in (select users.id from users #{custom_values_join} #{custom_fields_join} \
+                    where custom_fields.name='Skill or Role' and custom_values.value='#{filters[:skill_or_role]}')" unless filters[:skill_or_role].blank?
+        c << "users.id in (select users.id from users #{custom_values_join} #{custom_fields_join} \
+                    where custom_fields.name='Location' and custom_values.value='#{filters[:location]}')" unless filters[:location].blank?
+        c << "users.id in (select users.id from users #{custom_values_join} #{custom_fields_join} \
+                    where custom_fields.name='Organization' and custom_values.value='#{filters[:organization]}')" unless filters[:organization].blank?
+        c
+      end
     end
     
     module InstanceMethods
