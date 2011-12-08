@@ -1,0 +1,38 @@
+<% if @users %>
+  <table class="list">		
+    <thead>
+      <tr>
+	      <%= sort_header_tag('login', :caption => l(:field_login)) %>
+	      <%= sort_header_tag('firstname', :caption => l(:field_firstname)) %>
+	      <%= sort_header_tag('lastname', :caption => l(:field_lastname)) %>
+	      <%#= sort_header_tag('location', :caption => l(:field_location)) %>
+	      <%#= sort_header_tag('skill', :caption => l(:field_skill)) %>
+	      <%#= sort_header_tag('hired_date', :caption => l(:field_hired_date)) %>
+	      <%#= sort_header_tag('organization', :caption => l(:field_organization)) %>
+	      <%= content_tag 'th', 'Location' %>
+	      <%= content_tag 'th', 'Skill' %>
+	      <%= content_tag 'th', 'Hired Date' %>
+	      <%= content_tag 'th', 'Organization' %>
+	      <%= sort_header_tag('is_engineering', :caption => l(:field_is_engineering), :default_order => 'desc') %>
+      </tr>
+    </thead>
+    <tbody>
+    <% for user in @users -%>
+      <tr class="<%= cycle('odd', 'even') %>">
+	      <td class="username"><%= h(user.login) %></td>
+	      <td class="firstname"><%= h(user.firstname) %></td>
+	      <td class="lastname"><%= h(user.lastname) %></td>
+	      <td class="location center"><%= h(user.location) %></td>
+	      <td class="skill center"><%= h(user.skill) %></td>
+	      <td class="hired_date center"><%= user.hired_date %></td>
+	      <td class="organization center"><%= h(user.organization) %></td>
+	      <td class="center"><%= image_tag('true.png') if user.is_engineering? %></td>
+      </tr>
+    <% end -%>
+    </tbody>
+  </table>
+  <p class="pagination"><%= pagination_links_full @user_pages, @user_count %></p>
+
+  <% html_title(l(:label_user_plural)) -%>
+
+<% end %>

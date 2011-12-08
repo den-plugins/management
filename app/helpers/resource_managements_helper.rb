@@ -250,5 +250,37 @@ module ResourceManagementsHelper
       else; "lred"
     end
   end
+  
+  def mgt_custom_field_tag(name, params)
+    custom_field = UserCustomField.find(:first, :conditions => ["name = ?", name])
+    field_name = "filters[#{name.downcase.gsub(/ /,'_')}]"
+    value = params[:filters] ? (params[:filters][name.downcase.gsub(/ /,'_').to_sym] || "") : ""
+    
+    case custom_field.field_format
+    when "text"
+      label_tag(field_name, name) + text_field_tag(field_name, nil, :rows => 3, :value => value)
+    when "list"
+      blank_option = "<option></option>"
+      label_tag(field_name, name) + select_tag(field_name, blank_option + options_for_select(custom_field.possible_values, value))
+    when "bool"
+      label_tag(field_name, name) + check_box_tag(field_name, value, (value.to_i.eql?(1) ? true : false)) + hidden_field_tag(field_name, '0')
+    end
+  end
+  
+  def mgt_field_tag(label, field, params, options={})
+    label = (label.nil? || label.blank?) ? nil : label
+    field_name = "filters[#{field.downcase.gsub(/ /,'_')}]"
+    value = params[:filters] ? (params[:filters][field.downcase.gsub(/ /, '_').to_sym] || "") : ""
+
+    case options[:format]
+    when "text"
+      label_tag(field_name, label) + text_field_tag(field_name, nil, :rows => 3, :value => value)
+    when "list"
+      blank_option = "<option></option>"
+      label_tag(field_name, label) + select_tag(field_name, blank_option + options_for_select(options[:select_from], value))
+    when "bool"
+      label_tag(field_name, label) + check_box_tag(field_name, '1', (value.to_i.eql?(1) ? true : false)) + hidden_field_tag(field_name, '0')
+    end
+  end
 
 end

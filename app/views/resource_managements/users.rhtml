@@ -1,0 +1,34 @@
+<%= render :partial => 'resource_managements/header' %>
+
+<div id="filter_for_forecasts">
+  <h4>Resource Management</h4>
+  <fieldset>  
+    <legend>
+      <%= l(:label_filter_plural) %> 
+      <%=link_to "(hide/show)", "", :onclick => "$('filter_content').toggle(); return false;" %> 
+    </legend>
+    <div id="filter_content" style="padding: 5px;">
+    <% form_tag({:controller => "resource_managements", :action => "users"},
+                               :id => 'filter_for_forecasts_form') do %>
+      <div class="filter_group">
+        <%= mgt_field_tag "Engineering Only", "is_engineering", params, {:format => "bool"} %>
+        <%= mgt_custom_field_tag "Location", params %>
+        <%= mgt_custom_field_tag "Skill or Role", params %>
+        <%= mgt_custom_field_tag "Organization", params %>
+        <%= mgt_field_tag "Lastname", "lastname", params, {:format => "text"} %>
+        <%= link_to_remote l(:button_apply), "#", :class => "icon icon-checked",
+                                              :onclick => "$('filter_for_forecasts_form').submit();",
+                                              :style => "margin-left: 15px;" %>
+    <% end %>
+      </div>
+    </div>
+  </fieldset>
+  
+  <div id="mgt_user_list">
+    <%= render :partial => 'resource_managements/users/list' %>
+  </div>
+</div>
+
+<% content_for :header_tags do %>
+  <%= stylesheet_link_tag 'management', :plugin => 'management' %>
+<% end %>

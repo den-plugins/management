@@ -35,6 +35,7 @@ Redmine::Plugin.register :management do
     menu.push :dashboard, {:controller => 'resource_managements', :action => 'index' }
     menu.push :allocations, {:controller => 'resource_managements', :action =>'allocations' }, :caption => 'Resource Allocation'
     menu.push :forecasts, {:controller => 'resource_managements', :action =>'forecasts' }, :caption => 'Resource Forecast Summary'
+    menu.push :users, {:controller => 'resource_managements', :action => 'users'}, :caption => 'User Management'
   end
 
 end

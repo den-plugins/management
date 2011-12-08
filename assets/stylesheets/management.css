@@ -17,3 +17,10 @@ tr.lgreen, td.lgreen, th.lgreen { background-color: #9FC35B; color: #000; }
 tr.lblue, td.lblue, th.lblue { background-color: #99CCFF; color: #000; }
 tr.lred, td.lred, th.lred { background-color: #E57E7C; color: #000; }
 
+
+/**************************************
+            User Management
+***************************************/
+
+div.filter_group {padding: 3px; margin: 2px; width: 100%; }
+.center {align: center; text-align: center }

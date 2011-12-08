@@ -3,9 +3,13 @@ class ResourceManagementsController < ApplicationController
   menu_item :dashboard
   menu_item :allocations, :only => :allocations
   menu_item :forecasts, :only => :forecasts
+  menu_item :users, :only => :users
 
   before_filter :require_management
   before_filter :get_projects_members, :only => [:index, :allocations]
+  
+  helper :sort
+  include SortHelper
   
   def index
     @users = User.active.engineers
@@ -57,13 +61,31 @@ class ResourceManagementsController < ApplicationController
     User.tmp_skillset = @skill_set
     render :template => 'resource_managements/forecasts.rhtml', :layout => !request.xhr?
   end
+  
+  def users
+    sort_init 'login', 'asc'
+    #sort_update %w(login firstname lastname skill location hired_date organization is_engineering)
+    sort_update %w(login firstname lastname is_engineering)
+    
+    if f = params[:filters]
+      c << "LOWER(users.lastname) LIKE '#{f[:lastname].strip.downcase}'" unless f[:lastname].blank?
+      c << "users.is_engineering is true" if !f[:is_engineering].blank? and f[:is_engineering].to_i.eql?(1)
+      
+      limit = per_page_option
+      @users_count  = User.count(:all, :conditions => c.conditions)
+      @user_pages = Paginator.new self, @users_count, limit, params['page']
+      @users = User.find :all, :limit => limit, :offset => @user_pages.current.offset, :order => sort_clause,
+                                           :conditions => c.conditions
+    end
+    render :template => 'resource_managements/users.rhtml', :layout => !request.xhr?
+  end
 
   def load_weekly_forecasts
     @resources_no_limit = User.tmp_resources_no_limit
     @resources = User.tmp_resources
     @projects = Project.tmp_projects
     @skill_set = User.tmp_skillset
-    render :partial => 'resource_managements/forecasts/weeks', 
+    render :partial => 'resource_managements/forecasts/weeks',
          :locals => {:total_res_available => params[:total_res_available].to_i}
   end
   
