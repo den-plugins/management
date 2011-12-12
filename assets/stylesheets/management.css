@@ -17,6 +17,20 @@ tr.lgreen, td.lgreen, th.lgreen { background-color: #9FC35B; color: #000; }
 tr.lblue, td.lblue, th.lblue { background-color: #99CCFF; color: #000; }
 tr.lred, td.lred, th.lred { background-color: #E57E7C; color: #000; }
 
+.btn_show_chart{
+  width: 100%;
+  background-color: #dfdfdf;
+  border: 1px solid #cfcfcf;
+  padding: 5px;
+  color: #777;
+  font-size: 1em;
+  font-weight: bold;
+}
+
+.btn_show_chart:hover{
+  color: #34c134;
+}
+
 
 /**************************************
             User Management

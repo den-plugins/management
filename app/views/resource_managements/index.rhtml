@@ -27,26 +27,46 @@
     <div class="box">
       <h3>Resource Allocation as of <%= monday_last_week "%d-%b" %></h3>
       <div id="resource_allocation_chart"></div>
-      <%= render :partial => "resource_managements/charts/resource_allocation" %>
+      <div id="show_resource_allocation">
+        <% form_remote_tag(:url => {:action => 'load_chart', :chart => 'resource_allocation'}) do %>
+          <%= submit_tag "Show Graph", :class => 'btn_show_chart' %>
+        <% end %>
+      </div>
+      <%# render :partial => "resource_managements/charts/resource_allocation" %>
     </div>
   </div>
   <div class="singleCol">
     <div class="box">
       <h3>Resource Billability Forecast</h3>
       <div id="res_billability_forecast_chart"></div>
-      <%= render :partial => "resource_managements/charts/billability_forecast" %>
+      <div id="show_billability_forecast">
+        <% form_remote_tag(:url => {:action => 'load_chart', :chart => 'billability_forecast'}) do %>
+          <%= submit_tag "Show Graph", :class => 'btn_show_chart' %>
+        <% end %>
+      </div>
+      <%# render :partial => "resource_managements/charts/billability_forecast" %>
     </div>
     <div class="box">
       <h3>Billability Forecast by Skill Set</h3>
-	  <div id="chart3"></div>
-     <%= render :partial => "resource_managements/charts/line_graph" %>
+	    <div id="chart3"></div>
+	    <div id="show_line_graph">
+        <% form_remote_tag(:url => {:action => 'load_chart', :chart => 'line_graph'}) do %>
+          <%= submit_tag "Show Graph", :class => 'btn_show_chart' %>
+        <% end %>
+      </div>
+     <%# render :partial => "resource_managements/charts/line_graph" %>
     </div>
   </div>
   <div class="singleCol">
     <div class="box">
       <h3>Billability by Skill as of <%= monday_last_week "%d-%b" %></h3>
       <div id="billability_skill_chart"></div>
-     <%= render :partial => "resource_managements/charts/billability_skill" %>
+      <div id="show_billability_skill">
+        <% form_remote_tag(:url => {:action => 'load_chart', :chart => 'billability_skill'}) do %>
+          <%= submit_tag "Show Graph", :class => 'btn_show_chart' %>
+        <% end %>
+      </div>
+     <%# render :partial => "resource_managements/charts/billability_skill" %>
     </div>
   </div>
 </div>
@@ -67,5 +87,6 @@
   <%= javascript_include_tag 'plugins/jqplot.pieRenderer.min.js', :plugin => 'redmine_burndown' %>
   <%= javascript_include_tag 'plugins/jqplot.pointLabels.min.js', :plugin => 'redmine_burndown' %>
 <% end %>
+
 
 

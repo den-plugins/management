@@ -15,7 +15,7 @@ function plot_billability_forecast(id, data) {
   var plot = jQuery.jqplot(id, data, {
     axes: {
       xaxis: {label: 'Weeks',renderer: jQuery.jqplot.DateAxisRenderer, tickOptions: {showMark: false, fontSize: '8pt'}},
-      yaxis: {label: 'Total Allocation (%)',labelRenderer: jQuery.jqplot.CanvasAxisLabelRenderer, min: 0, max: 50}
+      yaxis: {label: 'Total Allocation (%)',labelRenderer: jQuery.jqplot.CanvasAxisLabelRenderer, min: 0}
     },
     legend: {show: false},
     cursor: {show: true, zoom: true},

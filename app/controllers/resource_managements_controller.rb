@@ -6,7 +6,7 @@ class ResourceManagementsController < ApplicationController
   menu_item :users, :only => :users
 
   before_filter :require_management
-  before_filter :get_projects_members, :only => [:index, :allocations]
+  before_filter :get_projects_members, :only => [:index, :allocations, :load_chart]
   
   helper :sort
   include SortHelper
@@ -15,6 +15,18 @@ class ResourceManagementsController < ApplicationController
     @users = User.active.engineers
     @skill_set = User.resource_skills.sort
     @categories = Project.project_categories.sort
+  end
+
+  def load_chart
+    if params[:chart] != "resource_allocation"
+      @users = User.active.engineers
+      @skill_set = User.resource_skills.sort
+    else
+      @categories = Project.project_categories.sort
+    end
+    render :update do |page|
+      page.replace_html "show_#{params[:chart]}".to_sym, :partial => "resource_managements/charts/#{params[:chart]}"
+    end
   end
   
   def allocations
