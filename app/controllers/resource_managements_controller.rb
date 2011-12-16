@@ -99,6 +99,7 @@ class ResourceManagementsController < ApplicationController
   end
 
   def load_weekly_forecasts
+    puts " ---- loading weekly forecasts ----"
     @resources_no_limit = User.tmp_resources_no_limit
     @resources = User.tmp_resources
     @projects = Project.tmp_projects
