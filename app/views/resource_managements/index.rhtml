@@ -7,7 +7,7 @@
   <div class="singleCol">
     <div class="box">
       <h3>Resource Inventory</h3>
-        <div id="chart1" style="height: 450px"></div>
+        <div id="chart1"></div>
             <script type="text/javascript">
               var data = <%= count_user_skill(@users) %>;
               var plot1 = jQuery.jqplot ('chart1', [data],
@@ -15,9 +15,7 @@
                   seriesDefaults: {
                     renderer: jQuery.jqplot.PieRenderer,
                     seriesColors: [ "#7ea5e2", "#e57e7c", "#bdde85", "#9b81bd", "#79cdea", "#fba665", "#a0bcec", "#f3a8a6", "#fd7f2ac", "#c7b6e2"],
-                    rendererOptions: {
-                      showDataLabels: true
-                    }
+                    rendererOptions: { showDataLabels: true }
                   },
                   legend: { show:true, location: 'e' }
                 }
