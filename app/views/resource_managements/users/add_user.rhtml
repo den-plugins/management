@@ -1,0 +1,8 @@
+<h2><%=l(:label_user_new)%></h2>
+
+<% labelled_tabular_form_for :user, @user, :url => { :action => "add_user", :filter => params[:filter] } do |f| %>
+<%= render :partial => 'users/form', :locals => { :f => f } %>
+<%= submit_tag l(:button_create) %> |
+<%= link_to "Cancel", :action => 'users', :filter => params[:filter] %> |
+<%= check_box_tag 'send_information', 1, true %> <%= l(:label_send_information) %>
+<% end %>

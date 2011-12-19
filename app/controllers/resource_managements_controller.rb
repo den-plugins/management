@@ -5,6 +5,8 @@ class ResourceManagementsController < ApplicationController
   menu_item :forecasts, :only => :forecasts
   menu_item :users, :only => :users
 
+  helper :users, :custom_fields
+
   before_filter :require_management
   before_filter :get_projects_members, :only => [:index, :allocations, :load_chart]
   before_filter :set_cache_buster
@@ -96,6 +98,59 @@ class ResourceManagementsController < ApplicationController
                                            :conditions => c.conditions
     end
     render :template => 'resource_managements/users.rhtml', :layout => !request.xhr?
+  end
+
+  def add_user
+    @auth_sources = AuthSource.find(:all)
+    if request.get?
+      @user = User.new(:language => Setting.default_language)
+      render :template => 'resource_managements/users/add_user.rhtml', :layout => !request.xhr?
+    else
+      @user = User.new(params[:user])
+      @user.admin = params[:user][:admin] || false
+      @user.login = params[:user][:login]
+      @user.password, @user.password_confirmation = params[:password], params[:password_confirmation] unless @user.auth_source_id
+      if @user.save
+        resource = Resource.new
+        resource.user = @user
+        if resource.save
+          @user.resource = resource
+        end
+        Mailer.deliver_account_information(@user, params[:password]) if params[:send_information]
+        flash[:notice] = l(:notice_successful_create)
+        redirect_to(url_for(:action => 'users', :filters => params[:filters]))
+      else
+        render :template => 'resource_managements/users/add_user.rhtml', :layout => !request.xhr?
+      end
+    end
+  end
+
+  def edit_user
+    @user = User.find(params[:id])
+    @auth_sources = AuthSource.find(:all)
+    @roles = Role.find_all_givable
+    @projects = Project.active.find(:all, :order => 'lft')
+    @membership ||= Member.new
+    @memberships = @user.memberships
+    @skills = Skill.find(:all)
+    if request.get?
+      render :template => 'resource_managements/users/edit_user.rhtml', :layout => !request.xhr?
+    elsif request.post?
+      @user.admin = params[:user][:admin] if params[:user][:admin]
+      @user.login = params[:user][:login] if params[:user][:login]
+      @user.password, @user.password_confirmation = params[:password], params[:password_confirmation] unless params[:password].nil? or params[:password].empty? or @user.auth_source_id
+      @user.attributes = params[:user]
+      # Was the account actived ? (do it before User#save clears the change)
+      was_activated = (@user.status_change == [User::STATUS_REGISTERED, User::STATUS_ACTIVE])
+      if @user.save
+        Mailer.deliver_account_activated(@user) if was_activated
+        flash[:notice] = l(:notice_successful_update)
+        # Give a string to redirect_to otherwise it would use status param as the response code
+        redirect_to(url_for(:action => 'users', :filters => params[:filters]))
+      else
+        render :template => 'resource_managements/users/edit_user.rhtml', :layout => !request.xhr?
+      end
+    end
   end
 
   def load_weekly_forecasts

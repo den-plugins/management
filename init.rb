@@ -21,7 +21,7 @@ Redmine::Plugin.register :management do
   version '0.0.1'
 
   project_module :management do
-    permission :manage_resources, {:resource_managements => [:index, :get, :allocations]}, :public => false
+    permission :manage_resources, {:resource_managements => [:index, :get, :allocations, :users, :add_user, :edit_user]}, :public => false
   end
 
   menu :top_menu,

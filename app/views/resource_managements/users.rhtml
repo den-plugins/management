@@ -1,5 +1,7 @@
 <%= render :partial => 'resource_managements/header' %>
-
+<div class="contextual">
+<%= link_to l(:label_user_new), {:action => 'add_user', :filter => params[:filter]}, :class => 'icon icon-add' %>
+</div>
 <div id="filter_for_forecasts">
   <h4>Resource Management</h4>
   <fieldset>  
