@@ -34,25 +34,25 @@
 	<tr class="<%= cycle 'odd', 'even' %>">
 	<td><%=h membership.project %></td>
     <td align="center">
-    <% form_tag({ :controller => 'users', :action => 'edit_membership', :id => @user, :membership_id => membership }) do %>
+    <% form_tag({ :controller => 'resource_managements', :action => 'edit_membership', :id => @user, :membership_id => membership }) do %>
         <%= select_tag 'membership[role_id]', options_from_collection_for_select(@roles, "id", "name", membership.role_id) %>
         <%= submit_tag l(:button_change), :class => "small" %>
     <% end %>
     </td>
     <td align="center">
-    <% form_tag({ :controller => 'users', :action => 'edit_membership', :id => @user, :membership_id => membership }) do %>
+    <% form_tag({ :controller => 'resource_managements', :action => 'edit_membership', :id => @user, :membership_id => membership }) do %>
         <%= text_field_tag "membership[internal_rate]", membership.internal_rate, :size => 5, :id => 'member_sow_rate_' + membership.id.to_s %>
         <%= submit_tag l(:button_change), :class => "small", :onclick => "return validateFloat(document.getElementById('member_sow_rate_#{membership.id}'))" %>
     <% end %>
     </td>
     <td align="center">
-    <% form_tag({ :controller => 'users', :action => 'edit_membership', :id => @user, :membership_id => membership }) do %>
+    <% form_tag({ :controller => 'resource_managements', :action => 'edit_membership', :id => @user, :membership_id => membership }) do %>
         <%= text_field_tag "membership[sow_rate]", membership.sow_rate, :size => 5, :id => 'member_sow_rate_' + membership.id.to_s %>
         <%= submit_tag l(:button_change), :class => "small", :onclick => "return validateFloat(document.getElementById('member_sow_rate_#{membership.id}'))" %>
     <% end %>
     </td>
     <td align="center">
-      <%= link_to l(:button_delete), {:controller => 'users', :action => 'destroy_membership', :id => @user, :membership_id => membership }, :method => :post, :class => 'icon icon-del' %>
+      <%= link_to l(:button_delete), {:controller => 'resource_managements', :action => 'destroy_membership', :id => @user, :membership_id => membership }, :method => :post, :class => 'icon icon-del' %>
     </td>
 	</tr>
 	</tbody>

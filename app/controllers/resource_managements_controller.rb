@@ -153,6 +153,28 @@ class ResourceManagementsController < ApplicationController
     end
   end
 
+  def edit_membership
+    @user = User.find(params[:id])
+    if request.post? 
+      if params[:projects]
+        new_projects = params[:projects].collect{|p| Member.new(:project_id => p.to_i, :role_id => params[:membership][:role_id].to_i)} 
+        @user.members << new_projects
+      end   
+      if params[:membership_id]
+        @membership = Member.find(params[:membership_id])
+        @membership.attributes = params[:membership]
+        @membership.save
+      end
+    end
+    redirect_to :action => 'edit_user', :id => @user, :tab => 'memberships'
+  end
+  
+  def destroy_membership
+    @user = User.find(params[:id])
+    Member.find(params[:membership_id]).destroy if request.post?
+    redirect_to :action => 'edit_user', :id => @user, :tab => 'memberships'
+  end
+
   def load_weekly_forecasts
     puts " ---- loading weekly forecasts ----"
     @resources_no_limit = User.tmp_resources_no_limit
