@@ -56,7 +56,11 @@ module ResourceManagementsHelper
   def acronym(name)
     name.sub('-', ' ').split.collect {|word| word.chars.first.upcase}.to_s if name
   end
-
+  
+  def get_string(num)
+    "%0.2f" % num
+  end
+  
   def get_float(num)
     ("%.2f" % num).to_f
   end
@@ -217,8 +221,8 @@ module ResourceManagementsHelper
             </tr>"
             percent_allocated = (get_float(current_total_res_available) / get_float(total_res_available)) * 100
             percent_unallocated = (get_float(total_res_available - current_total_res_available) / get_float(total_res_available)) * 100
-            str += "<tr style='background-color: #eee;'><td>#{percent_unallocated.round(2)}%</td></tr>
-            <tr style='background-color: #eee;'><td>#{percent_allocated.round(2)}%</td></tr>
+            str += "<tr style='background-color: #eee;'><td>#{get_string(percent_unallocated.round(2))}%</td></tr>
+            <tr style='background-color: #eee;'><td>#{get_string(percent_allocated.round(2))}%</td></tr>
             <tr><th>#{total_days}</th></tr>"
             current_res_allocated = 0.0
             skill_set.each do |skill|
@@ -226,16 +230,16 @@ module ResourceManagementsHelper
                 res_allocations_skill[skill] = 0 if res_allocations_skill[skill].nil?
                 res_allocations_skill[skill] += get_total_allocations_per_skill(skill, week, accounting)
                 res_count_per_work_days = res_allocations_skill[skill] ? (get_float(res_allocations_skill[skill])/get_float(total_days)) : 0.0
-                str += "<td>#{res_count_per_work_days}</td>"
+                str += "<td>#{get_string(res_count_per_work_days)}</td>"
                 current_res_allocated += res_count_per_work_days
                 res_allocations_skill[skill] = 0.0
               str += "</tr>"
             end
             str += "<tr style='background-color: #eee;'><td>&nbsp;</td></tr>
-            <tr style='background-color: #eee;'><td>#{current_res_allocated.round(2)}</td></tr>
-            <tr style='background-color: #eee;'><td>#{weekly_resources_count}</td></tr>"
+            <tr style='background-color: #eee;'><td>#{get_string(current_res_allocated.round(2))}</td></tr>
+            <tr style='background-color: #eee;'><td>#{get_string(weekly_resources_count)}</td></tr>"
             total_allocated_percent = (current_res_allocated / get_float(weekly_resources_count)) * 100
-            str += "<tr style='background-color: #eee;'><td>#{total_allocated_percent.round(2)}%</td></tr>
+            str += "<tr style='background-color: #eee;'><td>#{get_string(total_allocated_percent.round(2))}%</td></tr>
           </table>
         </div>"
       end
