@@ -23,6 +23,10 @@ Redmine::Plugin.register :management do
   project_module :management do
     permission :manage_resources, {:resource_managements => [:index, :get, :allocations, :users, :add_user, :edit_user, :edit_membership, :destroy_membership]}, :public => false
   end
+  
+  project_module :programme_dashboard do
+    permission :view_programme_dashboard, {}, :public => true
+  end
 
   menu :top_menu,
               :resource_management,
@@ -31,11 +35,22 @@ Redmine::Plugin.register :management do
               :before => :administration,
               :if => Proc.new { User.current.allowed_to?(:manage_resources, nil, :global => true) || User.current.admin? }
 
+  menu :top_menu,
+              :programme_dashboard,
+            {:controller => "programme", :action => "index" },
+              :caption => "Programme",
+              :after => :resource_management,
+              :if => Proc.new { User.current.allowed_to?(:view_programme_dashboard, nil, :global => true) || User.current.admin? }
+
+
   Redmine::MenuManager.map :resource_management do |menu|
     menu.push :dashboard, {:controller => 'resource_managements', :action => 'index' }
     menu.push :allocations, {:controller => 'resource_managements', :action =>'allocations' }, :caption => 'Resource Allocation'
     menu.push :forecasts, {:controller => 'resource_managements', :action =>'forecasts' }, :caption => 'Resource Forecast Summary'
     menu.push :users, {:controller => 'resource_managements', :action => 'users'}, :caption => 'User Management'
+  end
+  
+  Redmine::MenuManager.map :programme_dashboard do |menu|
   end
 
 end
