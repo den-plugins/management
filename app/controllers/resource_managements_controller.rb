@@ -198,6 +198,8 @@ class ResourceManagementsController < ApplicationController
   def get_projects_members
     @projects = Project.active.development.find(:all, :include => [:accounting])
     @members = []
-    @projects.each{|project| @members += project.members.all(:include => [:user], :order => "users.firstname ASC, users.lastname ASC").select {|m| !m.user.is_resigned}}
+    @projects.each{|project| @members += project.members.all(:include => [:user], 
+                             :conditions => ["proj_team = true"], 
+                             :order => "users.firstname ASC, users.lastname ASC").select {|m| !m.user.is_resigned}}
   end
 end
