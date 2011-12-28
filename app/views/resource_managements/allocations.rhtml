@@ -16,7 +16,7 @@
           <% @members.each do |member| %>
             <% if member.user.is_engineering %>
                 <tr class="<%= cycle('even', 'odd', :name => 'resources') %>">
-                  <td style="text-align: left"><%= member.project.name %></td>
+                  <td style="text-align: left"><%= link_to member.project.name, {:controller => 'resource_costs', :action => 'index', :project_id => member.project.identifier }, {:target => '_blank'} %></td>
                   <td><%= member.project.category.gsub('Project', '') unless member.project.category.nil? %></td>
                   <td><%= acronym member.project.accounting_type %></td>
                   <td style="text-align: left"><%= member.name %></td>
