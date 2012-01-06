@@ -53,17 +53,10 @@ class ResourceManagementsController < ApplicationController
     if @projects.empty?
       @resources = []
     else
-      #development = "and projects.id IN (#{@projects.join(', ')})"
-      #active_project = "select id, status from projects where projects.id = members.project_id and projects.status = 1 #{development}"
-      #statement = "exists (select user_id, project_id from members where members.user_id = users.id and exists (#{active_project}))"
-      #@resources_no_limit = User.active.engineers.find(:all, :select => "users.firstname, users.lastname, users.id",
-      #                                                          :include => [:projects, :members],
-      #                                                          :conditions => statement,
-      #                                                          :order => "firstname ASC, lastname ASC")
-      
       @resources_no_limit = User.active.engineers.find(:all, :order => "firstname ASC, lastname ASC", :include => [:projects, :members]).select do |resource|
         resource unless resource.memberships.select {|m| m.project.active? and @projects.include?(m.project_id) }.empty?
       end
+      
       @resource_count = @resources_no_limit.count
       @resource_pages = Paginator.new self, @resource_count, limit, params['page']
       offset = @resource_pages.current.offset
@@ -84,7 +77,6 @@ class ResourceManagementsController < ApplicationController
   
   def users
     sort_init 'login', 'asc'
-    #sort_update %w(login firstname lastname skill location hired_date organization is_engineering)
     sort_update %w(login firstname lastname is_engineering)
     
     if filters = params[:filters]
@@ -176,13 +168,41 @@ class ResourceManagementsController < ApplicationController
   end
 
   def load_weekly_forecasts
-    puts " ---- loading weekly forecasts ----"
     @resources_no_limit = User.tmp_resources_no_limit
     @resources = User.tmp_resources
     @projects = Project.tmp_projects
     @skill_set = User.tmp_skillset
-    render :partial => 'resource_managements/forecasts/weeks',
-         :locals => {:total_res_available => params[:total_res_available].to_i}
+    
+    @forecasts = {}
+    @summary = {}
+    acctg = params[:acctg].to_s.blank? ? "Billable" : params[:acctg]
+    
+    delay_job if params[:reload]
+    
+    if FileTest.exists?("#{RAILS_ROOT}/config/rm_forecasts.yml")
+      if file = YAML.load(File.open("#{RAILS_ROOT}/config/rm_forecasts.yml"))
+        if mgt = file[acctg]
+          @forecasts = mgt["forecasts"]
+          @summary = mgt["summary"]
+          @updated_at = mgt["updated_at"]
+          
+          if params[:updated_at] && params[:updated_at].eql?(@updated_at.to_s)
+            render_empty_weeks
+          else
+            render :update do |page|
+              page.replace_html :weekly_forecasts_panel, :partial => 'resource_managements/forecasts/weeks',
+                        :locals => {:total_res_available => params[:total_res_available].to_i }
+            end
+          end
+        end
+      else
+        delay_job
+        render_empty_weeks
+      end
+    else
+      delay_job
+      render_empty_weeks
+    end
   end
   
   private
@@ -198,8 +218,24 @@ class ResourceManagementsController < ApplicationController
   def get_projects_members
     @projects = Project.active.development.find(:all, :include => [:accounting])
     @members = []
-    @projects.each{|project| @members += project.members.all(:include => [:user], 
-                             :conditions => ["proj_team = true"], 
+    @projects.each{|project| @members += project.members.all(:include => [:user],
+                             :conditions => ["proj_team = true"],
                              :order => "users.firstname ASC, users.lastname ASC").select {|m| !m.user.is_resigned}}
+  end
+  
+  def delay_job
+    acctg = params[:acctg].to_s.blank? ? "Billable" : params[:acctg]
+    resources_no_limit = @resources_no_limit.collect {|r| r.id }
+    handler = ForecastJob.new(acctg, resources_no_limit, @skill_set, @projects, params[:total_res_available])
+    Delayed::Job.enqueue handler unless Delayed::Job.find_by_handler(handler.to_yaml)
+  end
+  
+  def render_empty_weeks
+    render :update do |page|
+      page.replace_html :weekly_forecasts_panel, :partial => 'resource_managements/forecasts/empty_weeks',
+                :locals => {:total_res_available => params[:total_res_available].to_i }
+      page.hide :icon_reload_forecasts
+      page.hide :updated_at_text
+    end
   end
 end

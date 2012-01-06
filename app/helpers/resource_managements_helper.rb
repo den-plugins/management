@@ -298,5 +298,13 @@ module ResourceManagementsHelper
       link_to l(:button_lock), url.merge(:user => {:status => User::STATUS_LOCKED}), :method => :post, :class => 'icon icon-lock'
     end
   end
+  
+  def to_yml(string)
+    if string.is_a? Date
+      string.strftime("%m/%d/%Y")
+    elsif string.is_a? String
+      string.gsub(/ /, '_')
+    end
+  end
 
 end

@@ -1,4 +1,75 @@
-<%= resource_forecast_summary(@resources, @projects, @skill_set, params[:acctg], total_res_available) %>
+<% weeks = get_weeks_range(Date.today-1.month, Date.today+6.months) %>
+<div id='floating_tables_holder' style="width: <%= weeks.count * 85 %>px">
+<% weeks.each do |week| %>
+    <% lweek = to_yml(week.last) %>
+    <% sweek = @summary[lweek] %>
+    <% fweek = @forecasts[lweek] %>
+    <div class='floating_table'>
+    <table id="allocation_week" class="list fixed">
+        <tr>
+            <th><%= display_week(week) %></th>
+        </tr>
+        <% @resources.each do |resource| %>
+        <tr class="<%= cycle('even', 'odd', :name => 'week_days') %> <%= allocation_to_class(allocation=fweek[resource.id]) %>">
+            <td><%= get_string allocation %></td>
+        </tr>
+        <% end %>
+        <% reset_cycle('week_days') %>
+        <tr>
+            <th>&nbsp;</th>
+        </tr>
+        <% @skill_set.each do |skill| %>
+        <tr style="background-color: #eee;">
+            <td><%= sweek["resource_count"][to_yml(skill)] %></td>
+        </tr>
+        <% end %>
+        
+        <tr style="background-color: #eee;">
+            <td>&nbsp;</td>
+        </tr>
+        <tr style="background-color: #eee;">
+            <td><%= sweek["current_total_available_resources"] %></td>
+        </tr>
+        <tr style="background-color: #eee;">
+            <td><%= get_string sweek["percent_unallocated"] %>%</td>
+        </tr>
+        <tr style="background-color: #eee;">
+            <td><%= get_string sweek["percent_allocated"] %>%</td>
+        </tr>
+        <tr>
+            <th><%= sweek["total_days"] %></th>
+        </tr>
+        <% @skill_set.each do |skill| %>
+        <tr style="background-color: #eee;">
+            <td><%= get_string sweek["resource_count_per_day"][to_yml(skill)] %></td>
+        </tr>
+        <% end %>
+        <tr style="background-color: #eee;">
+            <td>&nbsp;</td>
+        </tr>
+        <tr style="background-color: #eee;">
+            <td><%= get_string sweek["current_total_allocated_resources"] %></td>
+        </tr>
+        <tr style="background-color: #eee;">
+            <td><%=get_string sweek["weekly_resources_count"] %></td>
+        </tr>
+        <tr style="background-color: #eee;">
+            <td><%= get_string sweek["total_allocated_percent"] %>%</td>
+        </tr>
+    </table>
+    </div>
+<% end %>
+</div>
 <script type="text/javascript">
-  jQuery(".movable_table_container").scrollable({circular: false, mousewheel: true});
+    jQuery(".movable_table_container").scrollable({circular: false, mousewheel: true});
+    jQuery("#updated_at_text").show().text("as of <%= @updated_at.strftime('%b %d, %Y %I:%M %p') %>");
+    jQuery("#icon_reload_forecasts").show().click(function() {
+      new Ajax.Request('/resource_managements/load_weekly_forecasts', {
+        parameters: { 'total_res_available': '<%= params[:total_res_available] %>',
+                                   'acctg': '<%= params[:acctg] %>',
+                                   'reload' : 'true',
+                                   'updated_at' : '<%= @updated_at.to_s %>'},
+        onLoading: "$('ajax-indicator').hide()"
+      });
+    });
 </script>

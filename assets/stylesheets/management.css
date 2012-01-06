@@ -16,7 +16,13 @@ table.list tbody tr:hover { background-color: transparent; color: #000; }
 tr.lgreen, td.lgreen, th.lgreen { background-color: #9FC35B; color: #000; }
 tr.lblue, td.lblue, th.lblue { background-color: #99CCFF; color: #000; }
 tr.lred, td.lred, th.lred { background-color: #E57E7C; color: #000; }
+tr.green, td.green, th.green {background-color: #9FC35B; border: 1px solid #FFF; }
+tr.red, td.red, th.red {background-color: #E57E7C; border: 1px solid #FFF; }
+tr.yellow, td.yellow, th.yellow {background-color: #f7d959; border: 1px solid #FFF; }
 
+.bigfont { font-weight: bold; font-size: 12pt; text-align: center; padding: 10%;}
+.zero { padding: 0; margin: 0}
+.linkish-icon {padding: 0 7px; cursor: pointer; margin: 0}
 .btn_show_chart{
   width: 100%;
   background-color: #dfdfdf;
@@ -26,10 +32,7 @@ tr.lred, td.lred, th.lred { background-color: #E57E7C; color: #000; }
   font-size: 1em;
   font-weight: bold;
 }
-
-.btn_show_chart:hover{
-  color: #34c134;
-}
+.btn_show_chart:hover{ color: #34c134;}
 
 
 /**************************************
@@ -38,3 +41,10 @@ tr.lred, td.lred, th.lred { background-color: #E57E7C; color: #000; }
 
 div.filter_group {padding: 3px; margin: 2px; width: 100%; }
 .center {align: center; text-align: center }
+
+
+/**************************************
+            Programme Dashboard
+***************************************/
+
+table#project_health_table { table-layout: fixed; width: 99%; }

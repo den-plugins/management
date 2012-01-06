@@ -1,0 +1,14 @@
+<div>
+  <p class=" bigfont">Computing &nbsp;<%= image_tag("ajax-loader.gif", :width => '25', :plugin => 'management') %></p>
+  <script type="text/javascript">
+    setTimeout(function() {
+      $('weekly_forecasts_form').request({
+        parameters: { 'total_res_available': '<%= params[:total_res_available] %>',
+                                   'acctg': '<%= params[:acctg] %>',
+                                   'updated_at' : '<%= params[:updated_at] || '' %>'},
+        onLoading: Element.hide('ajax-indicator')
+      });
+    }, 20000);
+  </script>
+  <% form_tag({:action => 'load_weekly_forecasts'}, {:id => 'weekly_forecasts_form'}) {} %>
+</div>
