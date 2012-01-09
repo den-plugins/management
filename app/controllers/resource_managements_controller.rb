@@ -194,6 +194,9 @@ class ResourceManagementsController < ApplicationController
                         :locals => {:total_res_available => params[:total_res_available].to_i }
             end
           end
+        else
+          delay_job
+          render_empty_weeks
         end
       else
         delay_job

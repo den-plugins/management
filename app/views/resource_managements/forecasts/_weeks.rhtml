@@ -10,7 +10,7 @@
             <th><%= display_week(week) %></th>
         </tr>
         <% @resources.each do |resource| %>
-        <tr class="<%= cycle('even', 'odd', :name => 'week_days') %> <%= allocation_to_class(allocation=fweek[resource.id]) %>">
+        <tr class="<%= cycle('even', 'odd', :name => 'week_days') %> <%= allocation_to_class(allocation=(fweek ? fweek[resource.id] : 0)) %>">
             <td><%= get_string allocation %></td>
         </tr>
         <% end %>
@@ -20,7 +20,7 @@
         </tr>
         <% @skill_set.each do |skill| %>
         <tr style="background-color: #eee;">
-            <td><%= sweek["resource_count"][to_yml(skill)] %></td>
+            <td><%= sweek ? sweek["resource_count"][to_yml(skill)] : 0 %></td>
         </tr>
         <% end %>
         
@@ -28,33 +28,33 @@
             <td>&nbsp;</td>
         </tr>
         <tr style="background-color: #eee;">
-            <td><%= sweek["current_total_available_resources"] %></td>
+            <td><%= sweek ? sweek["current_total_available_resources"] : 0 %></td>
         </tr>
         <tr style="background-color: #eee;">
-            <td><%= get_string sweek["percent_unallocated"] %>%</td>
+            <td><%= get_string(sweek ? sweek["percent_unallocated"] : 0)%>%</td>
         </tr>
         <tr style="background-color: #eee;">
-            <td><%= get_string sweek["percent_allocated"] %>%</td>
+            <td><%= get_string(sweek ? sweek["percent_allocated"] : 0) %>%</td>
         </tr>
         <tr>
-            <th><%= sweek["total_days"] %></th>
+            <th><%= sweek ? sweek["total_days"] : 0 %></th>
         </tr>
         <% @skill_set.each do |skill| %>
         <tr style="background-color: #eee;">
-            <td><%= get_string sweek["resource_count_per_day"][to_yml(skill)] %></td>
+            <td><%= get_string(sweek ? sweek["resource_count_per_day"][to_yml(skill)] : 0) %></td>
         </tr>
         <% end %>
         <tr style="background-color: #eee;">
             <td>&nbsp;</td>
         </tr>
         <tr style="background-color: #eee;">
-            <td><%= get_string sweek["current_total_allocated_resources"] %></td>
+            <td><%= get_string(sweek ? sweek["current_total_allocated_resources"] : 0) %></td>
         </tr>
         <tr style="background-color: #eee;">
-            <td><%=get_string sweek["weekly_resources_count"] %></td>
+            <td><%=get_string(sweek ? sweek["weekly_resources_count"] : 0) %></td>
         </tr>
         <tr style="background-color: #eee;">
-            <td><%= get_string sweek["total_allocated_percent"] %>%</td>
+            <td><%= get_string(sweek ? sweek["total_allocated_percent"] : 0) %>%</td>
         </tr>
     </table>
     </div>
