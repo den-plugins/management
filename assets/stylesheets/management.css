@@ -12,10 +12,12 @@ table#allocation_week tr td, table#allocation_week tr th { text-align: center; t
 div.singleCol { float: left; width: 32%; margin: 3px 6px; }
 div.box { padding: 3px 5px; margin-bottom: 10px; background-color: #F6F6F6; color: #505050; line-height: 1.5em; border: 1px solid #E4E4E4; }
 
-table.list tbody tr:hover { background-color: transparent; color: #000; }
+table.list tbody tr:hover { background-color: #fff1b4; color: #000; }
 tr.lgreen, td.lgreen, th.lgreen { background-color: #9FC35B; color: #000; }
 tr.lblue, td.lblue, th.lblue { background-color: #99CCFF; color: #000; }
 tr.lred, td.lred, th.lred { background-color: #E57E7C; color: #000; }
+tr.lgray, td.lgray, th.lgray { background-color: #9a9a9a; color: #FFF; }
+
 tr.green, td.green, th.green {background-color: #9FC35B; border: 1px solid #FFF; }
 tr.red, td.red, th.red {background-color: #E57E7C; border: 1px solid #FFF; }
 tr.yellow, td.yellow, th.yellow {background-color: #f7d959; border: 1px solid #FFF; }

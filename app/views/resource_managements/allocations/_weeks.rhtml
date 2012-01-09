@@ -14,7 +14,7 @@
         <% @members.each do |member| %>
           <% if member.user.is_engineering %>
             <% member_days_cost = member.days_and_cost(week).to_f %>
-            <tr class="<%= cycle('even', 'odd', :name => 'week_days') %> <%= allocation_to_class(member_days_cost) %>">
+            <tr class="<%= cycle('even', 'odd', :name => 'week_days') %> <%= allocation_to_class(member_days_cost, member.is_shadowed?(week.last)) %>">
               <td><%= member_days_cost %></td>
             </tr>
             <% categ = member.project.category.to_s %>

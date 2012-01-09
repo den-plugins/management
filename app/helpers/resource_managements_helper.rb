@@ -246,12 +246,16 @@ module ResourceManagementsHelper
       str += "</div>"
   end
   
-  def allocation_to_class(allocation)
-    case allocation
-      when 0; ""
-      when 0 .. 2.5; "lblue"
-      when 2.5 .. 5; "lgreen"
-      else; "lred"
+  def allocation_to_class(allocation, is_shadowed=false)
+    if is_shadowed
+      "lgray"
+    else
+      case allocation
+        when 0; ""
+        when 0 .. 2.5; "lblue"
+        when 2.5 .. 5; "lgreen"
+        else; "lred"
+      end
     end
   end
   
