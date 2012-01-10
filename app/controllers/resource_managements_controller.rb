@@ -42,36 +42,7 @@ class ResourceManagementsController < ApplicationController
   end
   
   def forecasts
-    limit = per_page_option
-    dev_projects = Project.development.find(:all, :include => [:accounting])
-    if params[:acctg] && params[:acctg].eql?('Both')
-      @projects = dev_projects.collect {|p| p.id if (p.accounting_type.eql?('Billable') || p.accounting_type.eql?('Non-billable'))}.compact.uniq
-    else
-      @projects = dev_projects.collect {|p| p.id if (p.accounting_type.eql?( params[:acctg] || 'Billable'))}.compact.uniq
-    end
-
-    if @projects.empty?
-      @resources = []
-    else
-      @resources_no_limit = User.active.engineers.find(:all, :order => "firstname ASC, lastname ASC", :include => [:projects, :members]).select do |resource|
-        resource unless resource.memberships.select {|m| m.project.active? and @projects.include?(m.project_id) }.empty?
-      end
-      
-      @resource_count = @resources_no_limit.count
-      @resource_pages = Paginator.new self, @resource_count, limit, params['page']
-      offset = @resource_pages.current.offset
-      @resources = []
-      ## modified offset, limit approach through array rather than query
-      (offset ... (offset + limit)).each do |i|
-        break if @resources_no_limit[i].nil?
-        @resources << @resources_no_limit[i]
-      end
-    end
-    @skill_set = User.resource_skills
-    User.tmp_resources_no_limit = @resources_no_limit
-    User.tmp_resources = @resources
-    Project.tmp_projects = @projects
-    User.tmp_skillset = @skill_set
+    get_forecast_list
     render :template => 'resource_managements/forecasts.rhtml', :layout => !request.xhr?
   end
   
@@ -168,11 +139,7 @@ class ResourceManagementsController < ApplicationController
   end
 
   def load_weekly_forecasts
-    @resources_no_limit = User.tmp_resources_no_limit
-    @resources = User.tmp_resources
-    @projects = Project.tmp_projects
-    @skill_set = User.tmp_skillset
-    
+    get_forecast_list
     @forecasts = {}
     @summary = {}
     acctg = params[:acctg].to_s.blank? ? "Billable" : params[:acctg]
@@ -224,6 +191,39 @@ class ResourceManagementsController < ApplicationController
     @projects.each{|project| @members += project.members.all(:include => [:user],
                              :conditions => ["proj_team = true"],
                              :order => "users.firstname ASC, users.lastname ASC").select {|m| !m.user.is_resigned}}
+  end
+  
+  def get_forecast_list
+    limit = per_page_option
+    dev_projects = Project.development.find(:all, :include => [:accounting])
+    acctg = params[:acctg].to_s.blank? ? "Billable" : params[:acctg]
+    if acctg.eql?('Both')
+      @projects = dev_projects.collect {|p| p.id if (p.accounting_type.eql?('Billable') || p.accounting_type.eql?('Non-billable'))}.compact.uniq
+    else
+      @projects = dev_projects.collect {|p| p.id if (p.accounting_type.eql?( acctg))}.compact.uniq
+    end
+
+    if @projects.empty?
+      @resources = []
+    else
+      @resources_no_limit = User.active.engineers.find(:all, :order => "firstname ASC, lastname ASC", :include => [:projects, :members]).select do |resource|
+        resource unless resource.memberships.select {|m| m.project.active? and @projects.include?(m.project_id) }.empty?
+      end
+      @resource_count = @resources_no_limit.count
+      @resource_pages = Paginator.new self, @resource_count, limit, params['page']
+      offset = @resource_pages.current.offset
+      @resources = []
+      (offset ... (offset + limit)).each do |i|
+        break if @resources_no_limit[i].nil?
+        @resources << @resources_no_limit[i]
+      end
+    end
+    @skill_set = User.resource_skills
+  
+    #@resources_no_limit = User.tmp_resources_no_limit
+    #@resources = User.tmp_resources
+    #@projects = Project.tmp_projects
+    #@skill_set = User.tmp_skillset
   end
   
   def delay_job
