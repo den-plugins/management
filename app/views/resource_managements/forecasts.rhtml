@@ -1,3 +1,5 @@
+<%= render :partial => "fixed_header" %>
+
 <%= render :partial => 'header' %>
 <div id='dashboard'>
   <h4>Resource Forecast Summary</h4>
@@ -14,11 +16,13 @@
     <div class='tables_container'>
       <div class='fixed_table_container' style="width: 25%;">
         <table id='allocations_fixed_table' class="list fixed">
+        <thead>
           <tr>
             <th width='20%'>Location</th>
             <th width='50%'>Resource</th>
             <th width='30%'>Role</th>
           </tr>
+        </thead>
           <% resource_count = {} %>
           <% @resources.each do |resource| %>
             <tr class="<%= cycle('even', 'odd', :name => 'resources') %>">
@@ -71,7 +75,7 @@
           <tr style="background-color: #eee;"><td colspan="2" style="font-weight: bold; text-align: right;">Total Allocation %</td><td>&nbsp;</td></tr>
         </table>
       </div>
-      <div id='weekly_forecasts_panel' class='movable_table_container' style="width: 74%" %>
+      <div id='weekly_forecasts_panel' class='movable_table_container' style="width: 74%">
         <%# render :partial => 'resource_managements/forecasts/weeks', :locals => {:total_res_available => total_res_available} %>
       </div>
       <div class="clear"></div>
@@ -91,11 +95,19 @@
 <% content_for :header_tags do %>
   <%= javascript_include_tag 'jquery_tools', :plugin => 'management' %>
   <%= stylesheet_link_tag 'management', :plugin => 'management' %>
+  <%= javascript_include_tag 'fixed_header.js', :plugin => 'management' %>
 <% end %>
 
 <script>
   j = jQuery.noConflict();
   jQuery(document).ready(function(){
     jQuery("#load_forecasts_form").submit();
+    jQuery(window).scroll(function(){
+      if(jQuery("#allocations_fixed_table thead").is(":in-viewport")){
+        jQuery("#fixed_header").addClass("hide");
+      }else{
+        if(jQuery("#fixed_header").hasClass('hide')) jQuery("#fixed_header").removeClass("hide");
+      }
+    });
   });
 </script>

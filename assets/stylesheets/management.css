@@ -1,4 +1,6 @@
 div.tables_container { width: 100%; padding: 0; margin: 0; }
+div#fixed_header { position: fixed; top: 0px; width: 98.5%; z-index: 9999; }
+div.hide { display: none; }
 div.fixed_table_container { float: left; white-space: nowrap; border-right: 1px solid black;}
 div.movable_table_container { float: left; position: relative; overflow-x: auto; }
 div#floating_tables_holder { position: relative; }
@@ -7,6 +9,7 @@ table {font-size: 12px; }
 table.fixed { table-layout: fixed; }
 table.list tr th { height: 40px; white-space: normal; }
 table#allocations_fixed_table tr td { text-overflow: clip; overflow: hidden; white-space: nowrap; text-align: center; }
+table#allocations_fixed_table_clone tr td { text-overflow: clip; overflow: hidden; white-space: nowrap; text-align: center; }
 table#allocation_week tr td, table#allocation_week tr th { text-align: center; text-overflow: ellipsis; overflow: hidden; }
 
 div.singleCol { float: left; width: 32%; margin: 3px 6px; }

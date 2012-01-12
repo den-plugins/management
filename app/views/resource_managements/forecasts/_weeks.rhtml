@@ -6,9 +6,12 @@
     <% fweek = @forecasts[lweek] %>
     <div class='floating_table'>
     <table id="allocation_week" class="list fixed">
+        <thead>
         <tr>
             <th><%= display_week(week) %></th>
         </tr>
+        </thead>
+        <tbody>
         <% @resources.each do |resource| %>
         <tr class="<%= cycle('even', 'odd', :name => 'week_days') %> <%= allocation_to_class(allocation=(fweek ? fweek[resource.id] : 0)) %>">
             <td><%= get_string allocation %></td>
@@ -56,12 +59,21 @@
         <tr style="background-color: #eee;">
             <td><%= get_string(sweek ? sweek["total_allocated_percent"] : 0) %>%</td>
         </tr>
+        </tbody>
     </table>
     </div>
+    <script type="text/javascript">
+      jQuery("#fixed_header .movable_table_container #weeks_header_holder").append("<div class='floating_table'><table id='allocation_week' class='list fixed'><thead><tr><th><%= display_week(week) %></th></tr></thead>");
+    </script>
 <% end %>
 </div>
 <script type="text/javascript">
-    jQuery(".movable_table_container").scrollable({circular: false, mousewheel: true});
+    /*jQuery(".movable_table_container").scrollable({circular: false, mousewheel: true, onSeek: function(){
+        jQuery("table").stickyTableHeaders();
+      }
+    });*/
+    jQuery("#weeks_header_holder").css("width", "<%= weeks.count * 85 %>px");
+    jQuery(".movable_table_container:last").scrollable({circular: false, mousewheel: true});
     jQuery("#updated_at_text").show().text("as of <%= @updated_at.strftime('%b %d, %Y %I:%M %p') %>");
     jQuery("#icon_reload_forecasts").show().click(function() {
       new Ajax.Request('/resource_managements/load_weekly_forecasts', {
