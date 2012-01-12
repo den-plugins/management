@@ -107,7 +107,15 @@
         jQuery("#fixed_header").addClass("hide");
       }else{
         if(jQuery("#fixed_header").hasClass('hide')) jQuery("#fixed_header").removeClass("hide");
+        scroll_fixed_header();
       }
+    });
+
+    object1 = jQuery(".movable_table_container:last");
+    object2 = jQuery(".movable_table_container:first");
+    object1.scroll(function () {
+      object2.scrollLeft(object1.scrollLeft());
+      object2.scrollTop(object1.scrollTop());
     });
   });
 </script>
