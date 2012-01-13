@@ -8,6 +8,6 @@
 
 function scroll_fixed_header(){
   scrollable = jQuery(".movable_table_container:first #weeks_header_holder");
-  scrollable.css({left: jQuery(".movable_table_container:last #floating_tables_holder").position().left});
+  scrollable.css({left: jQuery(".movable_table_container:last #floating_tables_holder").css("left")});
 }
 
