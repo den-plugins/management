@@ -6,8 +6,31 @@
 
 //------------------------------------------------------------------------------
 
+function toggle_fixed_header(){
+  jQuery(window).scroll(function(){
+    if(jQuery("#allocations_fixed_table thead").is(":in-viewport")){
+      jQuery("#fixed_header").addClass("hide");
+    }else{
+      if(jQuery("#fixed_header").hasClass('hide')) jQuery("#fixed_header").removeClass("hide");
+      object1 = jQuery(".movable_table_container:last");
+      object2 = jQuery(".movable_table_container:first");
+      object2.scrollLeft(object1.scrollLeft());
+      object2.scrollTop(object1.scrollTop());
+    }
+  });
+}
+
 function scroll_fixed_header(){
   scrollable = jQuery(".movable_table_container:first #weeks_header_holder");
   scrollable.css({left: jQuery(".movable_table_container:last #floating_tables_holder").css("left")});
+}
+
+function synch_scroll_on_bar(){
+  object1 = jQuery(".movable_table_container:last");
+  object2 = jQuery(".movable_table_container:first");
+  object1.scroll(function () {
+    object2.scrollLeft(object1.scrollLeft());
+    object2.scrollTop(object1.scrollTop());
+  });
 }
 
