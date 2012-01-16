@@ -29,3 +29,13 @@ function synch_scroll_on_bar(){
   });
 }
 
+
+function synchRowHighlights() {
+  jQuery('table tbody tr').live('mouseover', function(){
+    var row = jQuery(this).closest('tr').prevAll().length;
+    jQuery("table > tbody").find("tr:eq("+row+")").addClass("highlight");
+  }).live('mouseout', function(){
+    var row = jQuery(this).closest('tr').prevAll().length;
+    jQuery("table > tbody").find("tr:eq("+row+")").removeClass("highlight");
+  });
+}

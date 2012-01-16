@@ -58,9 +58,11 @@
 <% content_for :header_tags do %>
   <%= javascript_include_tag 'jquery_tools', :plugin => 'management' %>
   <%= stylesheet_link_tag 'management', :plugin => 'management' %>
+  <%= javascript_include_tag 'fixed_header.js', :plugin => 'management' %>
 <% end %>
 
 <script>
   j = jQuery.noConflict();
+  synchRowHighlights();
   jQuery(".movable_table_container").scrollable({circular: false, mousewheel: true});
 </script>
