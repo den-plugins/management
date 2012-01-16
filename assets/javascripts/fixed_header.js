@@ -20,11 +20,6 @@ function toggle_fixed_header(){
   });
 }
 
-function scroll_fixed_header(){
-  scrollable = jQuery(".movable_table_container:first #weeks_header_holder");
-  scrollable.css({left: jQuery(".movable_table_container:last #floating_tables_holder").css("left")});
-}
-
 function synch_scroll_on_bar(){
   object1 = jQuery(".movable_table_container:last");
   object2 = jQuery(".movable_table_container:first");

@@ -69,10 +69,14 @@
 </div>
 <script type="text/javascript">
     jQuery("#weeks_header_holder").css("width", "<%= weeks.count * 85 %>px");
-    jQuery(".movable_table_container:last").scrollable({circular: false, mousewheel: true, onSeek: function(){
-        scroll_fixed_header();
-      }
-    });
+    jQuery(".movable_table_container:last").scrollable({circular: false, mousewheel: true, wheelSpeed: 400});
+
+    var tmp1 = jQuery(".movable_table_container:first #weeks_header_holder");
+    var tmp2 = jQuery(".movable_table_container:last #floating_tables_holder");
+    setInterval(function(){
+      tmp1.animate({left: tmp2.css("left")}, 0);
+    }, 50);
+    
     jQuery("#updated_at_text").show().text("as of <%= @updated_at.strftime('%b %d, %Y %I:%M %p') %>");
     jQuery("#icon_reload_forecasts").show().click(function() {
       new Ajax.Request('/resource_managements/load_weekly_forecasts', {
