@@ -1,3 +1,38 @@
 <%= render :partial => "header" %>
 
-Programme Dashboard Index
+<div id="programme_dashboard">
+  <div class="singleCol">
+    <div class="box">
+      <h3>Project Health</h3>
+        
+    </div>
+    <div class="box">
+      <h3>Proposal Health (Proposals currently being handled by PMs)</h3>
+      
+    </div>
+  </div>
+  <div class="singleCol">
+    <div class="box">
+      <h3>Project Schedule - End Date</h3>
+        
+    </div>
+    <div class="box">
+      <h3>Project Forecast Comparative Chart</h3>
+      
+    </div>
+  </div>
+  <div class="singleCol">
+    <div class="box">
+      <h3>Fixed Cost Projects -Financial Status</h3>
+        
+    </div>
+    <div class="box">
+      <h3>T and M Projects - Project Billability</h3>
+      
+    </div>
+  </div>
+</div>
+
+<% content_for :header_tags do %>
+  <%= stylesheet_link_tag 'management', :plugin => 'management' %>
+<% end %>
