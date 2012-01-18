@@ -45,7 +45,7 @@ th.rotated {position: relative; text-align: left; font-size: 10px; left: -10px; 
 .circle { display: block; width: 10px; height: 10px; text-align: center; -moz-border-radius: 10px; -webkit-border-radius: 40px; padding: 0; color: transparent; margin: auto; }
 .not-applicable, .nocolor {color: black; }
 .not-applicable:after {content: "NA" }
-.not-color:after {content: "?"}
+.nocolor:after {content: "?"}
 
 /**************************************
             User Management
