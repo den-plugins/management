@@ -1,5 +1,4 @@
 class ProgrammeController < ApplicationController
-  helper :project_schedule
 
   def index
     @projects = Project.find(:all, :order => 'name ASC')

@@ -2,7 +2,7 @@
 
 <% if @devt_projects.any? %>
 <% min_date = get_min_date(@devt_projects) %>
-<% jdata = chart_data(@devt_projects, min_date) %>
+<% jdata = sched_chart_data(@devt_projects, min_date) %>
 
 <script>
   var plot = jQuery.jqplot('project_sched_chart', <%= jdata %>, {
