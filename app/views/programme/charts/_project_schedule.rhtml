@@ -1,0 +1,38 @@
+<div id="project_sched_chart"></div>
+
+<% @projects = Project.development %>
+<% if @projects.any? %>
+<% min_date = get_min_date(@projects) %>
+<% jdata = chart_data(@projects, min_date) %>
+
+<script>
+  var plot = jQuery.jqplot('project_sched_chart', <%= jdata %>, {
+    seriesDefaults: {
+      renderer:jQuery.jqplot.BarRenderer,
+      pointLabels: { show: true, location: 'w'},
+      rendererOptions: {barDirection: 'horizontal', shadowOffset: 0, barPadding: -2, barWidth: 9}
+    },
+    seriesColors: ["#f63636", "#1e90ff"],
+    series: [
+      {label: "Scheduled End Date"},
+      {label: "Planned End Date"}
+    ],
+    axes: {
+      xaxis: {renderer: jQuery.jqplot.DateAxisRenderer,
+              min: <%= min_date.to_json %>,
+              tickRenderer: jQuery.jqplot.CanvasAxisTickRenderer,
+              tickOptions: {angle: -30, formatString:'%b %e', showMark: false, fontSize: '7pt'}},
+      yaxis: {renderer: jQuery.jqplot.CategoryAxisRenderer}
+    },
+    legend: {show: true, location: 'ne'},
+    grid: {gridLineColor: '#f2f2f2'}
+  });
+  jQuery("#project_sched_chart .jqplot-point-label").css("color", "#fff");
+  jQuery("#project_sched_chart .jqplot-yaxis-tick").each(function(){
+    jQuery(this).css({"line-height": "120%", "height": "" + jQuery(this).height() + "px",
+    "margin-top": "" + jQuery(this).height()/4 + "px"});
+  })
+</script>
+<% else %>
+  <p class="nodata">No Development Projects Found.</p>
+<% end %>

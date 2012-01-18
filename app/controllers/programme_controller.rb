@@ -1,4 +1,5 @@
 class ProgrammeController < ApplicationController
+  helper :project_schedule
 
   def index
     @devt_projects = Project.find(:all, :order => 'name ASC').select(&:development?)
