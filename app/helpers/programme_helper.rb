@@ -1,0 +1,83 @@
+module ProgrammeHelper
+
+  def color_code_for_cost_status(project)
+    if project.planned_start_date && project.planned_start_date
+      if display_by_billing_model(project).eql?("fixed")
+        puts "#{project.identifier} fixed"
+        range = project.planned_start_date..project.planned_end_date
+        contracts_amount = project.project_contracts.all.sum(&:amount)
+        resources = project.members.all
+        bac = resources.sum {|a| a.days_and_cost(range, daily_rate(a.internal_rate), false).last}
+        total_budget = bac.to_f + (bac.to_f * (project.contingency.to_f/100))
+        
+        case contracts_amount <=> total_budget
+          when -1; "red"
+          when  1: "green"
+          when  0: "yellow"
+        end
+      elsif display_by_billing_model(project).eql?("billability")
+        puts "#{project.identifier} T&M"
+        if percent = (@billabilities[project.id] ? @billabilities[project.id]["total_percent_billability_week"] : nil)
+          case
+            when percent > 85; "green"
+            when (80 ... 85) === percent; "yellow"
+            when (0 ... 80) === percent; "red"
+          end
+        else
+          "not-applicable"
+        end
+      end
+    else
+      "not-applicable"
+    end
+  end
+  
+  def color_code_for_issue_average(project)
+    issue_ave = PmDashboardIssue.average(:impact, :conditions => ["project_id = ? AND date_close IS NULL", project])
+    case issue_ave.to_f.ceil
+    when 0; "green"
+    when 1; "green"
+    when 2; "yellow"
+    when 3; "red"
+    end
+  end
+  
+  def color_code_for_risk_average(project)
+    risk_ave = Risk.average(:final_risk_rating, :conditions => ["project_id = ? AND status <> 'C'", project])
+    case risk_ave.to_f.ceil
+      when 0 ... 5; "green"
+      when 5 ... 15; "yellow"
+      when 15 .. 25; "red"
+    end
+  end
+  
+  def color_code_for_schedule_status(project)
+    if project.planned_start_date && project.planned_start_date
+      if project.actual_end_date
+        (project.actual_end_date < project.planned_end_date) ? "red" : "green"
+      else
+        "yellow"
+      end
+    else
+      "not-applicable"
+    end
+  end
+  
+  def daily_rate(rate)
+    rate.to_f * 8
+  end
+  
+  def display_by_billing_model(project)
+    if project.billing_model
+      if project.billing_model.scan(/^(Fixed)/).flatten.present?
+        "fixed"
+      elsif project.billing_model.scan(/^(T and M)/i).flatten.present?
+        "billability"
+      end
+    end
+  end
+  
+  def initials(first, last)
+    [first, last].map {|c| c.chars.first.upcase } if first && last
+  end
+end
