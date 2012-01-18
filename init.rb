@@ -25,7 +25,7 @@ Redmine::Plugin.register :management do
   end
   
   project_module :programme_dashboard do
-    permission :view_programme_dashboard, {}, :public => true
+    permission :view_programme_dashboard, {:programme => [:index] }
   end
 
   menu :top_menu,
@@ -48,9 +48,6 @@ Redmine::Plugin.register :management do
     menu.push :allocations, {:controller => 'resource_managements', :action =>'allocations' }, :caption => 'Resource Allocation'
     menu.push :forecasts, {:controller => 'resource_managements', :action =>'forecasts' }, :caption => 'Resource Forecast Summary'
     menu.push :users, {:controller => 'resource_managements', :action => 'users'}, :caption => 'User Management'
-  end
-  
-  Redmine::MenuManager.map :programme_dashboard do |menu|
   end
 
 end

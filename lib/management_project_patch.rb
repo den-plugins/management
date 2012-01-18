@@ -38,6 +38,10 @@ module Management
       def accounting_type
         accounting ? accounting.name : nil
       end
+      
+      def development?
+        project_type ? project_type.eql?("Development") : false
+      end
     end
   end
 end

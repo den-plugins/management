@@ -1,0 +1,26 @@
+<table class="list" id="project_health_table">
+  <tr style="height: 65px; background-color: #eee;">
+    <th width="30%">Project</th>
+    <th class="rotated">Cost</th>
+    <th class="rotated">Schedule</th>
+    <th class="rotated">Efficiency</th>
+    <th class="rotated">Risk</th>
+    <th class="rotated">Issue</th>
+    <th class="rotated">Contract</th>
+    <th class="rotated">PM</th>
+  </tr>
+  
+  <% @devt_projects.each do |project| %>
+  <tr class="<%= cycle 'even', 'odd' %>">
+    <td><%= project.name %></td>
+    <td><span class="circle <%= color_code_for_cost_status project %>"></span></td>
+    <td><span class="circle <%= color_code_for_schedule_status project %>"></span></td>
+    <td class=""></td>
+    <td><span class="circle <%= color_code_for_risk_average project %>"></span></td>
+    <td><span class="circle <%= color_code_for_issue_average project %>"></span></td>
+    <td class=""></td>
+    <% manager = (m=project.members.find_by_user_id(project.proj_manager)) ? m.user : nil %>
+    <td class="center"><span><%= manager ? initials(manager.firstname, manager.lastname) : "?" %></span></td>
+  </tr>
+  <% end %>
+</table>
