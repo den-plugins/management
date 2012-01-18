@@ -12,7 +12,7 @@ module ProjectScheduleHelper
       scheduled << (project.actual_end_date ? [project.actual_end_date.to_s, pname] : [min_date, pname])
       planned << (project.planned_end_date ? [project.planned_end_date.to_s, pname] : [min_date, pname])
     end
-    [scheduled, planned].to_json
+    [scheduled.reverse, planned.reverse].to_json
   end
 
   def sub_name(name)
