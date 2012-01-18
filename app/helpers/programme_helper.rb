@@ -1,9 +1,15 @@
 module ProgrammeHelper
 
+  def color_code_for_category(project)
+    pcode = project.for_time_logging_only? ? "vlgray" : ""
+    pcode = "lgray" if project.category.eql?("Internal Project")
+    pcode
+  end
+  
   def color_code_for_cost_status(project)
+    return "not-applicable" if project.category.eql?("Internal Project")
     if project.planned_start_date && project.planned_start_date
       if display_by_billing_model(project).eql?("fixed")
-        puts "#{project.identifier} fixed"
         range = project.planned_start_date..project.planned_end_date
         contracts_amount = project.project_contracts.all.sum(&:amount)
         resources = project.members.all
@@ -16,7 +22,6 @@ module ProgrammeHelper
           when  0: "yellow"
         end
       elsif display_by_billing_model(project).eql?("billability")
-        puts "#{project.identifier} T&M"
         if percent = (@billabilities[project.id] ? @billabilities[project.id]["total_percent_billability_week"] : nil)
           case
             when percent > 85; "green"
@@ -24,11 +29,11 @@ module ProgrammeHelper
             when (0 ... 80) === percent; "red"
           end
         else
-          "not-applicable"
+          "nocolor"
         end
       end
     else
-      "not-applicable"
+      "nocolor"
     end
   end
   
@@ -59,7 +64,7 @@ module ProgrammeHelper
         "yellow"
       end
     else
-      "not-applicable"
+      "nocolor"
     end
   end
   

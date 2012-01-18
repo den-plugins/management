@@ -39,6 +39,11 @@ module Management
         accounting ? accounting.name : nil
       end
       
+      def for_time_logging_only?
+        c = custom_values.detect {|v| v.mgt_custom "For time logging only"}
+        c ? c.value.eql?("1") : false
+      end
+      
       def development?
         project_type ? project_type.eql?("Development") : false
       end

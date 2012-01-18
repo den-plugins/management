@@ -1,6 +1,7 @@
 <table class="list" id="project_health_table">
-  <tr style="height: 65px; background-color: #eee;">
-    <th width="30%">Project</th>
+  <thead>
+  <tr style="height: 65px; background-color: #bfbfbf; border-bottom: 2px solid white;">
+    <th width="47%">Project</th>
     <th class="rotated">Cost</th>
     <th class="rotated">Schedule</th>
     <th class="rotated">Efficiency</th>
@@ -9,10 +10,11 @@
     <th class="rotated">Contract</th>
     <th class="rotated">PM</th>
   </tr>
-  
+  </thead>
+  <tbody>
   <% @devt_projects.each do |project| %>
-  <tr class="<%= cycle 'even', 'odd' %>">
-    <td><%= project.name %></td>
+  <tr class="<%= cycle 'podd', 'peven' %>">
+    <td class="<%= color_code_for_category project %>"><%= project.name %></td>
     <td><span class="circle <%= color_code_for_cost_status project %>"></span></td>
     <td><span class="circle <%= color_code_for_schedule_status project %>"></span></td>
     <td class=""></td>
@@ -23,4 +25,11 @@
     <td class="center"><span><%= manager ? initials(manager.firstname, manager.lastname) : "?" %></span></td>
   </tr>
   <% end %>
+  </tbody>
 </table>
+<div class="smallfont plegend">
+  <p><em>Project Color Coding</em></p>
+  <div class="legsquare vlgray"></div>For Time Logging Only<br/>
+  <div class="legsquare lgray"></div>Internal Project<br/>
+  <div class="legsquare podd"></div>Others<br/>
+</div>
