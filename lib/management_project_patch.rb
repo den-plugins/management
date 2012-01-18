@@ -47,6 +47,10 @@ module Management
       def development?
         project_type ? project_type.eql?("Development") : false
       end
+
+      def fixed_cost?
+        billing_model.scan(/^(Fixed)/i).flatten.present? if billing_model
+      end
     end
   end
 end

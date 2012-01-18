@@ -1,0 +1,48 @@
+<div id="fixed_cost_projects_chart"></div>
+
+<% if @fixed_cost_projects.any? %>
+<% jdata = [] %>
+<% ticks = [] %>
+<% baselines, actuals, forecasts = [], [], [] %>
+<% @fixed_cost_projects.each do |project| %>
+  <% ticks << sub_name(project.name) %>
+  <% fixed_cost = @fixed_costs["fixed_cost_#{project.id}"] ? @fixed_costs["fixed_cost_#{project.id}"] : {} %>
+  <% baselines << fixed_cost["cost_budget"] %>
+  <% actuals << fixed_cost["cost_actual"] %>
+  <% forecasts << fixed_cost["cost_forecast"] %>
+<% end %>
+<% jdata << [baselines, actuals, forecasts].to_json %>
+
+<script>
+  var plot1 = jQuery.jqplot('fixed_cost_projects_chart', <%= jdata %>, {
+        seriesDefaults:{
+            renderer:jQuery.jqplot.BarRenderer,
+            rendererOptions: {fillToZero: true, barPadding: 1, barWidth: 9}
+        },
+        seriesColors: ["#5296d9", "#dc594e", "#940f00"],
+        series:[
+            {label:'Baseline'},
+            {label:'Actuals'},
+            {label:'Forecast'}
+        ],
+        legend: {
+            show: true,
+            location: 'ne'
+        },
+        axes: {
+            xaxis: {
+                renderer: jQuery.jqplot.CategoryAxisRenderer,
+                ticks: <%= ticks.to_json %>,
+                tickRenderer: jQuery.jqplot.CanvasAxisTickRenderer,
+                tickOptions: {angle: -30, fontSize: '7pt'}
+            },
+            yaxis: {
+                tickOptions: {formatString: 'PHP %d'}
+            }
+        },
+        grid: {gridLineColor: '#f2f2f2'}
+    });
+</script>
+<% else %>
+  <p class="nodata">No projects found with fixed cost billing model.</p>
+<% end %>
