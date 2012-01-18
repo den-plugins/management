@@ -1,15 +1,20 @@
 class ProgrammeController < ApplicationController
+  helper :sort
+  include SortHelper
 
   def index
-    @projects = Project.find(:all, :order => 'name ASC')
+    sort_init 'name', 'asc'
+    sort_update({"name" =>  "name", "proj_manager" => "#{User.table_name}.firstname"})
+
+    @projects = Project.find(:all, :include => [:manager], :order => sort_clause)
     @devt_projects = @projects.select(&:development?)
+
     @fixed_cost_projects = @projects.select(&:fixed_cost?)
-    
     @billabilities = {}
-    #load billability file (pm_dashboard)
     @devt_projects.each {|p| load_billability_file p }
+
     load_fixed_cost_file
-    render :template => 'programme/index'
+    render :template => 'programme/index', :layout => !request.xhr?
   end
   
   private
@@ -30,5 +35,4 @@ class ProgrammeController < ApplicationController
       {}
     end
   end
-
 end
