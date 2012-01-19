@@ -1,4 +1,6 @@
 <div id="fixed_cost_projects_chart"></div>
+
+<% if @fixed_cost_projects.any? %>
 <div class="chart_legend">
 <div class="legend_wrapper">
   <div class="legend_square" style="background-color:#5296d9;"></div> Baseline
@@ -7,7 +9,6 @@
 </div>
 </div>
 
-<% if @fixed_cost_projects.any? %>
 <% jdata = [] %>
 <% ticks = [] %>
 <% baselines, actuals, forecasts = [], [], [] %>
@@ -38,13 +39,13 @@
                 renderer: jQuery.jqplot.CategoryAxisRenderer,
                 ticks: <%= ticks.to_json %>,
                 tickRenderer: jQuery.jqplot.CanvasAxisTickRenderer,
-                tickOptions: {angle: -30, fontSize: '7pt'}
+                tickOptions: {angle: -30, fontSize: '7pt', showGridline: false}
             },
             yaxis: {
                 tickOptions: {formatString: 'PHP %.2f%d'}
             }
         },
-        grid: {gridLineColor: '#f2f2f2'}
+        grid: {gridLineColor: '#c7c7c7'}
     });
 </script>
 <% else %>

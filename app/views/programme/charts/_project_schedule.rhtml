@@ -1,4 +1,7 @@
 <div id="project_sched_chart"></div>
+
+<% if @devt_projects.any? %>
+
 <div class="chart_legend">
 <div class="legend_wrapper">
   <div class="legend_square" style="background-color:#dc594e;"></div> Scheduled End Date
@@ -6,7 +9,6 @@
 </div>
 </div>
 
-<% if @devt_projects.any? %>
 <% min_date = get_min_date(@devt_projects) %>
 <% jdata = sched_chart_data(@devt_projects, min_date) %>
 
@@ -15,7 +17,7 @@
     seriesDefaults: {
       renderer:jQuery.jqplot.BarRenderer,
       pointLabels: { show: true, location: 'w'},
-      rendererOptions: {barDirection: 'horizontal', shadowOffset: 0, barPadding: 0, barWidth: 9}
+      rendererOptions: {barDirection: 'horizontal', shadowOffset: 1, shadowAlpha: 0.05, barPadding: 0, barWidth: 9}
     },
     seriesColors: ["#dc594e", "#5296d9"],
     series: [
@@ -26,13 +28,14 @@
       xaxis: {renderer: jQuery.jqplot.DateAxisRenderer,
               min: <%= min_date.to_json %>,
               tickRenderer: jQuery.jqplot.CanvasAxisTickRenderer,
-              tickOptions: {angle: -30, formatString:'%b %e', showMark: false, fontSize: '7pt'}},
-      yaxis: {renderer: jQuery.jqplot.CategoryAxisRenderer}
+              tickOptions: {angle: -30, formatString:'%b %e', fontSize: '7pt'}},
+      yaxis: {renderer: jQuery.jqplot.CategoryAxisRenderer,
+             tickOptions: {showGridline: false}}
     },
     legend: {show: false},
-    grid: {gridLineColor: '#f2f2f2'}
+    grid: {gridLineColor: '#c7c7c7'}
   });
-  jQuery("#project_sched_chart .jqplot-point-label").css("color", "#fff");
+  jQuery("#project_sched_chart .jqplot-point-label").css({"color":"#333", "font-size":"7.5pt"});
   jQuery("#project_sched_chart .jqplot-yaxis-tick").each(function(){
     jQuery(this).css({"line-height": "120%", "height": "" + jQuery(this).height() + "px",
     "margin-top": "" + jQuery(this).height()/4 + "px"});
