@@ -2,7 +2,7 @@
 <% if @t_and_m_projects.any? %>
   <div class="chart_legend">
     <div class="legend_wrapper">
-      <div class="legend_square" style="background-color:#6da6e4;"></div>Project Billability
+      <div class="legend_square" style="background-color:#5296d9"></div>Project Billability
     </div>
   </div>
   <% jticks, jdata = jsoned_billability_percentage(@t_and_m_projects, @billabilities).collect %>
@@ -14,6 +14,7 @@
         rendererOptions: {fillToZero: true, barPadding: 1},
         pointLabels: { show: true, location: 'e', edgeTolerance: -15 },
       },
+      seriesColors: ["#5296d9"],
       legend: { show: false },
       axes: {
         xaxis: { renderer: jQuery.jqplot.CategoryAxisRenderer, ticks: ticks,
