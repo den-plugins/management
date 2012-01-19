@@ -61,6 +61,7 @@ div.filter_group {padding: 3px; margin: 2px; width: 100%; }
 table#project_health_table { table-layout: fixed; width: 100%; color: #000;}
 table#project_health_table tr:hover, tr:hover td.vlgray, tr:hover td.lgray{ background-color: #ffffdd; color: #000;}
 table#project_health_table tr th { background-color: transparent; text-align: left; vertical-align: bottom}
+table#project_health_table tr th a {color: #616161; font-weight: bold; }
 table#project_health_table tr td { vertical-align: middle; border: 1px solid white; }
 .legsquare {display: inline-block; width: 15px; height: 15px; margin: 2px 5px -3px 15px; padding: 0; border 1px soild white;}
 .plegend {margin-top: 7px; padding: 0 5px; }

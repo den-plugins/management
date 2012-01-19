@@ -1,5 +1,25 @@
 module ProgrammeHelper
 
+  def code_by_budget_and_forecast(budget, forecast)
+    if budget && forecast
+      case budget <=> forecast
+        when -1; "red"
+        when  1: "green"
+        when  0: "yellow"
+      end
+    end
+  end
+  
+  def code_by_billability_rate(percent)
+    if percent
+      case
+        when percent > 85; "green"
+        when (80 ... 85) === percent; "yellow"
+        when (0 ... 80) === percent; "red"
+      end
+    end
+  end
+  
   def color_code_for_category(project)
     pcode = project.for_time_logging_only? ? "vlgray" : ""
     pcode = "lgray" if project.category.eql?("Internal Project")
@@ -10,31 +30,19 @@ module ProgrammeHelper
     return "not-applicable" if project.category.eql?("Internal Project")
     if project.planned_start_date && project.planned_start_date
       if display_by_billing_model(project).eql?("fixed")
-        range = project.planned_start_date..project.planned_end_date
-        contracts_amount = project.project_contracts.all.sum(&:amount)
-        resources = project.members.all
-        bac = resources.sum {|a| a.days_and_cost(range, daily_rate(a.internal_rate), false).last}
-        total_budget = bac.to_f + (bac.to_f * (project.contingency.to_f/100))
-        
-        case contracts_amount <=> total_budget
-          when -1; "red"
-          when  1: "green"
-          when  0: "yellow"
-        end
+        project_id = "fixed_cost_#{project.id}"
+        budget = (@fixed_costs[project_id] ? @fixed_costs[project_id]["cost_budget"] : nil)
+        forecast = (@fixed_costs[project_id] ? @fixed_costs[project_id]["cost_forecast"] : nil)
+        code = code_by_budget_and_forecast(budget, forecast) || "nocolor"
       elsif display_by_billing_model(project).eql?("billability")
-        if percent = (@billabilities[project.id] ? @billabilities[project.id]["total_percent_billability_week"] : nil)
-          case
-            when percent > 85; "green"
-            when (80 ... 85) === percent; "yellow"
-            when (0 ... 80) === percent; "red"
-          end
-        else
-          "nocolor"
-        end
+        project_id = "billability_#{project.id}"
+        percent = (@billabilities[project_id] ? @billabilities[project_id]["total_percent_billability_week"] : nil)
+        code = code_by_billability_rate(percent) || "nocolor"
       end
     else
-      "nocolor"
+      code = "nocolor"
     end
+    code
   end
   
   def color_code_for_issue_average(project)
