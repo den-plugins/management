@@ -45,4 +45,33 @@ module SortHelper
   def mgt_sort_clause
     @sort_criteria.to_sql_with_custom.collect
   end
+  
+  def sort_header_tag_without_update(column, options = {})
+    caption = options.delete(:caption) || column.to_s.humanize
+    default_order = options.delete(:default_order) || 'asc'
+    options[:title] = l(:label_sort_by, "\"#{caption}\"") unless options[:title]
+    content_tag('th', sort_link_without_update(column, caption, default_order), options)
+  end
+  
+  def sort_link_without_update(column, caption, default_order)
+    css, order = nil, default_order
+    if column.to_s == @sort_criteria.first_key
+      if @sort_criteria.first_asc?
+        css = 'sort asc'
+        order = 'desc'
+      else
+        css = 'sort desc'
+        order = 'asc'
+      end
+    end
+    caption = column.to_s.humanize unless caption
+    
+    sort_options = { :sort => @sort_criteria.add(column.to_s, order).to_param }
+    url_options = params.has_key?(:set_filter) ? sort_options : params.merge(sort_options)
+    url_options = url_options.merge(:project_id => params[:project_id]) if params.has_key?(:project_id)
+    link_to_remote(caption,
+                  {:url => url_options, :method => :get},
+                  {:href => url_for(url_options),
+                   :class => css})
+  end
 end

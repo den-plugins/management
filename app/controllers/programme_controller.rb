@@ -7,14 +7,22 @@ class ProgrammeController < ApplicationController
     sort_update({"name" =>  "name", "proj_manager" => "#{User.table_name}.firstname"})
 
     @projects = Project.find(:all, :include => [:manager], :order => sort_clause)
-    @devt_projects = @projects.select(&:development?)
+    @devt_projects_sorted = @projects.select(&:development?)
+    @devt_projects = @devt_projects_sorted.sort_by {|s| s.name.downcase }
 
     @fixed_cost_projects = @projects.select(&:fixed_cost?)
     @billabilities = {}
     @devt_projects.each {|p| load_billability_file p }
 
     load_fixed_cost_file
-    render :template => 'programme/index', :layout => !request.xhr?
+    
+    if request.xhr?
+      render :update do |page|
+        page.replace_html :programme_project_health, :partial => "programme/project_health"
+      end
+    else
+      render :template => 'programme/index'
+    end
   end
   
   private
