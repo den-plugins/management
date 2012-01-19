@@ -63,7 +63,7 @@ table#project_health_table tr:hover, tr:hover td.vlgray, tr:hover td.lgray{ back
 table#project_health_table tr th { background-color: transparent; text-align: left; vertical-align: bottom}
 table#project_health_table tr th a {color: #616161; font-weight: bold; }
 table#project_health_table tr td { vertical-align: middle; border: 1px solid white; }
-.legsquare {display: inline-block; width: 15px; height: 15px; margin: 2px 5px -3px 15px; padding: 0; border 1px soild white;}
+.legsquare {display: inline-block; width: 10px; height: 10px; margin: 2px 5px -3px 15px; padding: 0; border: 1px soild white; }
 .plegend {margin-top: 7px; padding: 0 5px; }
 .plegend p { margin: 0; padding: 0;}
 

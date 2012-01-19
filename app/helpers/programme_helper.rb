@@ -89,14 +89,26 @@ module ProgrammeHelper
       end
     end
   end
-  
-  def initials(first, last)
-    [first, last].map {|c| c.chars.first.upcase } if first && last
-  end
 
   def get_min_date(projects)
     min_date = (projects.map(&:planned_end_date) | projects.map(&:actual_end_date)).compact.min {|a,b| a <=> b}
     min_date = (min_date ? (min_date - 2.months) : nil)
+  end
+  
+  def initials(first, last)
+    [first, last].map {|c| c.chars.first.upcase } if first && last
+  end
+  
+  def jsoned_billability_percentage(projects, bill)
+    ticks = []
+    data = []
+    projects.each do |project|
+      id = "billability_#{project.id}"
+      percent = bill[id] ? bill[id]["total_percent_billability_week"] : nil
+      ticks << sub_name(project.name)
+      data << percent
+    end
+    [ticks.to_json, data.to_json]
   end
 
   def sched_chart_data(projects, min_date)

@@ -51,6 +51,10 @@ module Management
       def fixed_cost?
         billing_model.scan(/^(Fixed)/i).flatten.present? if billing_model
       end
+      
+      def t_and_m?
+        billing_model.scan(/^(T and M)/i).flatten.present? if billing_model
+      end
     end
   end
 end

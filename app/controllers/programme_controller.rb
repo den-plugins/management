@@ -10,7 +10,9 @@ class ProgrammeController < ApplicationController
     @devt_projects_sorted = @projects.select(&:development?)
     @devt_projects = @devt_projects_sorted.sort_by {|s| s.name.downcase }
 
-    @fixed_cost_projects = @projects.select(&:fixed_cost?)
+    @fixed_cost_projects = @projects.select(&:fixed_cost?).sort_by {|s| s.name.downcase }
+    @t_and_m_projects = @projects.select(&:t_and_m?).sort_by {|s| s.name.downcase }
+    
     load_billability_file
     load_fixed_cost_file
     
