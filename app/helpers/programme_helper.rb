@@ -121,6 +121,20 @@ module ProgrammeHelper
     [scheduled.reverse, planned.reverse].to_json
   end
 
+  def fixed_cost_projects_chart_data(projects, fixed_costs)
+    data, ticks = [], []
+    baselines, actuals, forecasts = [], [], []
+    projects.each do |project|
+      ticks << sub_name(project.name)
+      fixed_cost = fixed_costs["fixed_cost_#{project.id}"] ? fixed_costs["fixed_cost_#{project.id}"] : {}
+      baselines << fixed_cost["cost_budget"]
+      actuals << fixed_cost["cost_actual"]
+      forecasts << fixed_cost["cost_forecast"]
+    end
+    data = [baselines, actuals, forecasts]
+    return [ticks.to_json, data.to_json]
+  end
+
   def sub_name(name)
     name.sub(/development/i, "").strip
   end

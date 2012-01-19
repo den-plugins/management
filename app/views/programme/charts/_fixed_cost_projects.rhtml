@@ -9,18 +9,7 @@
 </div>
 </div>
 
-<% jdata = [] %>
-<% ticks = [] %>
-<% baselines, actuals, forecasts = [], [], [] %>
-<% @fixed_cost_projects.each do |project| %>
-  <% ticks << sub_name(project.name) %>
-  <% fixed_cost = @fixed_costs["fixed_cost_#{project.id}"] ? @fixed_costs["fixed_cost_#{project.id}"] : {} %>
-  <% baselines << fixed_cost["cost_budget"] %>
-  <% actuals << fixed_cost["cost_actual"] %>
-  <% forecasts << fixed_cost["cost_forecast"] %>
-<% end %>
-<% jdata << [baselines, actuals, forecasts].to_json %>
-
+<% jticks, jdata = fixed_cost_projects_chart_data(@fixed_cost_projects, @fixed_costs).collect %>
 <script>
   var plot = jQuery.jqplot('fixed_cost_projects_chart', <%= jdata %>, {
         seriesDefaults:{
@@ -37,7 +26,7 @@
         axes: {
             xaxis: {
                 renderer: jQuery.jqplot.CategoryAxisRenderer,
-                ticks: <%= ticks.to_json %>,
+                ticks: <%= jticks %>,
                 tickRenderer: jQuery.jqplot.CanvasAxisTickRenderer,
                 tickOptions: {angle: -30, fontSize: '7pt', showGridline: false}
             },
