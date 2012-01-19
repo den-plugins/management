@@ -1,4 +1,11 @@
 <div id="fixed_cost_projects_chart"></div>
+<div class="chart_legend">
+<div class="legend_wrapper">
+  <div class="legend_square" style="background-color:#5296d9;"></div> Baseline
+  <div class="legend_square" style="background-color:#dc594e;"></div> Actuals
+  <div class="legend_square" style="background-color:#940f00;"></div> Forecast
+</div>
+</div>
 
 <% if @fixed_cost_projects.any? %>
 <% jdata = [] %>
@@ -14,7 +21,7 @@
 <% jdata << [baselines, actuals, forecasts].to_json %>
 
 <script>
-  var plot1 = jQuery.jqplot('fixed_cost_projects_chart', <%= jdata %>, {
+  var plot = jQuery.jqplot('fixed_cost_projects_chart', <%= jdata %>, {
         seriesDefaults:{
             renderer:jQuery.jqplot.BarRenderer,
             rendererOptions: {fillToZero: true, barPadding: 1, barWidth: 9}
@@ -25,10 +32,7 @@
             {label:'Actuals'},
             {label:'Forecast'}
         ],
-        legend: {
-            show: true,
-            location: 'ne'
-        },
+        legend: { show: false },
         axes: {
             xaxis: {
                 renderer: jQuery.jqplot.CategoryAxisRenderer,

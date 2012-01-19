@@ -1,4 +1,10 @@
 <div id="project_sched_chart"></div>
+<div class="chart_legend">
+<div class="legend_wrapper">
+  <div class="legend_square" style="background-color:#dc594e;"></div> Scheduled End Date
+  <div class="legend_square" style="background-color:#5296d9;"></div> Planned End Date
+</div>
+</div>
 
 <% if @devt_projects.any? %>
 <% min_date = get_min_date(@devt_projects) %>
@@ -9,7 +15,7 @@
     seriesDefaults: {
       renderer:jQuery.jqplot.BarRenderer,
       pointLabels: { show: true, location: 'w'},
-      rendererOptions: {barDirection: 'horizontal', shadowOffset: 0, barPadding: -2, barWidth: 9}
+      rendererOptions: {barDirection: 'horizontal', shadowOffset: 0, barPadding: 0, barWidth: 9}
     },
     seriesColors: ["#dc594e", "#5296d9"],
     series: [
@@ -23,7 +29,7 @@
               tickOptions: {angle: -30, formatString:'%b %e', showMark: false, fontSize: '7pt'}},
       yaxis: {renderer: jQuery.jqplot.CategoryAxisRenderer}
     },
-    legend: {show: true, location: 'ne'},
+    legend: {show: false},
     grid: {gridLineColor: '#f2f2f2'}
   });
   jQuery("#project_sched_chart .jqplot-point-label").css("color", "#fff");
