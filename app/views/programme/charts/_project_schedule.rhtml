@@ -1,4 +1,4 @@
-<div class="auto_scroll">
+<div class="auto_scroll_y">
 <div id="project_sched_chart"></div>
 </div>
 
@@ -31,7 +31,7 @@
       xaxis: {renderer: jQuery.jqplot.DateAxisRenderer,
               min: <%= min_date.to_json %>,
               tickRenderer: jQuery.jqplot.CanvasAxisTickRenderer,
-              tickOptions: {angle: -30, formatString:'%b %e', fontSize: '7pt'}},
+              tickOptions: {angle: -45, formatString:'%b %e', fontSize: '7pt'}},
       yaxis: {renderer: jQuery.jqplot.CategoryAxisRenderer,
              tickRenderer: jQuery.jqplot.CanvasAxisTickRenderer,
              tickOptions: {fontSize: '7pt', showGridline: false}}

@@ -1,4 +1,6 @@
-<div id="fixed_cost_projects_chart"></div>
+<div class="auto_scroll_x">
+  <div id="fixed_cost_projects_chart"></div>
+</div>
 
 <% if @fixed_cost_projects.any? %>
 <div class="chart_legend">
@@ -28,13 +30,14 @@
                 renderer: jQuery.jqplot.CategoryAxisRenderer,
                 ticks: <%= jticks %>,
                 tickRenderer: jQuery.jqplot.CanvasAxisTickRenderer,
-                tickOptions: {angle: -30, fontSize: '7pt', showGridline: false}
+                tickOptions: {angle: -45, fontSize: '7pt', showGridline: false}
             },
             yaxis: {
                 tickOptions: {formatString: 'PHP %.2f%d'}
             }
         },
-        grid: {gridLineColor: '#c7c7c7'}
+        grid: {gridLineColor: '#c7c7c7'},
+        highlighter: {show: true, sizeAdjust: 7.5}
     });
 </script>
 <% else %>
