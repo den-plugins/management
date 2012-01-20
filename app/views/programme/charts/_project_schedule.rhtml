@@ -1,4 +1,6 @@
+<div class="auto_scroll">
 <div id="project_sched_chart"></div>
+</div>
 
 <% if @devt_projects.any? %>
 
@@ -13,6 +15,7 @@
 <% jdata = sched_chart_data(@devt_projects, min_date) %>
 
 <script>
+  jQuery("#project_sched_chart").height(jQuery("#project_health_table").height());
   var plot = jQuery.jqplot('project_sched_chart', <%= jdata %>, {
     seriesDefaults: {
       renderer:jQuery.jqplot.BarRenderer,
