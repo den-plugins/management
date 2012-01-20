@@ -2,6 +2,8 @@ class ProgrammeController < ApplicationController
   helper :sort
   include SortHelper
 
+  before_filter :require_pmanagement
+  
   def index
     sort_init 'name', 'asc'
     sort_update({"name" =>  "name", "proj_manager" => "#{User.table_name}.firstname"})
@@ -26,6 +28,15 @@ class ProgrammeController < ApplicationController
   end
   
   private
+  def require_pmanagement
+    return unless require_login
+    unless User.current.allowed_to?(:view_programme_dashboard, nil, :global => true) || User.current.admin?
+      render_403
+      return false
+    end
+    true
+  end
+  
   def load_billability_file
     @billabilities = if File.exists?("#{RAILS_ROOT}/config/billability.yml")
       YAML.load(File.open("#{RAILS_ROOT}/config/billability.yml")) || {}
