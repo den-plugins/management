@@ -13,6 +13,9 @@
 
 <% jticks, jdata = fixed_cost_projects_chart_data(@fixed_cost_projects, @fixed_costs).collect %>
 <script>
+  <% if @fixed_cost_projects.count > 7 %>
+  jQuery("#fixed_cost_projects_chart").width('<%= @fixed_cost_projects.count * 55 %>px');
+  <% end %>
   var plot = jQuery.jqplot('fixed_cost_projects_chart', <%= jdata %>, {
         seriesDefaults:{
             renderer:jQuery.jqplot.BarRenderer,

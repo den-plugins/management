@@ -10,6 +10,9 @@
   </div>
   <% jticks, jdata = jsoned_billability_percentage(@t_and_m_projects, @billabilities).collect %>
   <script>
+    <% if @t_and_m_projects.count > 10 %>
+    jQuery("#t_and_m_projects_chart").width('<%= @t_and_m_projects.count * 55 %>px');
+    <% end %>
     var ticks = <%= jticks %>;
     var tplot = jQuery.jqplot('t_and_m_projects_chart', [<%= jdata %>], {
       seriesDefaults:{

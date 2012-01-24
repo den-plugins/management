@@ -15,7 +15,9 @@
 <% jdata = sched_chart_data(@devt_projects, min_date) %>
 
 <script>
+  <% if @devt_projects.count > 10 %>
   jQuery("#project_sched_chart").height(jQuery("#project_health_table").height());
+  <% end %>
   var plot = jQuery.jqplot('project_sched_chart', <%= jdata %>, {
     seriesDefaults: {
       renderer:jQuery.jqplot.BarRenderer,
