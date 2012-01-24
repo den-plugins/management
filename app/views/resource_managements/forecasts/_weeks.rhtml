@@ -79,6 +79,7 @@
     
     jQuery("#updated_at_text").show().text("as of <%= @updated_at.strftime('%b %d, %Y %I:%M %p') %>");
     jQuery("#icon_reload_forecasts").show().click(function() {
+      tmp1.empty(); //empty fixed header weeks container...
       new Ajax.Request('/resource_managements/load_weekly_forecasts', {
         parameters: { 'total_res_available': '<%= params[:total_res_available] %>',
                                    'acctg': '<%= params[:acctg] %>',
