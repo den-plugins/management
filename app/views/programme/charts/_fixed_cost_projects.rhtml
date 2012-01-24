@@ -10,6 +10,7 @@
   <div class="legend_square" style="background-color:#940f00;"></div> Forecast
 </div>
 </div>
+<div id="chartpseudotooltip"></div>
 
 <% jticks, jdata = fixed_cost_projects_chart_data(@fixed_cost_projects, @fixed_costs).collect %>
 <script>
@@ -39,9 +40,28 @@
                 tickOptions: {formatString: 'PHP %.2f%d'}
             }
         },
-        grid: {gridLineColor: '#c7c7c7'},
-        highlighter: {show: true, sizeAdjust: 7.5}
+        grid: {gridLineColor: '#c7c7c7'}
     });
+    // custom highlighter for chart since jqplot has a bug on highlighter when using BarRenderer
+    jQuery("#fixed_cost_projects_chart").bind('jqplotDataHighlight', 
+      function (ev, seriesIndex, pointIndex, data ) {
+        mouseX = ev.pageX;
+        mouseY = ev.pageY;
+        jQuery('#chartpseudotooltip').html('PHP '+numberWithCommas(data[1]));
+        var cssObj = {
+            'left' : mouseX + 'px',
+            'top' : (mouseY-20) + 'px'
+          };
+        jQuery('#chartpseudotooltip').css(cssObj).fadeIn();
+      }
+    ).bind('jqplotDataUnhighlight', 
+      function (ev) {
+        jQuery('#chartpseudotooltip').fadeOut();
+      }
+    );   
+    function numberWithCommas(x) {
+      return x.toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",");
+    }
 </script>
 <% else %>
   <p class="nodata">No projects found with fixed cost billing model.</p>
