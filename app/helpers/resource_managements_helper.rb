@@ -58,7 +58,7 @@ module ResourceManagementsHelper
   end
   
   def get_string(num)
-    "%0.2f" % num
+    "%0.2f" % num.to_f
   end
   
   def get_float(num)
