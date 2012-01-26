@@ -4,7 +4,7 @@
 <div id='dashboard'>
   <h4>Resource Forecast Summary</h4>
 
-  <div style="padding: 10px;">
+  <div style="padding: 10px;" id="project_acctg_form">
     <% form_tag({}, :id => 'project_accounting_select') do %>
       Project Accounting: <%= select_tag 'acctg', options_for_select(%w(Billable Non-billable Both), (params[:acctg] || 'Billable')),
                                                                         :onchange => "$('project_accounting_select').submit();" %>

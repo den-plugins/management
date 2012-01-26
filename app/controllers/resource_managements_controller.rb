@@ -144,22 +144,25 @@ class ResourceManagementsController < ApplicationController
     @summary = {}
     acctg = params[:acctg].to_s.blank? ? "Billable" : params[:acctg]
     
-    delay_job if params[:reload]
-    
-    if FileTest.exists?("#{RAILS_ROOT}/config/rm_forecasts.yml")
-      if file = YAML.load(File.open("#{RAILS_ROOT}/config/rm_forecasts.yml"))
-        if mgt = file[acctg]
-          @forecasts = mgt["forecasts"]
-          @summary = mgt["summary"]
-          @updated_at = mgt["updated_at"]
-          
-          if params[:updated_at] && params[:updated_at].eql?(@updated_at.to_s)
-            render_empty_weeks
-          else
+    if params[:reload]
+      delay_job
+      render :update do |page|
+        page.insert_html :after, :project_acctg_form, "<div class='flash notice'>Process enqueued.</div>"
+      end
+    else
+      if FileTest.exists?("#{RAILS_ROOT}/config/rm_forecasts.yml")
+        if file = YAML.load(File.open("#{RAILS_ROOT}/config/rm_forecasts.yml"))
+          if mgt = file[acctg]
+            @forecasts = mgt["forecasts"]
+            @summary = mgt["summary"]
+            @updated_at = mgt["updated_at"]
             render :update do |page|
               page.replace_html :weekly_forecasts_panel, :partial => 'resource_managements/forecasts/weeks',
                         :locals => {:total_res_available => params[:total_res_available].to_i }
             end
+          else
+            delay_job
+            render_empty_weeks
           end
         else
           delay_job
@@ -169,9 +172,6 @@ class ResourceManagementsController < ApplicationController
         delay_job
         render_empty_weeks
       end
-    else
-      delay_job
-      render_empty_weeks
     end
   end
   
