@@ -3,7 +3,7 @@
 <div id='resource_allocation'>
   <h4>Resource Allocation</h4>
   <% if @members.any? %>
-    <div class='tables_container'>
+    <div class='tables_container' id="mgt_allocations_table_container">
       <div class='fixed_table_container' style="width: 43%;">
         <table id='allocations_fixed_table' class="list fixed">
           <tr>
@@ -46,9 +46,15 @@
           <tr style="background-color: #eee;"><td colspan="5" style="text-align: right;">Total Allocated</td></tr>
         </table>
       </div>
-      <div class="movable_table_container" style="width: 56%" %>
+      <div class="movable_table_container" style="width: 55%" %>
         <%= render :partial => 'resource_managements/allocations/weeks' %>
       </div>
+    </div>
+    <div class="scroll-bar-wrap-vertical ui-widget-content ui-corner-bottom">
+      <div id="slider-vertical" style="display: none"></div>
+    </div>
+    <div class="scroll-bar-wrap-horizontal ui-widget-content ui-corner-bottom">
+      <div id="slider-horizontal" style="display: none"></div>
     </div>
   <% else %>
     <div class="nodata"><%= l(:label_no_data) %></div>
@@ -59,10 +65,13 @@
   <%= javascript_include_tag 'jquery_tools', :plugin => 'management' %>
   <%= stylesheet_link_tag 'management', :plugin => 'management' %>
   <%= javascript_include_tag 'fixed_header.js', :plugin => 'management' %>
+  <%= javascript_include_tag 'jquery-ui-1.8.17.custom.min.js', :plugin => 'management' %>
+  <%= javascript_include_tag 'slider.js', :plugin => 'management' %>
 <% end %>
 
 <script>
   j = jQuery.noConflict();
   synchRowHighlights();
-  jQuery(".movable_table_container").scrollable({circular: false, mousewheel: true});
+  enableHorizontalSlider();
+  //enableVerticalSlider();
 </script>
