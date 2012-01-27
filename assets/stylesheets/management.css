@@ -1,5 +1,5 @@
-div.tables_container { width: 100%; padding: 0; margin: 0; display:  inline-block}
-div#mgt_allocations_table_container {height: 510px; overflow: auto; }
+div.tables_container { width: 100%; padding: 0; margin: 0; display: inline-block; }
+div.scroll-pane {overflow: auto; display:  inline-block; width:98%;}
 div#fixed_header { position: fixed; top: 0px; width: 98.5%; z-index: 9999; }
 div.hide { display: none; }
 div.fixed_table_container { float: left; white-space: nowrap; border-right: 1px solid black;}
