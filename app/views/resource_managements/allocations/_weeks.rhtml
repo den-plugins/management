@@ -8,9 +8,9 @@
     <% current_total_resources = 0 %>
     <div class='floating_table'>
       <table id="allocation_week" class="list fixed">
-        <tr>
+        <thead><tr>
             <th><%= display_week(week) %></th>
-        </tr>
+        </tr></thead>
         <% @members.each do |member| %>
           <% if member.user.is_engineering %>
             <% member_days_cost = member.days_and_cost(week).to_f %>
@@ -62,6 +62,9 @@
         </tr>
       </table>
     </div>
+    <script type="text/javascript">
+      jQuery("#fixed_header .movable_table_container #weeks_header_holder").append("<div class='floating_table'><table id='allocation_week' class='list fixed'><thead><tr><th><%= display_week(week) %></th></tr></thead>");
+    </script>
   <% end %>
 </div>
 

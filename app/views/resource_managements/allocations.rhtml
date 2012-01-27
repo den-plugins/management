@@ -1,3 +1,5 @@
+<%= render :partial => "fixed_header" %>
+
 <%= render :partial => 'resource_managements/header' %>
 
 <div id='resource_allocation'>
@@ -6,6 +8,7 @@
     <div class='tables_container' id="mgt_allocations_table_container">
       <div class='fixed_table_container' style="width: 43%;">
         <table id='allocations_fixed_table' class="list fixed">
+          <thead>
           <tr>
             <th width='36%'>Project</th>
             <th width='15%'>Category</th>
@@ -13,6 +16,7 @@
             <th width='27%'>Resource</th>
             <th width='16%'>Role</th>
           </tr>
+          </thead>
           <% @members.each do |member| %>
             <% if member.user.is_engineering %>
                 <tr class="<%= cycle('even', 'odd', :name => 'resources') %>">
@@ -71,6 +75,22 @@
 
 <script>
   j = jQuery.noConflict();
+  jQuery("#allocations_fixed_table_clone thead").html(jQuery('#allocations_fixed_table thead').html());
+  jQuery("#fixed_header .fixed_table_container").css({'width':'43%'});
+  jQuery("#fixed_header .movable_table_container").css({'width':'55%'});
+  jQuery("#weeks_header_holder").css("width", jQuery("#floating_tables_holder").css("width"));
+  var scrollable = jQuery("#mgt_allocations_table_container");
+  if(scrollable[0].scrollHeight > scrollable.innerHeight()){
+    if(jQuery("#fixed_header").hasClass('hide')){
+      jQuery("#fixed_header").removeClass('hide').css({'width': '97.5%',
+                                          'top': (scrollable.position().top + 'px')});
+    }
+  }
+  /*var tmp1 = jQuery(".movable_table_container:first #weeks_header_holder");
+  var tmp2 = jQuery(".movable_table_container:last #floating_tables_holder");
+  setInterval(function(){
+    tmp1.css({'margin-left': tmp2.css("margin-left")});
+  }, 10);*/
   synchRowHighlights();
   enableHorizontalSlider();
   //enableVerticalSlider();

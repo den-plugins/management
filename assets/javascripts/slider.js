@@ -1,18 +1,21 @@
 // http://jqueryui.com/demos/slider/#side-scroll //
 
 function enableHorizontalSlider() {
-  var scrollPane = jQuery( ".movable_table_container"),
-	scrollContent = jQuery( "#floating_tables_holder");
+  var scrollPane = jQuery( ".movable_table_container:last"),
+	scrollContent = jQuery( "#floating_tables_holder"),
+	scrollContent2 = jQuery("#fixed_header .movable_table_container #weeks_header_holder");
 
-  var diff = jQuery("#floating_tables_holder").width() - jQuery(".movable_table_container").width();
+  var diff = jQuery("#floating_tables_holder").width() - jQuery(".movable_table_container:last").width();
   if (diff > 0) {
     jQuery("#slider-horizontal").show().css({left: jQuery(".fixed_table_container").width(), width: scrollPane.width()});
 		var scrollbar = jQuery( "#slider-horizontal" ).slider({
 			slide: function( event, ui ) {
 					scrollContent.css( "margin-left", Math.round(ui.value / 100 * ( scrollPane.width() - scrollContent.width())) + "px" );
+					scrollContent2.css('margin-left', scrollContent.css('margin-left'));
 			},
 			change: function( event, ui ) {
 					scrollContent.css( "margin-left", Math.round(ui.value / 100 * ( scrollPane.width() - scrollContent.width())) + "px" );
+					scrollContent2.css('margin-left', scrollContent.css('margin-left'));
 			}
 		});
 		
@@ -49,6 +52,7 @@ function enableHorizontalSlider() {
 				var gap = scrollPane.width() - showing;
 				if ( gap > 0 ) {
 					scrollContent.css( "margin-left", parseInt( scrollContent.css( "margin-left" ), 10 ) + gap );
+					scrollContent2.css('margin-left', scrollContent.css('margin-left'));
 				}
 		}
 		
