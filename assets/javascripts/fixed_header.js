@@ -39,3 +39,24 @@ function synchRowHighlights() {
     jQuery("table > tbody").find("tr:eq("+row+")").removeClass("highlight");
   });
 }
+
+function allocationFixedHeader(){
+  jQuery("#allocations_fixed_table_clone thead").html(jQuery('#allocations_fixed_table thead').html());
+  setFixedHeaderWidth();
+  var scrollable = jQuery("#mgt_allocations_scroll_pane");
+  if(scrollable[0].scrollHeight > scrollable.innerHeight()){
+    if(jQuery("#fixed_header").hasClass('hide')){
+      jQuery("#fixed_header").removeClass('hide').css({'width': '97.5%',
+                                          'top': (scrollable.position().top + 'px')});
+    }
+  }
+  jQuery(window).scroll(function(){
+    jQuery("#fixed_header").css('top', ((scrollable.position().top - jQuery(this).scrollTop()) + 'px'));
+  });
+}
+
+function setFixedHeaderWidth(){
+  jQuery("#fixed_header .fixed_table_container").css({width: jQuery(".fixed_table_container:last").width()});
+  jQuery("#fixed_header .movable_table_container").css({width: jQuery(".movable_table_container:last").width()});
+  jQuery("#weeks_header_holder").css("width", jQuery("#floating_tables_holder").css("width"));
+}

@@ -63,6 +63,7 @@ function enableHorizontalSlider() {
 			resetValue();
 			sizeScrollbar();
 			reflowContent();
+			setFixedHeaderWidth();
 		});
 		//init scrollbar size
 		setTimeout( sizeScrollbar, 10 );//safari wants a timeout
