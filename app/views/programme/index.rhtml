@@ -1,28 +1,36 @@
 <%= render :partial => "header" %>
 
 <div id="programme_dashboard">
-  <div class="singleCol">
+  <div class="singleCol-wide">
     <div class="box">
+      <div class="box2" style="float: left">
       <h3>Project Health</h3>
-      <div id="programme_project_health">
-        <%= render :partial => "project_health" %>
+        <div id="programme_project_health">
+          <%= render :partial => "project_health" %>
+        </div>
+      </div>
+      
+      <div class="box2" style="float: right">
+        <h3>Project Schedule - End Date</h3>
+        <%= render :partial => "programme/charts/project_schedule" %>
       </div>
     </div>
-    <div class="box">
-      <h3>Proposal Health (Proposals currently being handled by PMs)</h3>
-      
+  
+    <div style="clear: both"></div>
+    
+    <div class="singleCol" style="float: left">
+      <div class="box">
+        <h3>Proposal Health (Proposals currently being handled by PMs)</h3>
+      </div>
+    </div>
+
+    <div class="singleCol" style="float: right">
+      <div class="box">
+        <h3>Project Forecast Comparative Chart</h3>
+      </div>
     </div>
   </div>
-  <div class="singleCol">
-    <div class="box">
-      <h3>Project Schedule - End Date</h3>
-      <%= render :partial => "programme/charts/project_schedule" %>
-    </div>
-    <div class="box">
-      <h3>Project Forecast Comparative Chart</h3>
-      
-    </div>
-  </div>
+
   <div class="singleCol">
     <div class="box">
       <h3>Fixed Cost Projects - Financial Status</h3>
