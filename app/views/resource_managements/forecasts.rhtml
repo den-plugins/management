@@ -13,7 +13,7 @@
     <p class="contextual zero" id="updated_at_text" style="display: none"></p>
   </div>
   <% if @resources.any? %>
-    <div class='tables_container'>
+    <div class='tables_container' id="forecasts_tables_container">
       <div class='fixed_table_container' style="width: 25%;">
         <table id='allocations_fixed_table' class="list fixed">
         <thead>
@@ -106,5 +106,9 @@
     jQuery("#load_forecasts_form").submit();
     toggle_fixed_header();
     synch_scroll_on_bar();
+    resizeHeader();
+  });
+  jQuery(window).resize(function(){
+    resizeHeader();
   });
 </script>

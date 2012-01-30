@@ -8,6 +8,12 @@
 
 function toggle_fixed_header(){
   jQuery(window).scroll(function(){
+    var tables_container = jQuery("#forecasts_tables_container");
+    if(jQuery(this).scrollLeft() > 0){
+      jQuery("#fixed_header").css({'left': ((tables_container.position().left - jQuery(this).scrollLeft()) + 'px')});
+    }else{
+      jQuery("#fixed_header").css({'left': (tables_container.position().left + 'px')});
+    }
     if(jQuery("#allocations_fixed_table thead").is(":in-viewport")){
       jQuery("#fixed_header").addClass("hide");
     }else{
@@ -18,6 +24,11 @@ function toggle_fixed_header(){
       object2.scrollTop(object1.scrollTop());
     }
   });
+}
+
+function resizeHeader(){
+  jQuery("#fixed_header").width(jQuery('#forecasts_tables_container').innerWidth());
+  setFixedHeaderWidth();
 }
 
 function synch_scroll_on_bar(){
