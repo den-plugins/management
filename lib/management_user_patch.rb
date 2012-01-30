@@ -69,7 +69,7 @@ module Management
       end
       
       def hired_date
-        c = custom_values.detect {|v| v.mgt_custom "Hired Date"}
+        c = custom_values.detect {|v| v.mgt_custom "Employment Start"}
         c ? c.value : nil
       end
       
