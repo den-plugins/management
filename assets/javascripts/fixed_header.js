@@ -46,12 +46,13 @@ function allocationFixedHeader(){
   var scrollable = jQuery("#mgt_allocations_scroll_pane");
   if(scrollable[0].scrollHeight > scrollable.innerHeight()){
     if(jQuery("#fixed_header").hasClass('hide')){
-      jQuery("#fixed_header").removeClass('hide').css({'width': '97.5%',
+      jQuery("#fixed_header").removeClass('hide').css({width: jQuery("#mgt_allocations_table_container").width(),
                                           'top': (scrollable.position().top + 'px')});
     }
   }
   jQuery(window).scroll(function(){
-    jQuery("#fixed_header").css('top', ((scrollable.position().top - jQuery(this).scrollTop()) + 'px'));
+    jQuery("#fixed_header").css({'top': ((scrollable.position().top - jQuery(this).scrollTop()) + 'px'),
+                                                           'left': ((scrollable.position().left - jQuery(this).scrollLeft()) + 'px')});
   });
 }
 

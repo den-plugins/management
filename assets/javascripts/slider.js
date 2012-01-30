@@ -65,76 +65,70 @@ function enableHorizontalSlider() {
 			reflowContent();
 			setFixedHeaderWidth();
 		});
+		
 		//init scrollbar size
-		setTimeout( sizeScrollbar, 10 );//safari wants a timeout
+		setTimeout( sizeScrollbar, 10 );  //safari wants a timeout
   }
 }
 
 
 function enableVerticalSlider() {
-  var scrollPane = jQuery( "#mgt_allocations_table_container"),
-	scrollContent = jQuery( ".movable_table_container");
+  var scrollPane = jQuery( ".scroll-pane:last"),
+	scrollContent = jQuery( ".tables_container:last");
 
-  var diff = jQuery(".movable_table_container").height() - jQuery("#mgt_allocations_table_container").height();
+  var diff = scrollContent.height() - scrollPane.height();
   if (diff > 0) {
-    jQuery("#slider-vertical").show().css({height: scrollPane.height()});
+		scrollPane.css("overflow", "hidden");
 		var scrollbar = jQuery( "#slider-vertical" ).slider({
-			slide: function( event, ui ) {
-					scrollContent.css( "margin-top", Math.round(ui.value / 100 * ( scrollPane.height() - scrollContent.height())) + "px" );
-			},
-			change: function( event, ui ) {
-					scrollContent.css( "margin-top", Math.round(ui.value / 100 * ( scrollPane.height() - scrollContent.height())) + "px" );
-			},
-			orientation: 'vertical',
-			min: 0,
-			max: 100
+		  orientation: 'vertical',
+		  range: "min",
+		  min: 0,
+		  max: 100,
+			slide: function(event, ui){scrollContent.css( "margin-top", Math.round(ui.value / 100 * ( scrollPane.height() - scrollContent.height())) + "px" );},
+			change: function(event, ui) {scrollContent.css( "margin-top", Math.round(ui.value / 100 * ( scrollPane.height() - scrollContent.height())) + "px" );}
 		});
 		
-		var handleHelper = scrollbar.find( ".ui-slider-handle" )
-		.append( "<span class='ui-icon'></span>" )
-		.wrap( "<div class='ui-handle-helper-parent'></div>" ).parent();
+		var handleHelper = scrollbar.find(".ui-slider-handle").append("<span class='ui-icon'></span>").wrap("<div class='ui-handle-helper-parent'></div>").parent();
 		
-		scrollPane.css( "overflow", "hidden" );
+		//size slider
+		function sizeSlider() {
+      jQuery("#slider-vertical").show().css({height: scrollPane.height()});
+		}
+
+		setTimeout(sizeSlider, 5); //safari wants timeout
 		
 		//size scrollbar and handle proportionally to scroll distance
 		function sizeScrollbar() {
 			var remainder = scrollContent.height() - scrollPane.height();
 			var proportion = remainder / scrollContent.height();
-			var handleSize = scrollPane.height() - ( proportion * scrollPane.height() );
-			scrollbar.find( ".ui-slider-handle" ).css({
-				height: handleSize,
-				"margin-top": -handleSize / 2
-			});
-			handleHelper.height( "" ).height( scrollbar.height() - handleSize );
+			var handleSize = scrollPane.height() - ( proportion * scrollPane.height());
+			scrollbar.find(".ui-slider-handle").css({height: handleSize, "margin-top": handleSize});
+			handleHelper.height("").height( scrollbar.height() - handleSize );
 		}
 		
 		//reset slider value based on scroll content position
 		function resetValue() {
 			var remainder = scrollPane.height() - scrollContent.height();
-			var topVal = scrollContent.css( "margin-top" ) === "auto" ? 0 :
-				parseInt( scrollContent.css( "margin-top" ) );
+			var topVal = scrollContent.css("margin-top") === "auto" ? 0 : parseInt( scrollContent.css("margin-top"));
 			var percentage = Math.round( topVal / remainder * 100 );
 			scrollbar.slider( "value", percentage );
 		}
 		
 		//if the slider is 100% and window gets larger, reveal content
 		function reflowContent() {
-				var showing = scrollContent.height() + parseInt( scrollContent.css( "margin-top" ), 10 );
+				var showing = scrollContent.height() + parseInt( scrollContent.css("margin-top"), 10);
 				var gap = scrollPane.height() - showing;
-				if ( gap > 0 ) {
-					scrollContent.css( "margin-top", parseInt( scrollContent.css( "margin-top" ), 10 ) + gap );
-				}
+				if (gap > 0) scrollContent.css( "margin-top", parseInt(scrollContent.css("margin-top"), 10)  + gap);
 		}
 		
 		//change handle position on window resize
-		jQuery( window ).resize(function() {
-		  sizeSlider();
+		jQuery(window).resize(function() {
+			sizeSlider();
 			resetValue();
 			sizeScrollbar();
 			reflowContent();
 		});
 		
-		//init scrollbar size
-		setTimeout(sizeScrollbar, 10);  //safari wants a timeout
+		setTimeout( sizeScrollbar, 5);  //safari wants a timeout
   }
 }

@@ -31,14 +31,14 @@ Redmine::Plugin.register :management do
   menu :top_menu,
               :resource_management,
             {:controller => "resource_managements", :action => "index" },
-              :caption => "Management",
+              :caption => "Resource Management",
               :before => :administration,
               :if => Proc.new { User.current.allowed_to?(:manage_resources, nil, :global => true) || User.current.admin? }
 
   menu :top_menu,
               :programme_dashboard,
             {:controller => "programme", :action => "index" },
-              :caption => "Programme",
+              :caption => "Programme Management",
               :after => :resource_management,
               :if => Proc.new { User.current.allowed_to?(:view_programme_dashboard, nil, :global => true) || User.current.admin? }
 
