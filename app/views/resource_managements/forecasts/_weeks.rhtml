@@ -23,7 +23,11 @@
         </tr>
         <% @skill_set.each do |skill| %>
         <tr style="background-color: #eee;">
-            <td><%= (sweek && sweek["resource_count"]) ? sweek["resource_count"][to_yml(skill)] : 0 %></td>
+            <% if (sweek && sweek["resource_count"]) %>
+              <td><%= (s=sweek["resource_count"][to_yml(skill)]) ? s : 0 %></td>
+            <% else %>
+              <td>0</td>
+            <% end %>
         </tr>
         <% end %>
         
