@@ -8,7 +8,9 @@ class ProgrammeController < ApplicationController
     sort_init 'name', 'asc'
     sort_update({"name" =>  "name", "proj_manager" => "#{User.table_name}.firstname"})
 
-    @projects = Project.find(:all, :include => [:manager], :order => sort_clause)
+    @projects = Project.find(:all, :include => [:manager], 
+                             :conditions => ["projects.status = ?", Project::STATUS_ACTIVE], 
+                             :order => sort_clause)
     @devt_projects_sorted = @projects.select(&:development?)
     @devt_projects = @devt_projects_sorted.sort_by {|s| s.name.downcase }
 
