@@ -2,11 +2,13 @@ module ResourceManagementsHelper
 
   def get_weeks_range(from, to)
     if from && to
+      start_date, end_date = from, to
       weeks = []
-      for i in 0 .. (from.weeks_ago(to)) do
-        mon, fri = from.monday, (from.monday + 4.days)
-        weeks << (mon .. fri)
+      until ((from..to).to_a & (start_date..end_date).to_a).empty?
+        mon = from.eql?(start_date) ? start_date : from.monday
+        fri = from.weeks_ago(to).eql?(0) ? to : (mon.monday+4.days)
         from = mon + 1.week
+        weeks << (mon .. fri)
       end
       weeks
     end
