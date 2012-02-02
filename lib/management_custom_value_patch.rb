@@ -17,7 +17,7 @@ module Management
     module InstanceMethods
       def date_entries_must_be_in_calendar
         if custom_field.field_format.eql?('date')
-          if value
+          if value && !value.blank?
             begin
               date = value.to_date
               errors.add(:value, :not_a_date) if Date.valid_date?(date.year, date.month, date.day).nil?
