@@ -7,7 +7,7 @@ module Management
       base.send(:include, InstanceMethods)
       base.class_eval do
         unloadable
-        validate :date_entries_must_be_in_calendar
+        validate :date_entries_must_be_in_calendar, :if => :is_date_format?
       end
     end
     
@@ -15,17 +15,14 @@ module Management
     end
     
     module InstanceMethods
+      def is_date_format?
+        custom_field && custom_field.field_format.eql?('date')
+      end
+      
       def date_entries_must_be_in_calendar
-        if custom_field.field_format.eql?('date')
-          if value && !value.blank?
-            begin
-              date = value.to_date
-              errors.add(:value, :not_a_date) if Date.valid_date?(date.year, date.month, date.day).nil?
-            rescue ArgumentError
-              errors.add(:value, :not_a_date)
-            end
-          end
-        end
+        date = Date.parse(value)  unless value.blank?
+        rescue  ArgumentError
+          errors.add(:value, :not_a_date)
       end
       
       def mgt_custom(field)
