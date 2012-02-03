@@ -4,6 +4,7 @@ class ResourceManagementsController < ApplicationController
   menu_item :allocations, :only => :allocations
   menu_item :forecasts, :only => :forecasts
   menu_item :users, :only => :users
+  menu_item :utilization, :only => :utilization
 
   helper :users, :custom_fields
 
@@ -62,7 +63,10 @@ class ResourceManagementsController < ApplicationController
     end
     render :template => 'resource_managements/users.rhtml', :layout => !request.xhr?
   end
-
+  
+  def utilization
+  end
+  
   def add_user
     @auth_sources = AuthSource.find(:all)
     if request.get?
