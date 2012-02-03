@@ -1,2 +1,23 @@
 <%= render :partial => 'resource_managements/header' %>
 <h4>Resource Utilization</h4>
+
+<fieldset>
+  <legend>
+    <%= l(:label_filter_plural) %>
+    <%=link_to "(hide/show)", "", :onclick => "jQuery('#utilization_filters').toggle(); return false;" %>
+  </legend>
+  <%= render :partial => "resource_managements/utilization/filters" %>
+</fieldset>
+<br/>
+
+<div id="mgt_resources_list">
+  <%= render :partial => "resource_managements/utilization/list" %>
+</div>
+
+<div id="utilization_pie_chart_wrapper">
+</div>
+
+<% content_for :header_tags do %>
+  <%= javascript_include_tag 'jquery_tools', :plugin => 'management' %>
+  <%= stylesheet_link_tag 'management', :plugin => 'management' %>
+<% end %>

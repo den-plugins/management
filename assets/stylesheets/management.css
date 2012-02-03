@@ -73,7 +73,16 @@ th.rotated {position: relative; text-align: left; font-size: 10px; left: -10px; 
             User Management
 ***************************************/
 
-div.filter_group {padding: 3px; margin: 2px; width: 100%; }
+div.filter_group {padding: 7px 0 0 7px; margin: 2px; width: 100%; }
+div.filter_group label {padding-right: 5px;}
+div.filter_group input, div.filter_group select {margin-right: 15px;}
+
+
+/**************************************
+	          Charts
+***************************************/
+
+div.utilization_pie_chart_wrapper {width: 75%; margin: 10px auto;}
 
 
 /**************************************
@@ -100,6 +109,7 @@ table#project_health_table tr td { vertical-align: middle; border: 1px solid whi
 #programme_dashboard .auto_scroll_x { height: 350px; width: 100%; overflow-x: auto; overflow-y: hidden; }
 #chartpseudotooltip { position: absolute; font-size: 8pt; background-color: #ffffff;
                       border: 1px solid #e6e6fa; display: none; }
+
 
 
 
