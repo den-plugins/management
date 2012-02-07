@@ -22,7 +22,7 @@ module Management
       def date_entries_must_be_in_calendar
         date = Date.parse(value)  unless value.blank?
         rescue  ArgumentError
-          errors.add(:value, :not_a_date)
+          errors.add(:value, "is not in the calendar.")
       end
       
       def mgt_custom(field)
