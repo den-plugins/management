@@ -1,31 +1,26 @@
-<% unless @selected_users.empty? %>
-<div class="scroll-pane" style="height: 510px; width: 100%;">
-  <div class='tables_container' id="forecasts_tables_container">
-    <div class='fixed_table_container' style="width: 25%;">
-      <table id='allocations_fixed_table' class="list fixed">
-      <thead>
-        <tr>
-          <th width='30%'>Location</th>
-          <th width='50%'>Resource Name</th>
-          <th width='20%'>Skill</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @selected_users.each do |u| %>
-        <tr class="<%= cycle('odd','even') %>">
-          <td><%= u.location %></td>
-          <td><%= u.name %></td>
-          <td><%= u.skill %></td>
-        </tr>
-        <% end %>
-      </tbody>
-      </table>
-    </div>
-    
-    <div class='movable_table_container' style="width: 74%">
-    </div>
+<!--<div class="scroll-pane" style="height: 510px; width: 100%;">-->
+<div class='tables_container' id="forecasts_tables_container">
+  <div class='fixed_table_container' style="width: 25%;">
+    <table id='allocations_fixed_table' class="list fixed">
+    <thead>
+      <tr>
+        <th width='30%'>Location</th>
+        <th width='50%'>Resource Name</th>
+        <th width='20%'>Skill</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @selected_users.each do |u| %>
+      <tr class="<%= cycle('odd','even') %>">
+        <td><%= u.location %></td>
+        <td><%= u.name %></td>
+        <td><%= u.skill %></td>
+      </tr>
+      <% end %>
+    </tbody>
+    </table>
+  </div>
+  
+  <div class='movable_table_container' style="width: 74%">
   </div>
 </div>
-<% else %>
-  <p class="nodata">No data to display.</p>
-<% end %>

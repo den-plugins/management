@@ -1,17 +1,17 @@
 <div id="utilization_filters">
   <div style="vertical-align:top; float:left; margin: 0px; padding: 0px; width:80px;">
-        <%=radio_button_tag 'query', 'project', (@query == "project")? true : false, :onClick => "toggleSelections();this.form.onsubmit();"  %> 
-        <%= l(:label_project_plural)%>
-      </div>
-      <div style="vertical-align:top; float:left; margin: 0px; padding: 0px; width:300px;">
-      Available Projects
-      <%= select_tag 'availableprojects', options_from_collection_for_select(@available_projects, "id", "name"  ), 
-                                      :multiple => true, 
-                                      :size => 10,
-                                      "onDblClick" => "moveSelectedOptions($('availableprojects'),$('selectedprojects[]'),true,'')",
-                                      :style => "width:270px;",
-                                      :name => "availableprojects",
-                                      :class => "project" %>
+    <%=radio_button_tag 'query', 'project', (@query == "project")? true : false, :onClick => "toggleSelections();this.form.onsubmit();"  %> 
+    <%= l(:label_project_plural)%>
+  </div>
+  <div style="vertical-align:top; float:left; margin: 0px; padding: 0px; width:300px;">
+  Available Projects
+  <%= select_tag 'availableprojects', options_from_collection_for_select(@available_projects, "id", "name"  ), 
+                                  :multiple => true, 
+                                  :size => 10,
+                                  "onDblClick" => "moveSelectedOptions($('availableprojects'),$('selectedprojects[]'),true,'')",
+                                  :style => "width:270px;",
+                                  :name => "availableprojects",
+                                  :class => "project" %>
     <% if @query == "project" %>
       <% if !@project_type.nil? and @project_type_values %>
       <div style="float:right; margin-right:30px;">
@@ -143,5 +143,4 @@
     <%= submit_tag l(:button_apply), :name => nil, :onclick => "selectAllOptions( document.getElementById('selectedprojects[]') );selectAllOptions( document.getElementById('selectednames[]') );" %>
     </p> 
     
-    </div>
 </div>

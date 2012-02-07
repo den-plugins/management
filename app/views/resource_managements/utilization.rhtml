@@ -1,25 +1,30 @@
 <%= render :partial => 'resource_managements/header' %>
-<h4>Time Logging</h4>
-<% form_remote_tag(:url => {}, 
-                   :loading => "$('ajax-indicator').show()", :complete => "$('ajax-indicator').hide()",
-                   :html => {:method => :get, :id => "myform"}, :method => :get, :update => 'content') do %>
-<fieldset>
-  <legend>
-    <%= l(:label_filter_plural) %>
-    <%=link_to "(hide/show)", "", :onclick => "jQuery('#utilization_filters').toggle(); return false;" %>
-  </legend>
-  <%= render :partial => "resource_managements/utilization/filters" %>
-</fieldset>
-<% end %>
-<br/>
+<div id="time_logging">
+  <h4>Time Logging</h4>
+  <% form_remote_tag(:url => {}, 
+                     :loading => "$('ajax-indicator').show()", :complete => "$('ajax-indicator').hide()",
+                     :html => {:method => :get, :id => "myform"}, :method => :get, :update => 'content') do %>
+  <fieldset>
+    <legend>
+      <%= l(:label_filter_plural) %>
+      <%=link_to "(hide/show)", "", :onclick => "jQuery('#utilization_filters').toggle(); return false;" %>
+    </legend>
+    <%= render :partial => "resource_managements/utilization/filters" %>
+  </fieldset>
+  <br/>
 
-<div id="mgt_resources_list">
-  <%= render :partial => "resource_managements/utilization/list" %>
+  <% unless @selected_users.empty? %>
+  <div id="mgt_resources_list">
+    <%= render :partial => "resource_managements/utilization/list" %>
+  </div>
+
+  <div id="utilization_pie_chart_wrapper">
+  </div>
+  <% else %>
+    <p class="nodata">No data to display.</p>
+  <% end %>
+  <% end %>
 </div>
-
-<div id="utilization_pie_chart_wrapper">
-</div>
-
 <script type="text/javascript">
   j = jQuery.noConflict();
   toggleQuery();
