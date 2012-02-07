@@ -358,9 +358,26 @@ class ResourceManagementsController < ApplicationController
     end if projtypes
 
     if @query == "user"
+      @skill = CustomField.find_by_name("Skill or Role")
+      if @skill
+        @skill_values = [["All", "0"]]
+	    	@skill.possible_values.each do |line|
+	    		@skill_values << line
+	    	end
+	    end
+
+	    @skill_selected = params[:skill]
+      @skill_ids = []
+      skill = CustomValue.find(:all, :conditions => ["value = ? and custom_field_id = ?", @skill_selected, @skill])
+      skill.each do |x|
+      	@skill_ids << x.customized_id
+      end if skill
+
+      @skill_ids = [0] if @skill_ids.empty? and @skill_selected != 0 and @skill_selected != nil
       available_user_conditions = []
       available_user_conditions << "\"users\".\"status\" = 1"
       available_user_conditions << eng_only
+      available_user_conditions << ("id in (#{@skill_ids.join(',')})") if !@skill_ids.empty? and @skill_selected != "0" and @skill_selected != ""
       available_user_conditions << ( (params[:selectednames].blank?)? nil : "id not in (#{params[:selectednames].join(',')})")
       available_user_conditions = available_user_conditions.compact.join(" and ")
       @available_users = User.all(:select => user_select,
