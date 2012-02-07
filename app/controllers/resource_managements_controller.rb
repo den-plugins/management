@@ -6,7 +6,7 @@ class ResourceManagementsController < ApplicationController
   menu_item :users, :only => :users
   menu_item :utilization, :only => :utilization
 
-  helper :users, :custom_fields
+  helper :users, :custom_fields, :scrums
 
   before_filter :require_management
   before_filter :get_projects_members, :only => [:index, :allocations, :load_chart]
@@ -65,6 +65,11 @@ class ResourceManagementsController < ApplicationController
   end
   
   def utilization
+    @selected_users = []
+    utilization_filters
+    respond_to do |format|
+      format.html { render :layout => !request.xhr? }
+    end
   end
   
   def add_user
@@ -243,6 +248,175 @@ class ResourceManagementsController < ApplicationController
                 :locals => {:total_res_available => params[:total_res_available].to_i }
       page.hide :icon_reload_forecasts
       page.hide :updated_at_text
+    end
+  end
+
+# Retrieves the date range based on predefined ranges or specific from/to param dates
+  def retrieve_date_range(period_type,period)
+    @free_period = false
+    @from, @to = nil, nil
+
+    if period_type == '1' || (period_type.nil? && !period_type.nil?)
+      case period.to_s
+      when 'today'
+        @from = @to = Date.today
+      when 'yesterday'
+        @from = @to = Date.today - 1
+      when 'current_week'
+        @from = Date.today - (Date.today.cwday - 1)%7
+        @to = @from + 6
+      when 'last_week'
+        @from = Date.today - 7 - (Date.today.cwday - 1)%7
+        @to = @from + 6
+      when '7_days'
+        @from = Date.today - 7
+        @to = Date.today
+      when 'current_month'
+         current_month
+      when 'last_month'
+        @from = Date.civil(Date.today.year, Date.today.month, 1) << 1
+        @to = (@from >> 1) - 1
+      when '30_days'
+        @from = Date.today - 30
+        @to = Date.today
+      when 'current_year'
+        @from = Date.civil(Date.today.year, 1, 1)
+        @to = Date.civil(Date.today.year, 12, 31)
+      end
+    elsif period_type == '2' || (period_type.nil? && (!params[:from].nil? || !params[:to].nil?))
+      begin; @from = params[:from].to_s.to_date unless params[:from].blank?; rescue; end
+      begin; @to = params[:to].to_s.to_date unless params[:to].blank?; rescue; end
+      begin; @from = params[:leaves_from].to_s.to_date unless params[:leaves_from].blank?; rescue; end
+      begin; @to = params[:leaves_to].to_s.to_date unless params[:leaves_to].blank?; rescue; end
+      @free_period = true
+    else
+      # default
+      current_month
+    end
+    
+    @from, @to = @to, @from if @from && @to && @from > @to
+    @from ||= (TimeEntry.minimum(:spent_on, :include => :project, :conditions => Project.allowed_to_condition(User.current, :view_time_entries)) || Date.today) - 1
+    @to   ||= (TimeEntry.maximum(:spent_on, :include => :project, :conditions => Project.allowed_to_condition(User.current, :view_time_entries)) || Date.today)
+  end
+
+  def current_month
+    @from = Date.civil(Date.today.year, Date.today.month, 1)
+    @to = (@from >> 1) - 1
+  end
+
+  def utilization_filters
+    @billing_model = CustomField.find_by_name('Billing Model')
+
+  	if @billing_model
+	  	@billing_model_values = [["All", "0"]]
+	  	@billing_model.possible_values.each do |v|
+	  		@billing_model_values << v
+	  	end
+	  end
+
+   	@project_type = CustomField.find_by_name('Project Type')
+
+  	if @project_type
+	  	@project_type_values = [["All", "0"]]
+	  	@project_type.possible_values.each do |line|
+	  		@project_type_values << line
+	  	end
+	  end	  
+
+    retrieve_date_range(params[:period_type], params[:period])
+    @columns = (params[:columns] && %w(year month week day).include?(params[:columns])) ? params[:columns] : 'month'
+    @query = (params[:query].blank?)? "user" : params[:query]
+    @disable_acctype_options = (@query == "user")? true : false
+    @eng_only, eng_only = (params[:eng_only] == "1" || params[:right].blank? )? [true, "is_engineering = true"] : [false, nil] 
+    @for_acctg = (params[:for_acctg] == "1" )? true : false
+    @show_only = (params[:show_only].blank?)? "both" : params[:show_only]
+    @tall ||= []
+
+    @selected_acctype = ((params[:acctype].blank?)? "" : params[:acctype]).to_i
+    @acctype_options = [["All", ""]]
+    Enumeration.accounting_types.each do |at|
+      @acctype_options << [at.name, at.id]
+    end
+    
+    user_select = "id, firstname, lastname, status"
+    user_order = "firstname asc, lastname asc"
+    project_select = "id, name"
+    project_order = "name asc"
+    
+    @billing = params[:billing_model]
+    @project_billing_ids = []
+    billings = CustomValue.find_all_by_value(@billing)
+    billings.each do |x|
+    	@project_billing_ids << x.customized_id
+    end if billings
+
+    @projtype = params[:project_type]
+    @project_type_ids = []
+    projtypes = CustomValue.find_all_by_value(@projtype)
+    projtypes.each do |x|
+    	@project_type_ids << x.customized_id
+    end if projtypes
+
+    if @query == "user"
+      available_user_conditions = []
+      available_user_conditions << "\"users\".\"status\" = 1"
+      available_user_conditions << eng_only
+      available_user_conditions << ( (params[:selectednames].blank?)? nil : "id not in (#{params[:selectednames].join(',')})")
+      available_user_conditions = available_user_conditions.compact.join(" and ")
+      @available_users = User.all(:select => user_select,
+                                  :conditions => available_user_conditions,
+                                  :order => user_order)
+      
+      selected_user_conditions = []
+      selected_user_conditions << "\"users\".\"status\" = 1"
+      selected_user_conditions << eng_only
+      selected_user_conditions << ( (params[:selectednames].blank?)? "id is null" : "id in (#{params[:selectednames].join(',')})")
+      selected_user_conditions = selected_user_conditions.compact.join(" and ")
+      @selected_users = User.all(:select => user_select,
+                                  :conditions => selected_user_conditions,
+                                  :include => [:memberships],
+                                  :order => user_order)
+      @available_projects = Project.active.all(:select => project_select,
+                                        :order => project_order )
+      @selected_projects = []
+    else
+
+
+    	@project_billing_ids = [0] if @project_billing_ids.empty? and @billing != 0 and !@billing.nil?
+    	@project_type_ids = [0] if @project_type_ids.empty? and @projtype != 0 and @projtype != nil
+      available_project_conditions = []
+      available_project_conditions << ( (@selected_acctype == 0)? nil : "\"projects\".\"acctg_type\" = #{params[:acctype]}")
+      available_project_conditions << ( (params[:selectedprojects].blank?)? nil : "id not in (#{params[:selectedprojects].join(',')})")
+			available_project_conditions << ("id in (#{@project_billing_ids.join(',')})") if !@project_billing_ids.empty? and @billing != "0" and !@billing.nil?
+			available_project_conditions << ("id in (#{@project_type_ids.join(',')})") if !@project_type_ids.empty? and @projtype != "0" and @projtype != ""
+      available_project_conditions = available_project_conditions.compact.join(" and ")
+      #available_project_conditions = ( (params[:selectedprojects].blank?)? "" : "id not in (#{params[:selectedprojects].join(',')})")
+
+      @available_projects = Project.active.all(:select => project_select,
+                                        :conditions => available_project_conditions,
+                                        :order => project_order)
+      selected_project_conditions = ( (params[:selectedprojects].blank?)? "id is null" : "id in (#{params[:selectedprojects].join(',')})")
+      @selected_projects = Project.active.all(:select => project_select,
+                                       :conditions => selected_project_conditions,
+                                       :order => project_order)
+      selected_user_conditions = []
+      selected_user_conditions << "\"users\".\"status\" = 1"
+      selected_user_conditions << eng_only
+      selected_user_conditions << ( (@selected_projects.size > 0)? "users.id in ( select m.user_id from members as m where m.project_id in( #{@selected_projects.collect(&:id).join(',')} ) )" : "id is null")
+      selected_user_conditions = selected_user_conditions.compact.join(" and ")
+      @selected_users = User.all( :select => user_select,
+                                   :conditions => selected_user_conditions,
+                                   :include => [:projects, {:memberships, :role }],
+                                   :order => user_order)
+                                   
+      available_user_conditions = []
+      available_user_conditions << "\"users\".\"status\" = 1"
+      available_user_conditions << eng_only
+      available_user_conditions << ((@selected_users.size > 0)? "id not in (#{@selected_users.collect(&:id).join(',')})" : nil )
+      available_user_conditions = available_user_conditions.compact.join(" and ")
+      @available_users = User.all(:select => user_select,
+                                  :conditions => available_user_conditions,
+                                  :order => user_order)
     end
   end
 end

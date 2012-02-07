@@ -1,6 +1,8 @@
 <%= render :partial => 'resource_managements/header' %>
 <h4>Time Logging</h4>
-
+<% form_remote_tag(:url => {}, 
+                   :loading => "$('ajax-indicator').show()", :complete => "$('ajax-indicator').hide()",
+                   :html => {:method => :get, :id => "myform"}, :method => :get, :update => 'content') do %>
 <fieldset>
   <legend>
     <%= l(:label_filter_plural) %>
@@ -8,6 +10,7 @@
   </legend>
   <%= render :partial => "resource_managements/utilization/filters" %>
 </fieldset>
+<% end %>
 <br/>
 
 <div id="mgt_resources_list">
@@ -17,7 +20,14 @@
 <div id="utilization_pie_chart_wrapper">
 </div>
 
+<script type="text/javascript">
+  j = jQuery.noConflict();
+  toggleQuery();
+</script>
+
 <% content_for :header_tags do %>
+  <%= javascript_include_tag 'prototype' %>
   <%= javascript_include_tag 'jquery_tools', :plugin => 'management' %>
+  <%= javascript_include_tag 'selectbox' %>
   <%= stylesheet_link_tag 'management', :plugin => 'management' %>
 <% end %>
