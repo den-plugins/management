@@ -65,7 +65,7 @@
                                       :id => "selectedprojects[]",
                                       :class => "project" %>
 		  </div>
-    </div>
+    
     
     <div style="clear:both;"></div><br/>
     
@@ -93,13 +93,13 @@
       </div>
       <div style="vertical-align:top; float:left; margin: 0px; padding: 0px; width:100px; align:center;">
         <br/>
-        <input type="button" name="right" value="&gt;&gt;" onclick="moveSelectedOptions($('availablenames'),$('selectednames[]'),true,'');selectAllOptions($('selectednames[]'));this.form.onsubmit();" class="user">
+        <input type="button" name="right" value="&gt;&gt;" onclick="moveSelectedOptions($('availablenames'),$('selectednames[]'),true,'');selectAllOptions($('selectednames[]'));this.form.onsubmit();" class="user" />
         <br/><br/>
-        <input type="button" name="right" value="ALL &gt;&gt;" onclick="moveAllOptions($('availablenames'),$('selectednames[]'),true,'');selectAllOptions($('selectednames[]'));this.form.onsubmit();" class="user">
+        <input type="button" name="right" value="ALL &gt;&gt;" onclick="moveAllOptions($('availablenames'),$('selectednames[]'),true,'');selectAllOptions($('selectednames[]'));this.form.onsubmit();" class="user" />
         <br/><br/>
-        <input type="button" name="left" id="leftname" value="&lt;&lt;" onclick="moveSelectedOptions($('selectednames[]'),$('availablenames'),true,'');selectAllOptions($('selectednames[]'));this.form.onsubmit();" class="user">
+        <input type="button" name="left" id="leftname" value="&lt;&lt;" onclick="moveSelectedOptions($('selectednames[]'),$('availablenames'),true,'');selectAllOptions($('selectednames[]'));this.form.onsubmit();" class="user" />
         <br/><br/>
-        <input type="button" name="left" value="ALL &lt;&lt;" onclick="moveAllOptions($('selectednames[]'),$('availablenames'),true,'');selectAllOptions($('selectednames[]'));this.form.onsubmit();" class="user">
+        <input type="button" name="left" value="ALL &lt;&lt;" onclick="moveAllOptions($('selectednames[]'),$('availablenames'),true,'');selectAllOptions($('selectednames[]'));this.form.onsubmit();" class="user" />
 		  </div>
 		  
 		  <div style="vertical-align:top; float:left; margin: 0px; padding: 0px; width:300px;">
