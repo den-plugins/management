@@ -476,7 +476,8 @@ class ResourceManagementsController < ApplicationController
     @tnbh = bounded_time_entries_non_billable.collect(&:hours).compact.sum
     @thos = (@tbh + @tnbh)
     @summary = []
-
+    
+    project_ids = @selected_projects.collect(&:id)
     @selected_users.each do |usr|
       if usr.class.to_s == "User"
         b = bounded_time_entries_billable.select{|v| v.user_id == usr.id }
@@ -490,6 +491,7 @@ class ResourceManagementsController < ApplicationController
         x[:total_hours] = time_entries.select{|v| v.user_id == usr.id }.collect(&:hours).compact.sum
         x[:billable_hours] = b.collect(&:hours).compact.sum
         x[:non_billable_hours] = nb.collect(&:hours).compact.sum
+        x[:forecasted_hours_on_selected] = usr.allocations((@from..@to), project_ids)
         x[:total_hours_on_selected] = x[:billable_hours] + x[:non_billable_hours]
         @summary.push(x)
       end

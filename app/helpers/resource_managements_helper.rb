@@ -177,77 +177,6 @@ module ResourceManagementsHelper
     return res_billability_forecast.to_json
   end
 
-  def resource_forecast_summary(resources, projects, skill_set, accounting, total_res_available)
-    str = ""
-    start_date, end_date = Date.today - 1.month, Date.today + 6.months
-    weeks = get_weeks_range(start_date, end_date)
-    total_days = 0
-    resource_count = {}
-    res_count_per_work_days = 0.0
-    res_allocations_skill = {}
-    str += "<div id='floating_tables_holder' style='width: #{weeks.count * 85}px'>"
-      weeks.each do |week|
-        total_days = week.count
-        weekly_resources_count = 0
-        str += "<div class='floating_table'>
-          <table id='allocation_week' class='list fixed'>
-            <tr>
-                <th>#{display_week(week)}</th>
-            </tr>"
-            resources.each do |resource|
-                res_allocations = resource.allocations(week, projects)
-                res_allocations_skill[resource.skill] = 0 if res_allocations_skill[resource.skill].nil?
-                resource_count[resource.skill] = 0 if resource_count[resource.skill].nil?
-                str += "<tr class='#{cycle('even', 'odd', :name => 'week_days')} #{allocation_to_class(res_allocations)}'>"
-                str += "<td>#{res_allocations}</td>"
-                res_allocations_skill[resource.skill] += res_allocations if !resource.is_resigned
-                resource_count[resource.skill] += 1 if !res_allocations.zero? and !resource.is_resigned
-              str += "</tr>"
-              weekly_resources_count += 1
-            end
-            reset_cycle('week_days')
-            current_total_res_available = 0
-            str += "<tr><th>&nbsp;</th></tr>"
-            skill_set.each do |skill|
-              str += "<tr style='background-color: #eee;'>"
-              resource_count[skill] = 0 if resource_count[skill].nil?
-              resource_count[skill] += resource_countby(skill, week, accounting)
-              str += "<td>#{resource_count[skill]}</td>"
-              current_total_res_available += resource_count[skill] ? resource_count[skill] : 0.0
-              resource_count[skill] = 0
-              str += "</tr>"
-            end
-            str += "<tr style='background-color: #eee;'><td>&nbsp;</td></tr>
-            <tr style='background-color: #eee;'>
-              <td>#{current_total_res_available}</td>
-            </tr>"
-            percent_allocated = (get_float(current_total_res_available) / get_float(total_res_available)) * 100
-            percent_unallocated = (get_float(total_res_available - current_total_res_available) / get_float(total_res_available)) * 100
-            str += "<tr style='background-color: #eee;'><td>#{get_string(percent_unallocated.round(2))}%</td></tr>
-            <tr style='background-color: #eee;'><td>#{get_string(percent_allocated.round(2))}%</td></tr>
-            <tr><th>#{total_days}</th></tr>"
-            current_res_allocated = 0.0
-            skill_set.each do |skill|
-              str += "<tr style='background-color: #eee;'>"
-                res_allocations_skill[skill] = 0 if res_allocations_skill[skill].nil?
-                res_allocations_skill[skill] += get_total_allocations_per_skill(skill, week, accounting)
-                res_count_per_work_days = res_allocations_skill[skill] ? (get_float(res_allocations_skill[skill])/get_float(total_days)) : 0.0
-                str += "<td>#{get_string(res_count_per_work_days)}</td>"
-                current_res_allocated += res_count_per_work_days
-                res_allocations_skill[skill] = 0.0
-              str += "</tr>"
-            end
-            str += "<tr style='background-color: #eee;'><td>&nbsp;</td></tr>
-            <tr style='background-color: #eee;'><td>#{get_string(current_res_allocated.round(2))}</td></tr>
-            <tr style='background-color: #eee;'><td>#{get_string(weekly_resources_count)}</td></tr>"
-            total_allocated_percent = (current_res_allocated / get_float(weekly_resources_count)) * 100
-            str += "<tr style='background-color: #eee;'><td>#{get_string(total_allocated_percent.round(2))}%</td></tr>
-          </table>
-        </div>"
-      end
-      str += "</div>"
-  end
-  
   def allocation_to_class(allocation, is_shadowed=false)
     if is_shadowed
       "lgray"
@@ -313,14 +242,13 @@ module ResourceManagementsHelper
     end
   end
   
-  def options_for_period_select(value)
-    options_for_select(
-          [[l(:label_this_month), 'current_month'],
-          #[l(:label_last_month), 'last_month'],
-          [l(:label_all_time), 'all'],
-          [l(:label_this_week), 'current_week'],
-          [l(:label_last_week), 'last_week']],
-          value)
+  def compute_percentage_utilization(members, from, to)
+    with_complete_logs = 0
+    if from && to && !members.empty?
+      members.each do |m|
+        with_complete_logs += 1 if m[:total_hours_on_selected] >= m[:forecasted_hours_on_selected]
+      end
+    end
+    (with_complete_logs.to_f / members.count.to_f) * 100
   end
-
 end

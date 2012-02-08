@@ -1,30 +1,31 @@
 <%= render :partial => 'resource_managements/header' %>
 <div id="time_logging">
   <h4>Time Logging</h4>
-  <% form_remote_tag(:url => {}, 
+  <% form_remote_tag(:url => {},
                      :loading => "$('ajax-indicator').show()", :complete => "$('ajax-indicator').hide()",
                      :html => {:method => :get, :id => "myform"}, :method => :get, :update => 'content') do %>
-  <fieldset>
-    <legend>
-      <%= l(:label_filter_plural) %>
-      <%=link_to "(hide/show)", "", :onclick => "jQuery('#utilization_filters').toggle(); return false;" %>
-    </legend>
-    <%= render :partial => "resource_managements/utilization/filters" %>
-  </fieldset>
-  <br/>
+    <fieldset>
+      <legend>
+        <%= l(:label_filter_plural) %>
+        <%=link_to "(hide/show)", "", :onclick => "jQuery('#utilization_filters').toggle(); return false;" %>
+      </legend>
+      <%= render :partial => "resource_managements/utilization/filters" %>
+    </fieldset>
+    <br/>
 
-  <% unless @selected_users.empty? %>
-  <div id="mgt_resources_list">
-    <%= render :partial => "resource_managements/utilization/list" %>
-  </div>
+    <% unless @selected_users.empty? %>
+      <div id="mgt_resources_list">
+        <%= render :partial => "resource_managements/utilization/list" %>
+      </div>
 
-  <div id="utilization_pie_chart_wrapper">
-  </div>
-  <% else %>
-    <p class="nodata">No data to display.</p>
-  <% end %>
+      <div id="utilization_pie_chart_wrapper"></div>
+      <%= render :partial => "resource_managements/charts/time_logging" %>
+    <% else %>
+      <p class="nodata">No data to display.</p>
+    <% end %>
   <% end %>
 </div>
+
 <script type="text/javascript">
   j = jQuery.noConflict();
   toggleQuery();
@@ -35,4 +36,9 @@
   <%= javascript_include_tag 'jquery_tools', :plugin => 'management' %>
   <%= javascript_include_tag 'selectbox' %>
   <%= stylesheet_link_tag 'management', :plugin => 'management' %>
+  <%= stylesheet_link_tag 'jquery.jqplot.css', :plugin => 'redmine_burndown' %>
+  <%= javascript_include_tag 'jquery.jqplot.js', :plugin => 'redmine_burndown' %>
+  <%= javascript_include_tag 'plugins/jqplot.cursor.min.js', :plugin => 'redmine_burndown' %>
+  <%= javascript_include_tag 'plugins/jqplot.highlighter.min.js', :plugin => 'redmine_burndown' %>
+  <%= javascript_include_tag 'plugins/jqplot.pieRenderer.min.js', :plugin => 'redmine_burndown' %>
 <% end %>
