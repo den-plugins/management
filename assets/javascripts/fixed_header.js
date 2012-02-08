@@ -6,6 +6,20 @@
 
 //------------------------------------------------------------------------------
 
+function forecastsFixedHeader() {
+  jQuery("#allocations_fixed_table_clone thead").html(jQuery('#allocations_fixed_table thead').html());
+  var tmp1 = jQuery(".movable_table_container:first #weeks_header_holder");
+  var tmp2 = jQuery(".movable_table_container:last #floating_tables_holder");
+  
+  setFixedHeaderWidth();
+  tmp1.html(tmp2.html());
+  jQuery(".movable_table_container:first #weeks_header_holder tbody").remove();
+  
+  setInterval(function(){
+    tmp1.animate({left: tmp2.css("left")}, 0);
+  }, 50);
+}
+
 function toggle_fixed_header(){
   jQuery(window).scroll(function(){
     var tables_container = jQuery("#forecasts_tables_container");

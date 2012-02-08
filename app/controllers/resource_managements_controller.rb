@@ -43,8 +43,17 @@ class ResourceManagementsController < ApplicationController
   end
   
   def forecasts
-    get_forecast_list
-    render :template => 'resource_managements/forecasts.rhtml', :layout => !request.xhr?
+    sort_init "lastname"
+    sort_update %w(lastname)
+    get_forecast_list(sort_clause)
+
+    if params[:sort]
+      render :update do |page|
+        page.replace_html :mgt_forecast_list, :partial => "resource_managements/forecasts/list"
+      end
+    else
+      render :template => 'resource_managements/forecasts.rhtml', :layout => !request.xhr?
+    end
   end
   
   def users
@@ -148,7 +157,9 @@ class ResourceManagementsController < ApplicationController
   end
 
   def load_weekly_forecasts
-    get_forecast_list
+    clause = session['resource_managements_forecasts_sort'].gsub(/:/, " ")
+    get_forecast_list(clause)
+
     @forecasts = {}
     @summary = {}
     acctg = params[:acctg].to_s.blank? ? "Billable" : params[:acctg]
@@ -202,7 +213,7 @@ class ResourceManagementsController < ApplicationController
                              :order => "users.firstname ASC, users.lastname ASC").select {|m| !m.user.is_resigned}}
   end
   
-  def get_forecast_list
+  def get_forecast_list(order)
     limit = per_page_option
     dev_projects = Project.development.find(:all, :include => [:accounting])
     acctg = params[:acctg].to_s.blank? ? "Billable" : params[:acctg]
@@ -215,7 +226,7 @@ class ResourceManagementsController < ApplicationController
     if @projects.empty?
       @resources = []
     else
-      @resources_no_limit = User.active.engineers.find(:all, :order => "firstname ASC, lastname ASC", :include => [:projects, :members]).select do |resource|
+      @resources_no_limit = User.active.engineers.find(:all, :order => order, :include => [:projects, :members]).select do |resource|
         resource unless resource.memberships.select {|m| m.project.active? and @projects.include?(m.project_id) }.empty?
       end
       @resource_count = @resources_no_limit.count
@@ -228,11 +239,6 @@ class ResourceManagementsController < ApplicationController
       end
     end
     @skill_set = User.resource_skills
-  
-    #@resources_no_limit = User.tmp_resources_no_limit
-    #@resources = User.tmp_resources
-    #@projects = Project.tmp_projects
-    #@skill_set = User.tmp_skillset
   end
   
   def delay_job

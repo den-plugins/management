@@ -66,24 +66,14 @@
         </tbody>
     </table>
     </div>
-    <script type="text/javascript">
-      jQuery("#fixed_header .movable_table_container #weeks_header_holder").append("<div class='floating_table'><table id='allocation_week' class='list fixed'><thead><tr><th><%= display_week(week) %></th></tr></thead>");
-    </script>
 <% end %>
 </div>
 <script type="text/javascript">
-    jQuery("#weeks_header_holder").css("width", "<%= weeks.count * 85 %>px");
     jQuery(".movable_table_container:last").scrollable({circular: false, mousewheel: true, wheelSpeed: 400});
-
-    var tmp1 = jQuery(".movable_table_container:first #weeks_header_holder");
-    var tmp2 = jQuery(".movable_table_container:last #floating_tables_holder");
-    setInterval(function(){
-      tmp1.animate({left: tmp2.css("left")}, 0);
-    }, 50);
+    forecastsFixedHeader();
     
     jQuery("#updated_at_text").show().text("as of <%= @updated_at.strftime('%b %d, %Y %I:%M %p') %>");
     jQuery("#icon_reload_forecasts").show().click(function() {
-      tmp1.empty(); //empty fixed header weeks container...
       new Ajax.Request('/resource_managements/load_weekly_forecasts', {
         parameters: { 'total_res_available': '<%= params[:total_res_available] %>',
                                    'acctg': '<%= params[:acctg] %>',
