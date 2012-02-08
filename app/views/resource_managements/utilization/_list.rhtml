@@ -1,12 +1,16 @@
 <div class="scroll-pane" style="height: 510px; width: 100%;">
   <div class='tables_container' id="forecasts_tables_container">
-    <div class='fixed_table_container' style="width: 25%;">
+    <div class='fixed_table_container' style="width: 60%;">
       <table id='allocations_fixed_table' class="list fixed">
       <thead>
         <tr>
-          <th width='30%'>Location</th>
-          <th width='50%'>Resource Name</th>
+          <th width='10%'>Location</th>
+          <th width='30%'>Resource Name</th>
           <th width='20%'>Skill</th>
+          <th width='10%'>Total Hours</th>
+          <th width='10%'>Total Hours on Selected Projects</th>
+          <th width='10%'>Billable Hours</th>
+          <th width='10%'>Non-billable Hours</th>
         </tr>
       </thead>
       <tbody>
@@ -15,13 +19,17 @@
           <td><%= u.location %></td>
           <td><%= u.name %></td>
           <td><%= u.skill %></td>
+          <td><%=  %></td>
+          <td><%=  %></td>
+          <td><%=  %></td>
+          <td><%=  %></td>
         </tr>
         <% end %>
       </tbody>
       </table>
     </div>
     
-    <div class='movable_table_container' style="width: 74%">
+    <div class='movable_table_container' style="width: 40%">
     </div>
   </div>
 </div>
