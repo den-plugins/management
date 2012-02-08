@@ -29,7 +29,21 @@
       </table>
     </div>
     
-    <div class='movable_table_container' style="width: 40%">
+    <div class='movable_table_container' style="max-width: 39%; float:left;">
+      <table id="entries_table" class="list rcf" style="position:relative;">
+        <thead>
+        <tr><%= header %></tr>
+        </thead>
+        <tbody>
+          <% @summary.each do |s| %>
+            <tr><%= print_entries(s[:entries]) %></tr>
+          <% end %>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>
+
+<script type="text/javascript">
+  jQuery('#allocations_fixed_table thead tr').height(jQuery('#entries_table thead')[0].offsetHeight);
+</script>

@@ -110,6 +110,14 @@ table#project_health_table tr td { vertical-align: middle; border: 1px solid whi
 #chartpseudotooltip { position: absolute; font-size: 8pt; background-color: #ffffff;
                       border: 1px solid #e6e6fa; display: none; }
 
+/*******************************************
+      Time Logging
+********************************************/
+
+#entries_table th { height: 20px; padding: 0px 20px; }
+#entries_table tr td { text-align: center; }
+#entries_table tr:nth-child(odd) { background-color: #F4F4EA; }
+#entries_table tr:nth-child(even) { background-color: #FFF; }
 
 
 
