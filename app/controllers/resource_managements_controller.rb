@@ -435,5 +435,60 @@ class ResourceManagementsController < ApplicationController
                                   :conditions => available_user_conditions,
                                   :order => user_order)
     end
+
+    ####################SUMMARY COMPUTATION###################
+
+    user_list = (@selected_users.size > 0)? "time_entries.user_id in (#{@selected_users.collect(&:id).join(',')}) and" : ""
+    project_list = (@selected_projects.size > 0)? "time_entries.project_id in (#{@selected_projects.collect(&:id).join(',')}) and" : ""   
+    bounded_time_entries_billable = TimeEntry.find(:all, 
+                                :conditions => ["#{user_list} #{project_list} spent_on between ? and ? and issues.acctg_type = (select id from enumerations where name = 'Billable')",
+                                @from, @to],
+                                :include => [:project],
+                                :joins => [:issue],
+                                :order => "projects.name asc" )
+    bounded_time_entries_billable.each{|v| v.billable = true }
+    bounded_time_entries_non_billable = TimeEntry.find(:all, 
+                                :conditions => ["#{user_list} #{project_list} spent_on between ? and ? and issues.acctg_type = (select id from enumerations where name = 'Non-billable')",
+                                @from, @to],
+                                :include => [:project],
+                                :joins => [:issue],
+                                :order => "projects.name asc" )
+    bounded_time_entries_non_billable.each{|v| v.billable = false }
+    time_entries = TimeEntry.find(:all, 
+                                :conditions => ["#{user_list} spent_on between ? and ?", 
+                                @from, @to] )                            
+                               
+    ######################################
+    # th = total hours regardless of selected projects
+    # tth = total hours on selected projects
+    # tbh = total billable hours on selected projects
+    # tnbh = total non-billable hours on selected projects
+    ######################################
+    @th = time_entries.collect(&:hours).compact.sum
+    @tbh = bounded_time_entries_billable.collect(&:hours).compact.sum
+    @tnbh = bounded_time_entries_non_billable.collect(&:hours).compact.sum
+    @thos = (@tbh + @tnbh)
+    @summary = []
+
+    @selected_users.each do |usr|
+      if usr.class.to_s == "User"
+        b = bounded_time_entries_billable.select{|v| v.user_id == usr.id }
+        nb = bounded_time_entries_non_billable.select{|v| v.user_id == usr.id }
+        x = Hash.new
+        
+        x[:location] = usr.location
+        x[:name] = usr.name
+        x[:skill] = usr.skill
+        x[:entries] = b + nb
+        x[:total_hours] = time_entries.select{|v| v.user_id == usr.id }.collect(&:hours).compact.sum
+        x[:billable_hours] = b.collect(&:hours).compact.sum
+        x[:non_billable_hours] = nb.collect(&:hours).compact.sum
+        x[:total_hours_on_selected] = x[:billable_hours] + x[:non_billable_hours]
+        @summary.push(x)
+      end
+    end
+
+    @summary = @summary.sort_by{|c| "#{c[:name]}" }
+    
   end
 end

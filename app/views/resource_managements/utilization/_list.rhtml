@@ -14,15 +14,15 @@
         </tr>
       </thead>
       <tbody>
-        <% @selected_users.each do |u| %>
+        <% @summary.each do |s| %>
         <tr class="<%= cycle('odd','even') %>">
-          <td><%= u.location %></td>
-          <td><%= u.name %></td>
-          <td><%= u.skill %></td>
-          <td><%=  %></td>
-          <td><%=  %></td>
-          <td><%=  %></td>
-          <td><%=  %></td>
+          <td><%= s[:location] %></td>
+          <td><%= s[:name] %></td>
+          <td><%= s[:skill] %></td>
+          <td><%= html_hours("%.2f" % s[:total_hours].to_f) %></td>
+          <td><%= html_hours("%.2f" % s[:total_hours_on_selected].to_f) %></td>
+          <td><%= html_hours("%.2f" % s[:billable_hours].to_f) %></td>
+          <td><%= html_hours("%.2f" % s[:non_billable_hours].to_f) %></td>
         </tr>
         <% end %>
       </tbody>
