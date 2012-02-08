@@ -342,6 +342,7 @@ class ResourceManagementsController < ApplicationController
     user_order = "firstname asc, lastname asc"
     project_select = "id, name"
     project_order = "name asc"
+    eng_only = "is_engineering = true"
     
     @billing = params[:billing_model]
     @project_billing_ids = []
