@@ -6,7 +6,7 @@ class ResourceManagementsController < ApplicationController
   menu_item :users, :only => :users
   menu_item :utilization, :only => :utilization
 
-  helper :users, :custom_fields, :scrums, :ticker
+  helper :users, :custom_fields, :scrums, :resource_utilization
 
   before_filter :require_management
   before_filter :get_projects_members, :only => [:index, :allocations, :load_chart]

@@ -251,4 +251,12 @@ module ResourceManagementsHelper
     end
     (with_complete_logs.to_f / members.count.to_f) * 100
   end
+
+  def get_acctg(acctg)
+    case acctg
+      when "both"; nil
+      when "billable"; "Billable"
+      when "non_billable"; "Non-billable"
+    end
+  end
 end

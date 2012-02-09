@@ -1,0 +1,33 @@
+<% unless dates.nil? or dates.empty? %>
+<div class="movable_table_container" style="max-width: 39%">
+  <div id='utilization_per_date' class='utilization_table_container' style="width: <%= dates.count * 150 %>px">
+    <% dates.each_with_index do |date, dnum| %>
+    <div class='floating_table' style=" width: 150px">
+      <table class="list rcf time_logging">
+      <thead>
+        <tr><th><%= date.first.year %></th><tr>
+        <tr>
+          <th><%= display_week(date) %></th>
+        </tr>
+        </thead>
+        <% @selected_users.each do |u| %>
+        <tr class="<%= cycle('odd','even', :name => 'users') %>">
+          <% ah = 0 %>
+          <% u.memberships.each do |m| %>
+           <% acctg_type = get_acctg(acctg) %>
+           <% ah += m.spent_time(date.first, date.last, acctg_type, true) %>
+          <% end %>
+          <td><%= "%0.2f" % ah.to_f %></td>
+        </tr>
+        <% end %>
+        <% reset_cycle('users') %>
+      </table>
+    </div>
+    <% end %>
+  </div>
+</div>
+
+<script type="text/javascript">
+  jQuery('#allocations_fixed_table thead tr').height(jQuery('#utilization_per_date table thead')[0].offsetHeight);
+</script>
+<% end %>
