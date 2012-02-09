@@ -12,12 +12,7 @@
         </thead>
         <% @selected_users.each do |u| %>
         <tr class="<%= cycle('odd','even', :name => 'users') %>">
-          <% ah = 0 %>
-          <% u.memberships.each do |m| %>
-           <% acctg_type = get_acctg(acctg) %>
-           <% ah += m.spent_time(date.first, date.last, acctg_type, true) %>
-          <% end %>
-          <td><%= "%0.2f" % ah.to_f %></td>
+          <td><%= "%0.2f" % actual_hours_on_memberships(u, date, acctg, @selected_projects) %></td>
         </tr>
         <% end %>
         <% reset_cycle('users') %>

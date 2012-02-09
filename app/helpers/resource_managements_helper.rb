@@ -259,4 +259,19 @@ module ResourceManagementsHelper
       when "non_billable"; "Non-billable"
     end
   end
+
+  def actual_hours_on_memberships(user, range, acctg, projects = [])
+    ah = 0
+    if projects.any?
+      memberships = user.memberships.find(:all, 
+                                          :conditions => ["project_id IN (#{projects.collect(&:id).compact.join(',')})"])
+    else
+      memberships = user.memberships
+    end
+    memberships.each do |m|
+      acctg_type = get_acctg(acctg)
+      ah += m.spent_time(range.first, range.last, acctg_type, true)
+    end
+    ah.to_f
+  end
 end
