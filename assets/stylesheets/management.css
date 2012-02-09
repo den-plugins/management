@@ -114,8 +114,8 @@ table#project_health_table tr td { vertical-align: middle; border: 1px solid whi
       Time Logging
 ********************************************/
 
-.time_logging thead th { height: 20px; padding: 0px 20px; }
-.time_logging tr td { text-align: center; }
+#utilization_per_date .time_logging thead th { height: 30px; padding: 0px 20px; }
+#utilization_per_date .time_logging tr td { text-align: center; }
 /*.time_logging tr:nth-child(odd) { background-color: #F4F4EA; }
 .time_logging tr:nth-child(even) { background-color: #FFF; }*/
 
