@@ -274,4 +274,8 @@ module ResourceManagementsHelper
     end
     ah.to_f
   end
+  
+  def color_code_log_time(user)
+    "lred" if user[:total_hours_on_selected].to_f < user[:forecasted_hours_on_selected].to_f
+  end
 end
