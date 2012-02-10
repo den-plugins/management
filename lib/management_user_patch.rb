@@ -52,6 +52,11 @@ module Management
         end
       end
     
+      # Return user's full name for display
+      def display_name
+        name :lastname_coma_lastname
+      end
+  
       def location
         c = custom_values.detect {|v| v.mgt_custom "Location"}
         c ? c.value : nil
