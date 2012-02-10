@@ -57,7 +57,6 @@ function synch_scroll_on_bar(){
 
 function synchRowHighlights(div) {
   var div_id = (div=="") ? "" : ("#"+div)
-  alert(div_id);
   jQuery(div_id+ " table tbody tr").live('mouseover', function(){
     var row = jQuery(this).closest('tr').prevAll().length;
     jQuery(div_id+ " table > tbody").find("tr:eq("+row+")").addClass("highlight");
