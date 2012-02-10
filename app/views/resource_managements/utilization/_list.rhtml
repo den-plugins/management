@@ -1,5 +1,5 @@
-<div class="scroll-pane" style="max-height: 510px; width: 100%;">
-  <div class='tables_container' id="forecasts_tables_container">
+<div class="scroll-pane" style="max-height: 510px; width: 100%;" id="mgt_allocations_scroll_pane">
+  <div class='tables_container' id="mgt_allocations_table_container">
     <div class='fixed_table_container' style="width: 60%;">
       <table id='allocations_fixed_table' class="list fixed">
       <thead>
@@ -33,5 +33,21 @@
                :locals => {:dates => dates, :acctg => params[:show_only]} %>
   </div>
 </div>
+<div class="scroll-bar-wrap-horizontal ui-widget-content ui-corner-bottom">
+  <div id="slider-horizontal" style="display: none"></div>
+</div>
+
+<script type="text/javascript">
+jQuery(document).ready(function(){
+  allocationFixedHeader();
+  synchRowHighlights();
+  enableHorizontalSlider();
+});
+jQuery(window).resize(function(){
+  jQuery('#floating_tables_holder table thead').innerHeight(jQuery('#allocations_fixed_table thead tr')[0].offsetHeight);
+  jQuery('#weeks_header_holder table thead').innerHeight(jQuery('#allocations_fixed_table thead')[0].offsetHeight);
+  setFixedHeaderWidth();
+});
+</script>
 
 

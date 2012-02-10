@@ -1,3 +1,6 @@
+<div class="scroll-pane">
+  <%= render :partial => "fixed_header" %>
+</div>
 <%= render :partial => 'resource_managements/header' %>
 <div id="time_logging">
   <h4>Time Logging</h4>
@@ -41,4 +44,7 @@
   <%= javascript_include_tag 'plugins/jqplot.cursor.min.js', :plugin => 'redmine_burndown' %>
   <%= javascript_include_tag 'plugins/jqplot.highlighter.min.js', :plugin => 'redmine_burndown' %>
   <%= javascript_include_tag 'plugins/jqplot.pieRenderer.min.js', :plugin => 'redmine_burndown' %>
+  <%= javascript_include_tag 'fixed_header.js', :plugin => 'management' %>
+  <%= javascript_include_tag 'jquery-ui-1.8.17.custom.min.js', :plugin => 'management' %>
+  <%= javascript_include_tag 'slider.js', :plugin => 'management' %>
 <% end %>

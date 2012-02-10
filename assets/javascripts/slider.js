@@ -1,7 +1,7 @@
 // http://jqueryui.com/demos/slider/#side-scroll //
 
 function enableHorizontalSlider() {
-  var scrollPane = jQuery( ".movable_table_container:last"),
+  var scrollPane = jQuery( "#mgt_allocations_table_container .movable_table_container"),
 	scrollContent = jQuery( "#floating_tables_holder"),
 	scrollContent2 = jQuery("#fixed_header .movable_table_container #weeks_header_holder");
 
@@ -25,7 +25,7 @@ function enableHorizontalSlider() {
 		
 		//size slider
 		function sizeSlider() {
-       jQuery("#slider-horizontal").show().css({left: jQuery(".fixed_table_container:last").width(), width: scrollPane.width()});
+       jQuery("#slider-horizontal").show().css({left: jQuery("#mgt_allocations_table_container .fixed_table_container").width(), width: scrollPane.width()});
 		}
 		
 		setTimeout( sizeSlider, 10 );//safari wants a timeout

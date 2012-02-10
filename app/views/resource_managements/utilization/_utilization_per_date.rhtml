@@ -1,6 +1,6 @@
 <% unless dates.nil? or dates.empty? %>
 <div class="movable_table_container" style="max-width: 39%">
-  <div id='utilization_per_date' class='utilization_table_container' style="width: <%= dates.count * 150 %>px">
+  <div id='floating_tables_holder' class='utilization_table_container' style="width: <%= dates.count * 150 %>px">
     <% dates.each_with_index do |date, dnum| %>
     <div class='floating_table' style=" width: 150px">
       <table class="time_logging list rcf">
@@ -18,11 +18,18 @@
         <% reset_cycle('users') %>
       </table>
     </div>
+    <script type="text/javascript">
+      jQuery("#fixed_header .movable_table_container #weeks_header_holder").append("<div class='floating_table' style='width:150px'><table id='allocation_week' class='time_logging list fixed'><thead><tr><th><%= date.first.year %></th><tr><tr><th><%= display_week(date) %></th></tr></thead>");
+    </script>
     <% end %>
   </div>
 </div>
 
 <script type="text/javascript">
-  jQuery('#allocations_fixed_table thead tr').height(jQuery('#utilization_per_date table thead')[0].offsetHeight);
+  if(jQuery('#allocations_fixed_table thead').height() <= jQuery('#floating_tables_holder table thead').height()){
+    jQuery('#allocations_fixed_table thead tr').height(jQuery('#floating_tables_holder table thead')[0].offsetHeight);
+  }else{
+    jQuery('#floating_tables_holder table thead').innerHeight(jQuery('#allocations_fixed_table thead tr')[0].offsetHeight);
+  }
 </script>
 <% end %>
