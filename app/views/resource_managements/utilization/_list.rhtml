@@ -4,13 +4,13 @@
       <table id='allocations_fixed_table' class="list fixed">
       <thead>
         <tr>
-          <th width='10%'>Location</th>
-          <th width='30%'>Resource Name</th>
-          <th width='20%'>Skill</th>
-          <th width='10%'>Total Hours</th>
-          <th width='10%'>Total Hours on Selected Projects</th>
-          <th width='10%'>Billable Hours</th>
-          <th width='10%'>Non-billable Hours</th>
+          <th width='8%'>Location</th>
+          <th width='28%'>Resource Name</th>
+          <th width='8%'>Skill</th>
+          <th width='14%'>Total Hours (<%= get_string @th %>)</th>
+          <th width='14%'>Total Hours on Selected Projects (<%= get_string @thos %>)</th>
+          <th width='14%'>Billable Hours (<%= get_string @tbh %>)</th>
+          <th width='14%'>Non-billable Hours (<%= get_string @tnbh %>)</th>
         </tr>
       </thead>
       <tbody>
@@ -40,7 +40,7 @@
 <script type="text/javascript">
 jQuery(document).ready(function(){
   allocationFixedHeader();
-  synchRowHighlights();
+  synchRowHighlights("mgt_allocations_scroll_pane");
   enableHorizontalSlider();
 });
 jQuery(window).resize(function(){

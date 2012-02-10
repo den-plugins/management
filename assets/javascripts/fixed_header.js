@@ -55,13 +55,15 @@ function synch_scroll_on_bar(){
 }
 
 
-function synchRowHighlights() {
-  jQuery('table tbody tr').live('mouseover', function(){
+function synchRowHighlights(div) {
+  var div_id = (div=="") ? "" : ("#"+div)
+  alert(div_id);
+  jQuery(div_id+ " table tbody tr").live('mouseover', function(){
     var row = jQuery(this).closest('tr').prevAll().length;
-    jQuery("table > tbody").find("tr:eq("+row+")").addClass("highlight");
+    jQuery(div_id+ " table > tbody").find("tr:eq("+row+")").addClass("highlight");
   }).live('mouseout', function(){
     var row = jQuery(this).closest('tr').prevAll().length;
-    jQuery("table > tbody").find("tr:eq("+row+")").removeClass("highlight");
+    jQuery(div_id+ " table > tbody").find("tr:eq("+row+")").removeClass("highlight");
   });
 }
 
