@@ -2,6 +2,7 @@
 <div class="movable_table_container" style="max-width: 39%">
   <div id='floating_tables_holder' class='utilization_table_container' style="width: <%= dates.count * 101 %>px">
     <% dates.each_with_index do |date, dnum| %>
+    <% total_hours = 0 %>
     <div class='floating_table' style=" width: 101px">
       <table class="time_logging list rcf">
       <thead>
@@ -12,9 +13,14 @@
         </thead>
         <% @selected_users.each do |u| %>
         <tr class="<%= cycle('odd','even', :name => 'users') %>">
-          <td><%= "%0.2f" % actual_hours_on_memberships(u, date, acctg, @selected_projects) %></td>
+          <% user_hour = actual_hours_on_memberships(u, date, acctg, @selected_projects) %>
+          <% total_hours += user_hour %>
+          <td><%= "%0.2f" % user_hour %></td>
         </tr>
         <% end %>
+        <tr class="summary_total">
+          <td><%= get_string total_hours%></td>
+        </tr>
         <% reset_cycle('users') %>
       </table>
     </div>

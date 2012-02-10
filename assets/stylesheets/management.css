@@ -9,7 +9,7 @@ div.floating_table { float: left; display: inline-block; table-layout: fixed; wi
 table {font-size: 12px; }
 table.fixed { table-layout: fixed; }
 table.list tr th { height: 40px; white-space: normal; }
-table#allocations_fixed_table tr td { text-overflow: clip; overflow: hidden; white-space: nowrap; text-align: center; }
+table#allocations_fixed_table tr td { text-overflow: clip; overflow: hidden; white-space: nowrap; text-align: center;}
 table#allocations_fixed_table_clone tr td { text-overflow: clip; overflow: hidden; white-space: nowrap; text-align: center; }
 table#allocation_week tr td, table#allocation_week tr th { text-align: center; text-overflow: ellipsis; overflow: hidden; }
 
@@ -53,6 +53,9 @@ tr.green, td.green, th.green, span.green {background-color: #9FC35B; border: 1px
 tr.red, td.red, th.red, span.red {background-color: #E57E7C; border: 1px solid #FFF; }
 tr.yellow, td.yellow, th.yellow, span.yellow {background-color: #f7d959; border: 1px solid #FFF; }
 tr.gray, td.gray, th.gray, span.gray {background-color: #808080; border: 1px solid #FFF; }
+
+tr.summary_total {height: 27px; ha:;}
+tr.summary_total td { color: black; font-weight: bold; text-align: center; background-color: #eee; vertical-align: middle;}
 
 .podd { background-color: #c4d2e4}
 .peven {background-color: #e3e9f1}
@@ -119,6 +122,7 @@ table#project_health_table tr td { vertical-align: middle; border: 1px solid whi
 }
 #floating_tables_holder .time_logging tr td { text-align: center; }
 #utilization_pie_chart_wrapper {width: 50%; margin: 10px auto; }
+
 
 
 
