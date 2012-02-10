@@ -10,7 +10,7 @@
     <fieldset>
       <legend>
         <%= l(:label_filter_plural) %>
-        <%=link_to "(hide/show)", "", :onclick => "jQuery('#utilization_filters').toggle(); return false;" %>
+        <%=link_to "(hide/show)", "", :onclick => "jQuery('#utilization_filters').toggle(); allocationFixedHeader(); return false;" %>
       </legend>
       <%= render :partial => "resource_managements/utilization/filters" %>
     </fieldset>

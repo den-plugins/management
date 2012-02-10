@@ -31,7 +31,8 @@
       </tbody>
       </table>
     </div>
-    <% dates = (params[:columns] == "week")? get_weeks_range(@from, @to) : get_months_range(@from, @to) %>
+    <% from, to = ((params[:from] && params[:to])? [@from, @to] : [(Date.today - 4.weeks), Date.today]) %>
+    <% dates = (@columns == "week")? get_weeks_range(from, to) : get_months_range(from, to) %>
     <%= render :partial => "resource_managements/utilization/utilization_per_date", 
                :locals => {:dates => dates, :acctg => params[:show_only]} %>
   </div>
@@ -41,10 +42,17 @@
 </div>
 
 <script type="text/javascript">
+function fixed_header_pos(){
+  var scrollable = jQuery("#mgt_allocations_scroll_pane");
+  jQuery("#fixed_header").css({'top': ((scrollable.position().top - jQuery(this).scrollTop()) + 'px'),
+                               'left': ((scrollable.position().left - jQuery(this).scrollLeft()) + 'px')});
+}
 jQuery(document).ready(function(){
+  fixed_header_pos();
   allocationFixedHeader();
   synchRowHighlights("mgt_allocations_scroll_pane");
   enableHorizontalSlider();
+  jQuery('#utilization_filters').bind('toggle', fixed_header_pos());
 });
 jQuery(window).resize(function(){
   jQuery('#floating_tables_holder table thead').innerHeight(jQuery('#allocations_fixed_table thead tr')[0].offsetHeight);

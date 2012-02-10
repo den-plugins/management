@@ -330,7 +330,7 @@ class ResourceManagementsController < ApplicationController
 	  end	  
 
     retrieve_date_range(params[:period_type], params[:period])
-    @columns = (params[:columns] && %w(year month week day).include?(params[:columns])) ? params[:columns] : 'month'
+    @columns = (params[:columns] && %w(year month week day).include?(params[:columns])) ? params[:columns] : 'week'
     @query = (params[:query].blank?)? "user" : params[:query]
     @disable_acctype_options = (@query == "user")? true : false
     @eng_only, eng_only = (params[:eng_only] == "1" || params[:right].blank? )? [true, "is_engineering = true"] : [false, nil] 
@@ -396,8 +396,10 @@ class ResourceManagementsController < ApplicationController
       selected_user_conditions << eng_only
       selected_user_conditions << ( (params[:selectednames].blank?)? "id is null" : "id in (#{params[:selectednames].join(',')})")
       selected_user_conditions = selected_user_conditions.compact.join(" and ")
+      user_default_query = ((!request.xhr?)? available_user_conditions : selected_user_conditions)
+      
       @selected_users = User.all(:select => user_select,
-                                  :conditions => selected_user_conditions,
+                                  :conditions => user_default_query,
                                   :include => [:memberships],
                                   :order => user_order)
       @available_projects = Project.active.all(:select => project_select,

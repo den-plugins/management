@@ -74,7 +74,8 @@
 		  
 		  <div style="vertical-align:top; float:left; margin: 0px; padding: 0px; width:300px;">
 		  Selected Names
-		    <%= select_tag 'selectednames[]', options_from_collection_for_select(@selected_users, "id", "name"  ), 
+		    <% selected_users = ((params[:selectednames].blank?)? [] : @selected_users) %>
+		    <%= select_tag 'selectednames[]', options_from_collection_for_select(selected_users, "id", "name"  ), 
                                       :multiple => true, 
                                       :size => 10,
                                       "onDblClick" => "moveSelectedOptions($('selectednames[]'),$('availablenames'),true,'')",
