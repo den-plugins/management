@@ -401,7 +401,7 @@ class ResourceManagementsController < ApplicationController
       @selected_users = User.all(:select => user_select,
                                   :conditions => user_default_query,
                                   :include => [:memberships],
-                                  :order => user_order)
+                                  :order => user_order).sort_by {|u| u.name.strip}
       @available_projects = Project.active.all(:select => project_select,
                                         :order => project_order )
       @selected_projects = []
@@ -433,7 +433,7 @@ class ResourceManagementsController < ApplicationController
       @selected_users = User.all( :select => user_select,
                                    :conditions => selected_user_conditions,
                                    :include => [:projects, {:memberships, :role }],
-                                   :order => user_order)
+                                   :order => user_order).sort_by {|u| u.name.strip}
                                    
       available_user_conditions = []
       available_user_conditions << "\"users\".\"status\" = 1"
@@ -498,7 +498,7 @@ class ResourceManagementsController < ApplicationController
         @summary.push(x)
       end
     end
-
+#    @selected_users.sort_by {|u| u.name.strip}.each {|u| puts "name: #{u.name}"}
     @summary = @summary.sort_by{|c| "#{c[:name].strip}" }
     
   end
