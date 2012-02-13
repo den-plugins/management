@@ -499,7 +499,7 @@ class ResourceManagementsController < ApplicationController
       end
     end
 
-    @summary = @summary.sort_by{|c| "#{c[:name]}" }
+    @summary = @summary.sort_by{|c| "#{c[:name].strip}" }
     
   end
 end
