@@ -344,7 +344,7 @@ class ResourceManagementsController < ApplicationController
       @acctype_options << [at.name, at.id]
     end
     
-    user_select = "id, firstname, lastname, status"
+    user_select = "id, trim(BOTH ' ' FROM firstname) as firstname, trim(BOTH ' ' FROM lastname) as lastname, status"
     user_order = "firstname asc, lastname asc"
     project_select = "id, name"
     project_order = "name asc"
@@ -401,7 +401,7 @@ class ResourceManagementsController < ApplicationController
       @selected_users = User.all(:select => user_select,
                                   :conditions => user_default_query,
                                   :include => [:memberships],
-                                  :order => user_order).sort_by {|u| u.name.strip}
+                                  :order => user_order)
       @available_projects = Project.active.all(:select => project_select,
                                         :order => project_order )
       @selected_projects = []
@@ -416,7 +416,6 @@ class ResourceManagementsController < ApplicationController
 			available_project_conditions << ("id in (#{@project_billing_ids.join(',')})") if !@project_billing_ids.empty? and @billing != "0" and !@billing.nil?
 			available_project_conditions << ("id in (#{@project_type_ids.join(',')})") if !@project_type_ids.empty? and @projtype != "0" and @projtype != ""
       available_project_conditions = available_project_conditions.compact.join(" and ")
-      #available_project_conditions = ( (params[:selectedprojects].blank?)? "" : "id not in (#{params[:selectedprojects].join(',')})")
 
       @available_projects = Project.active.all(:select => project_select,
                                         :conditions => available_project_conditions,
@@ -433,7 +432,7 @@ class ResourceManagementsController < ApplicationController
       @selected_users = User.all( :select => user_select,
                                    :conditions => selected_user_conditions,
                                    :include => [:projects, {:memberships, :role }],
-                                   :order => user_order).sort_by {|u| u.name.strip}
+                                   :order => user_order)
                                    
       available_user_conditions = []
       available_user_conditions << "\"users\".\"status\" = 1"
@@ -485,7 +484,8 @@ class ResourceManagementsController < ApplicationController
         b = bounded_time_entries_billable.select{|v| v.user_id == usr.id }
         nb = bounded_time_entries_non_billable.select{|v| v.user_id == usr.id }
         x = Hash.new
-        
+
+        x[:id] = usr.id
         x[:location] = usr.location
         x[:name] = usr.name
         x[:skill] = usr.skill
@@ -498,8 +498,7 @@ class ResourceManagementsController < ApplicationController
         @summary.push(x)
       end
     end
-#    @selected_users.sort_by {|u| u.name.strip}.each {|u| puts "name: #{u.name}"}
-    @summary = @summary.sort_by{|c| "#{c[:name].strip}" }
+#    @summary = @summary.sort_by{|c| "#{c[:name].strip}" }
     
   end
 end
