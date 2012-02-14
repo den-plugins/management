@@ -74,10 +74,20 @@ class ResourceManagementsController < ApplicationController
   end
   
   def utilization
+    sort_init "lastname"
+    sort_update %w(lastname)
+    
     @selected_users = []
-    utilization_filters
-    respond_to do |format|
-      format.html { render :layout => !request.xhr? }
+    utilization_filters(sort_clause)
+
+    if params[:sort]
+      render :update do |page|
+        page.replace_html :mgt_resources_list, :partial => "resource_managements/utilization/list"
+      end
+    else
+      respond_to do |format|
+        format.html { render :layout => !request.xhr? }
+      end
     end
   end
   
@@ -310,7 +320,7 @@ class ResourceManagementsController < ApplicationController
     @to = (@from >> 1) - 1
   end
 
-  def utilization_filters
+  def utilization_filters(usr_order)
     @billing_model = CustomField.find_by_name('Billing Model')
 
   	if @billing_model
@@ -343,9 +353,8 @@ class ResourceManagementsController < ApplicationController
     Enumeration.accounting_types.each do |at|
       @acctype_options << [at.name, at.id]
     end
-    
-    user_select = "id, trim(BOTH ' ' FROM firstname) as firstname, trim(BOTH ' ' FROM lastname) as lastname, status"
-    user_order = "firstname asc, lastname asc"
+    user_select = "id, firstname, lastname, status"
+    user_order = usr_order
     project_select = "id, name"
     project_order = "name asc"
     eng_only = "is_engineering = true"
@@ -396,7 +405,7 @@ class ResourceManagementsController < ApplicationController
       selected_user_conditions << eng_only
       selected_user_conditions << ( (params[:selectednames].blank?)? "id is null" : "id in (#{params[:selectednames].join(',')})")
       selected_user_conditions = selected_user_conditions.compact.join(" and ")
-      user_default_query = ((!request.xhr?)? available_user_conditions : selected_user_conditions)
+      user_default_query = ((params[:columns].blank?)? available_user_conditions : selected_user_conditions)
       
       @selected_users = User.all(:select => user_select,
                                   :conditions => user_default_query,

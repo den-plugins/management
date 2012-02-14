@@ -5,7 +5,7 @@
       <thead>
         <tr>
           <th width='8%'>Location</th>
-          <th width='28%'>Resource Name</th>
+          <%= sort_header_tag_without_update('lastname', :caption => "Resource Name", :width => "28%", :id => "sort_by") %>
           <th width='8%'>Skill</th>
           <th width='14%'>Total Hours (<%= get_string @th %>)</th>
           <th width='14%'>Total Hours on Selected Projects (<%= get_string @thos %>)</th>
@@ -49,11 +49,16 @@ function fixed_header_pos(){
                                'left': ((scrollable.position().left - jQuery(this).scrollLeft()) + 'px')});
 }
 jQuery(document).ready(function(){
+  jQuery('#ajax-indicator').hide();
   fixed_header_pos();
   allocationFixedHeader();
   synchRowHighlights("mgt_allocations_scroll_pane");
   enableHorizontalSlider();
   jQuery('#utilization_filters').bind('toggle', fixed_header_pos());
+  jQuery('#sort_by').bind('click', function(){
+    jQuery('#ajax-indicator').show();
+    jQuery('#fixed_header #weeks_header_holder').empty();
+  });
 });
 jQuery(window).resize(function(){
   jQuery('#floating_tables_holder table thead').innerHeight(jQuery('#allocations_fixed_table thead tr')[0].offsetHeight);
