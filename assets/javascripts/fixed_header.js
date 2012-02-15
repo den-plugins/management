@@ -82,6 +82,12 @@ function allocationFixedHeader(){
   });
 }
 
+function fixed_header_pos(){
+  var scrollable = jQuery("#mgt_allocations_scroll_pane");
+  jQuery("#fixed_header").css({'top': ((scrollable.position().top - jQuery(this).scrollTop()) + 'px'),
+                               'left': ((scrollable.position().left - jQuery(this).scrollLeft()) + 'px')});
+}
+
 function setFixedHeaderWidth(){
   jQuery("#fixed_header .fixed_table_container").css({width: jQuery(".fixed_table_container:last").width()});
   jQuery("#fixed_header .movable_table_container").css({width: jQuery(".movable_table_container:last").width()});

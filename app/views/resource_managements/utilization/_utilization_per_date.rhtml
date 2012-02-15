@@ -4,7 +4,7 @@
     <% dates.each_with_index do |date, dnum| %>
     <% total_hours = 0 %>
     <div class='floating_table' style=" width: 101px">
-      <table class="time_logging list rcf">
+      <table id="table_<%= date.first %>" class="time_logging list rcf">
       <thead>
         <tr><th><%= date.first.year %></th><tr>
         <tr>
@@ -18,9 +18,10 @@
           <td><%= "%0.2f" % user_hour %></td>
         </tr>
         <% end %>
-        <tr class="summary_total">
+        <!--<tr class="summary_total">
           <td><%= get_string total_hours%></td>
-        </tr>
+        </tr>-->
+        <input type="hidden" id="th_<%= date.first %>" value="<%= get_string total_hours %>" />
         <% reset_cycle('users') %>
       </table>
     </div>

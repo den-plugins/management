@@ -80,13 +80,17 @@ class ResourceManagementsController < ApplicationController
     @selected_users = []
     utilization_filters(sort_clause)
 
-    if params[:sort]
+    if params[:sort] && params[:lazy_load].blank?
       render :update do |page|
         page.replace_html :mgt_resources_list, :partial => "resource_managements/utilization/list"
       end
     else
       respond_to do |format|
-        format.html { render :layout => !request.xhr? }
+        if params[:lazy_load].blank?
+          format.html { render :layout => !request.xhr? }
+        else
+          format.js {render :layout => false}
+        end
       end
     end
   end
@@ -410,7 +414,9 @@ class ResourceManagementsController < ApplicationController
       @selected_users = User.all(:select => user_select,
                                   :conditions => user_default_query,
                                   :include => [:memberships],
-                                  :order => user_order)
+                                  :order => user_order,
+                                  :limit => 10,
+                                  :offset => params[:offset].to_i)
       @available_projects = Project.active.all(:select => project_select,
                                         :order => project_order )
       @selected_projects = []
@@ -441,7 +447,9 @@ class ResourceManagementsController < ApplicationController
       @selected_users = User.all( :select => user_select,
                                    :conditions => selected_user_conditions,
                                    :include => [:projects, {:memberships, :role }],
-                                   :order => user_order)
+                                   :order => user_order,
+                                   :limit => 10,
+                                   :offset => params[:offset].to_i)
                                    
       available_user_conditions = []
       available_user_conditions << "\"users\".\"status\" = 1"
@@ -508,6 +516,7 @@ class ResourceManagementsController < ApplicationController
       end
     end
 #    @summary = @summary.sort_by{|c| "#{c[:name].strip}" }
+#    puts @selected_users.inspect
     
   end
 end

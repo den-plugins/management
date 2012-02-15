@@ -26,9 +26,9 @@
           <td><%= html_hours("%.2f" % s[:non_billable_hours].to_f) %></td>
         </tr>
         <% end %>
-        <tr class="summary_total">
+        <!--<tr class="summary_total">
           <td colspan="7"></td>
-        </tr>
+        </tr>-->
       </tbody>
       </table>
     </div>
@@ -43,11 +43,6 @@
 </div>
 
 <script type="text/javascript">
-function fixed_header_pos(){
-  var scrollable = jQuery("#mgt_allocations_scroll_pane");
-  jQuery("#fixed_header").css({'top': ((scrollable.position().top - jQuery(this).scrollTop()) + 'px'),
-                               'left': ((scrollable.position().left - jQuery(this).scrollLeft()) + 'px')});
-}
 jQuery(document).ready(function(){
   jQuery('#ajax-indicator').hide();
   fixed_header_pos();
@@ -55,9 +50,22 @@ jQuery(document).ready(function(){
   synchRowHighlights("mgt_allocations_scroll_pane");
   enableHorizontalSlider();
   jQuery('#utilization_filters').bind('toggle', fixed_header_pos());
-  jQuery('#sort_by').bind('click', function(){
+  var xhr = null;
+  jQuery('#sort_by').live('click', function(){
+    if(xhr) xhr.abort();
     jQuery('#ajax-indicator').show();
     jQuery('#fixed_header #weeks_header_holder').empty();
+  });
+  jQuery("#myform").attr("onsubmit", "if(xhr) xhr.abort();");
+  var myurl = jQuery("#myform").attr('action');
+  xhr = jQuery.ajax({
+    url: myurl, 
+    data: jQuery.extend(<%= params.to_json %>, {'offset':'<%= (params[:offset].to_i + 10) %>', 'lazy_load':'true'}),
+    beforeSend: function(xhr){
+      var str = '<p id="loading_data" class="nodata" style="margin:0;"><%= image_tag("loading.gif") %></p>';
+      jQuery('#loading_data').remove();
+      jQuery(str).insertAfter("#mgt_allocations_table_container");
+    }
   });
 });
 jQuery(window).resize(function(){
@@ -66,5 +74,6 @@ jQuery(window).resize(function(){
   setFixedHeaderWidth();
 });
 </script>
+
 
 
