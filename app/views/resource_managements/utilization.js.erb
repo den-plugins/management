@@ -1,0 +1,77 @@
+<% from, to = ((params[:from] && params[:to])? [@from, @to] : [(Date.today - 4.weeks), Date.today]) %>
+<% dates = (@columns == "week")? get_weeks_range(from, to) : get_months_range(from, to) %>
+<% acctg = params[:show_only] %>
+<% if @selected_users.any? %>
+fixed_header_pos();
+allocationFixedHeader();
+enableHorizontalSlider();
+
+var xhr = null;
+jQuery('#sort_by').live('click', function(){
+  if(xhr) xhr.abort();
+  jQuery('#ajax-indicator').show();
+  jQuery('#fixed_header #weeks_header_holder').empty();
+});
+
+jQuery("#myform").attr("onsubmit", "if(xhr) xhr.abort();");
+
+var myurl = jQuery("#myform").attr('action');
+xhr = jQuery.ajax({
+  type: "GET",
+  url: myurl, 
+  data: jQuery.extend(<%= params.to_json %>, {'offset':'<%= (params[:offset].to_i + 10) %>', 'lazy_load':'true'}),
+  beforeSend: function(xhr){
+    var str = '<p id="loading_data" class="nodata" style="margin:0;"><%= image_tag("loading.gif") %></p>';
+    jQuery('#loading_data').remove();
+    jQuery(str).insertAfter("#mgt_allocations_table_container");
+  },
+  success: function(html){
+    var str = "";
+    <% @selected_users.each do |u| %>
+    <% s = @summary.detect {|x| x[:id] == u.id} %>
+    str += "<tr class='<%= cycle('odd','even') %> <%= color_code_log_time s %>'>";
+    str += "<td><%= s[:location] %></td>";
+    str += "<td><%= s[:name] %></td>";
+    str += "<td><%= s[:skill] %></td>";
+    str += '<td><%= html_hours("%.2f" % s[:total_hours].to_f) %></td>';
+    str += '<td><%= html_hours("%.2f" % s[:total_hours_on_selected].to_f) %></td>';
+    str += '<td><%= html_hours("%.2f" % s[:billable_hours].to_f) %></td>';
+    str += '<td><%= html_hours("%.2f" % s[:non_billable_hours].to_f) %></td>';
+    str += '</tr>';
+    <% end %>
+    jQuery("#allocations_fixed_table").append(str);
+    <% unless dates.nil? or dates.empty? %>
+    <% dates.each_with_index do |date, dnum| %>
+      <% total_hours = 0 %>
+      var str2 = "";
+      <% @selected_users.each do |u| %>
+        str2 += '<tr class="<%= cycle('odd','even', :name => 'users') %>">';
+        <% user_hour = actual_hours_on_memberships(u, date, acctg, @selected_projects) %>
+        <% total_hours += user_hour %>
+        str2 += '<td><%= "%0.2f" % user_hour %></td>';
+        str2 += '</tr>';
+      <% end %>
+      var totalHours = parseFloat(jQuery('#th_<%= date.first %>').val()) + parseFloat(<%= total_hours %>);
+      jQuery('#th_<%= date.first %>').val(totalHours);
+      <% reset_cycle('users') %>
+      jQuery('#table_<%= date.first %>').append(str2);
+    <% end %>
+    <% end %>
+  }
+});
+<% else %>
+  jQuery("#allocations_fixed_table").ajaxStop(function(){
+    jQuery('#loading_data, .summary_total').remove();
+    var str = '<tr class="summary_total"><td colspan="7"></td></tr>';
+    jQuery("#allocations_fixed_table").append(str);
+
+    <% unless dates.nil? or dates.empty? %>
+    <% dates.each_with_index do |date, dnum| %>
+      var str2 = '<tr class="summary_total"><td>' + 
+                  parseFloat(jQuery('#th_<%= date.first %>').val()).toFixed(2) + 
+                  '</td></tr>';
+      jQuery("#table_<%= date.first %>").append(str2);
+    <% end %>
+    <% end %>
+  });
+<% end %>
