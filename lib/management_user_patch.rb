@@ -54,7 +54,7 @@ module Management
     
       # Return user's full name for display
       def display_name
-        name :lastname_coma_lastname
+        name :lastname_coma_firstname
       end
   
       def location

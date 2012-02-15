@@ -24,6 +24,10 @@ class ResourceManagementsController < ApplicationController
     @users = User.active.engineers
     @skill_set = User.resource_skills.sort
     @categories = Project.project_categories.sort
+    @projects = Project.active.all
+    @from = (Date.today - 4.week).monday
+    @to = (Date.today - 1.week).monday
+    time_logging_filter
   end
 
   def load_chart
@@ -519,4 +523,48 @@ class ResourceManagementsController < ApplicationController
 #    puts @selected_users.inspect
     
   end
+
+
+  def time_logging_filter
+
+    user_list = (@users.size > 0)? "time_entries.user_id in (#{@users.collect(&:id).join(',')}) and" : ""
+    project_list = (@projects.size > 0)? "time_entries.project_id in (#{@projects.collect(&:id).join(',')}) and" : ""
+    bounded_time_entries_billable = TimeEntry.find(:all,
+                                :conditions => ["#{user_list} #{project_list} spent_on between ? and ? and issues.acctg_type = (select id from enumerations where name = 'Billable')",
+                                @from, @to],
+                                :include => [:project],
+                                :joins => [:issue] )
+    bounded_time_entries_billable.each{|v| v.billable = true }
+    bounded_time_entries_non_billable = TimeEntry.find(:all,
+                                :conditions => ["#{user_list} #{project_list} spent_on between ? and ? and issues.acctg_type = (select id from enumerations where name = 'Non-billable')",
+                                @from, @to],
+                                :include => [:project],
+                                :joins => [:issue])
+    bounded_time_entries_non_billable.each{|v| v.billable = false }
+    time_entries = TimeEntry.find(:all,
+                                :conditions => ["#{user_list} spent_on between ? and ?",
+                                @from, @to] )
+    @time_log_summary = []
+
+    project_ids = @projects.collect(&:id)
+    @users.each do |usr|
+        b = bounded_time_entries_billable.select{|v| v.user_id == usr.id }
+        nb = bounded_time_entries_non_billable.select{|v| v.user_id == usr.id }
+        x = Hash.new
+
+        x[:id] = usr.id
+        x[:location] = usr.location
+        x[:name] = usr.name
+        x[:skill] = usr.skill
+        x[:entries] = b + nb
+        x[:total_hours] = time_entries.select{|v| v.user_id == usr.id }.collect(&:hours).compact.sum
+        x[:billable_hours] = b.collect(&:hours).compact.sum
+        x[:non_billable_hours] = nb.collect(&:hours).compact.sum
+        x[:forecasted_hours_on_selected] = usr.allocations((@from..@to), project_ids)
+        x[:total_hours_on_selected] = x[:billable_hours] + x[:non_billable_hours]
+        @time_log_summary.push(x)
+    end
+
+  end
+
 end
