@@ -505,7 +505,7 @@ class ResourceManagementsController < ApplicationController
 
         x[:id] = usr.id
         x[:location] = usr.location
-        x[:name] = usr.name
+        x[:name] = usr.display_name
         x[:skill] = usr.skill
         x[:entries] = b + nb
         x[:total_hours] = time_entries.select{|v| v.user_id == usr.id }.collect(&:hours).compact.sum
