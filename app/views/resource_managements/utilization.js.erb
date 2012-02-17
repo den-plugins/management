@@ -2,10 +2,8 @@
 <% dates = (@columns == "week")? get_weeks_range(from, to) : get_months_range(from, to) %>
 <% acctg = params[:show_only] %>
 <% if @selected_users.any? %>
-fixed_header_pos();
 allocationFixedHeader();
-enableHorizontalSlider();
-
+fixed_header_pos();
 var xhr = null;
 jQuery('#sort_by').live('click', function(){
   if(xhr) xhr.abort();
