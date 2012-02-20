@@ -41,6 +41,11 @@ class ResourceManagementsController < ApplicationController
   
   def allocations
     @categories = Project.project_categories
+    if params[:sort]
+      render :update do |page|
+        page.replace_html :mgt_allocations_table_container, :partial => "resource_managements/allocations/allocation_list"
+      end
+    end
   end
   
   def forecasts
@@ -221,7 +226,9 @@ class ResourceManagementsController < ApplicationController
   end
   
   def get_projects_members
-    @projects = Project.active.development.find(:all, :include => [:accounting])
+    sort_init "prpjects.name"
+    sort_update %w(projects.name)
+    @projects = Project.active.development.find(:all, :include => [:accounting], :order => sort_clause)
     @members = []
     @projects.each{|project| @members += project.members.all(:include => [:user],
                              :conditions => ["proj_team = true"],
@@ -517,8 +524,6 @@ class ResourceManagementsController < ApplicationController
         @summary.push(x)
       end
     end
-#    @summary = @summary.sort_by{|c| "#{c[:name].strip}" }
-#    puts @selected_users.inspect
     
   end
 
