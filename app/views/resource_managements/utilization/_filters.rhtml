@@ -59,6 +59,12 @@
                                       :onchange => "selectAllOptions( document.getElementById('selectedprojects[]') );selectAllOptions( document.getElementById('selectednames[]') ); this.form.onsubmit();",
                                       :style => "width:150px" %>
          </div>
+         <div style="float:right; margin-right:30px;">
+           Location: 
+            <%= select_tag 'location', options_for_select(@location_values, params[:location]),
+                                       :onchange => "selectAllOptions( document.getElementById('selectedprojects[]') );selectAllOptions( document.getElementById('selectednames[]') ); this.form.onsubmit();",
+                                       :style => "width:150px" %>
+         </div>
          <% end %>
       </div>
       <div style="vertical-align:top; float:left; margin: 0px; padding: 0px; width:100px; align:center;">
