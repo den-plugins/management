@@ -63,7 +63,8 @@ class ResourceManagementsController < ApplicationController
   end
   
   def users
-    sort_init 'login', 'asc'
+    sort_clear
+    sort_init 'lastname', 'asc'
     sort_update %w(login firstname lastname is_engineering)
     
     if filters = params[:filters]
@@ -80,6 +81,7 @@ class ResourceManagementsController < ApplicationController
   end
   
   def utilization
+    sort_clear
     sort_init "lastname"
     sort_update %w(lastname)
     
@@ -226,6 +228,7 @@ class ResourceManagementsController < ApplicationController
   end
   
   def get_projects_members
+    sort_clear
     sort_init 'users.lastname', 'asc'
     sort_update %w(projects.name users.lastname)
     @projects = Project.active.development.find(:all, :include => [:accounting])
