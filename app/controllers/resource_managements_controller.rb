@@ -367,7 +367,7 @@ class ResourceManagementsController < ApplicationController
     Enumeration.accounting_types.each do |at|
       @acctype_options << [at.name, at.id]
     end
-    user_select = "id, firstname, lastname, status"
+    user_select = "id, firstname, lastname, status, location, skill"
     user_order = usr_order
     project_select = "id, name"
     project_order = "name asc"
