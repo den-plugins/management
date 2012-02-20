@@ -1,4 +1,5 @@
 require_dependency 'user'
+include ResourceManagementsHelper
 
 module Management
   module UserPatch
@@ -91,6 +92,15 @@ module Management
         end unless project_allocations.empty?
         cost = days * (rate.to_f)
         rate ? [days, cost] : days
+      end
+
+      def total_expected(from, to)
+        weeks = get_weeks_range(from, to)
+        texpected = 0
+        weeks.each do |week|
+          texpected += (week.count * 8) # 40 hours is the expected hours per week, 8 hours per day and 5 days a week
+        end
+        texpected
       end
       
       def detect_holidays_in_week(location, day)

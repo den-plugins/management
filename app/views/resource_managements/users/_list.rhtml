@@ -3,8 +3,8 @@
     <thead>
       <tr>
 	      <%= sort_header_tag('login', :caption => l(:field_login)) %>
-	      <%= sort_header_tag('firstname', :caption => l(:field_firstname)) %>
 	      <%= sort_header_tag('lastname', :caption => l(:field_lastname)) %>
+	      <%= sort_header_tag('firstname', :caption => l(:field_firstname)) %>
 	      <%#= sort_header_tag('location', :caption => l(:field_location)) %>
 	      <%#= sort_header_tag('skill', :caption => l(:field_skill)) %>
 	      <%#= sort_header_tag('hired_date', :caption => l(:field_hired_date)) %>
@@ -23,8 +23,8 @@
 	      <td class="username">
 	        <%= link_to h(user.login), :action => 'edit_user', :id => user, :filters => params[:filters] %>
 	      </td>
-	      <td class="firstname"><%= h(user.firstname) %></td>
 	      <td class="lastname"><%= h(user.lastname) %></td>
+	      <td class="firstname"><%= h(user.firstname) %></td>
 	      <td class="location center"><%= h(user.location) %></td>
 	      <td class="skill center"><%= h(user.skill) %></td>
 	      <td class="hired_date center"><%= user.hired_date %></td>

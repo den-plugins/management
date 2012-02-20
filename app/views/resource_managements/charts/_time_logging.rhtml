@@ -1,4 +1,4 @@
-<%  @from = (Date.today - 4.week).monday %>
+<%  @from = (Date.today - 4.weeks).monday %>
 <%  @to = (Date.today - 1.week).monday  %>
 
 <%  user_list = (@users.size > 0)? "time_entries.user_id in (#{@users.collect(&:id).join(',')}) and" : "" %>
@@ -34,7 +34,7 @@
 <%      x[:total_hours] = time_entries.select{|v| v.user_id == usr.id }.collect(&:hours).compact.sum %>
 <%      x[:billable_hours] = b.collect(&:hours).compact.sum %>
 <%      x[:non_billable_hours] = nb.collect(&:hours).compact.sum %>
-<%      x[:forecasted_hours_on_selected] = usr.allocations((@from..@to), project_ids)  %>
+<%      x[:forecasted_hours_on_selected] = usr.total_expected(@from, @to) %>
 <%      x[:total_hours_on_selected] = x[:billable_hours] + x[:non_billable_hours]   %>
 <%      @time_log_summary.push(x)  %>
 <%  end   %>

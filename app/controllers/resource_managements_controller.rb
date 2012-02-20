@@ -41,6 +41,11 @@ class ResourceManagementsController < ApplicationController
   
   def allocations
     @categories = Project.project_categories
+    if params[:sort]
+      render :update do |page|
+        page.replace_html :mgt_allocations_table_container, :partial => "resource_managements/allocations/allocation_list"
+      end
+    end
   end
   
   def forecasts
@@ -58,7 +63,8 @@ class ResourceManagementsController < ApplicationController
   end
   
   def users
-    sort_init 'login', 'asc'
+    sort_clear
+    sort_init 'lastname', 'asc'
     sort_update %w(login firstname lastname is_engineering)
     
     if filters = params[:filters]
@@ -75,6 +81,7 @@ class ResourceManagementsController < ApplicationController
   end
   
   def utilization
+    sort_clear
     sort_init "lastname"
     sort_update %w(lastname)
     
@@ -221,11 +228,13 @@ class ResourceManagementsController < ApplicationController
   end
   
   def get_projects_members
+    sort_clear
+    sort_init 'users.lastname', 'asc'
+    sort_update %w(projects.name users.lastname)
     @projects = Project.active.development.find(:all, :include => [:accounting])
-    @members = []
-    @projects.each{|project| @members += project.members.all(:include => [:user],
-                             :conditions => ["proj_team = true"],
-                             :order => "users.firstname ASC, users.lastname ASC").select {|m| !m.user.is_resigned}}
+    @members = Member.find(:all, :include => [:user, :project], 
+                           :conditions => ["members.proj_team = true AND members.project_id IN (#{@projects.collect(&:id).join(',')})"],
+                           :order => sort_clause).select {|m| !m.user.is_resigned}
   end
   
   def get_forecast_list(order)
@@ -512,13 +521,11 @@ class ResourceManagementsController < ApplicationController
         x[:total_hours] = time_entries.select{|v| v.user_id == usr.id }.collect(&:hours).compact.sum
         x[:billable_hours] = b.collect(&:hours).compact.sum
         x[:non_billable_hours] = nb.collect(&:hours).compact.sum
-        x[:forecasted_hours_on_selected] = usr.allocations((from..to), project_ids)
+        x[:forecasted_hours_on_selected] = usr.total_expected(from, to)
         x[:total_hours_on_selected] = x[:billable_hours] + x[:non_billable_hours]
         @summary.push(x)
       end
     end
-#    @summary = @summary.sort_by{|c| "#{c[:name].strip}" }
-#    puts @selected_users.inspect
     
   end
 

@@ -9,53 +9,7 @@
   <% if @members.any? %>
     <div class="scroll-pane" style="height: 510px;" id="mgt_allocations_scroll_pane">
       <div class='tables_container' id="mgt_allocations_table_container">
-        <div class='fixed_table_container' style="width: 43%;">
-          <table id='allocations_fixed_table' class="list fixed">
-            <thead>
-            <tr>
-              <th width='36%'>Project</th>
-              <th width='15%'>Category</th>
-              <th width='6%'>Acctg Type</th>
-              <th width='27%'>Resource</th>
-              <th width='16%'>Role</th>
-            </tr>
-            </thead>
-            <% @members.each do |member| %>
-              <% if member.user.is_engineering %>
-                  <tr class="<%= cycle('even', 'odd', :name => 'resources') %>">
-                    <td style="text-align: left"><%= link_to member.project.name, {:controller => 'resource_costs', :action => 'index', :project_id => member.project.identifier }, {:target => '_blank'} %></td>
-                    <td><%= member.project.category.gsub('Project', '') unless member.project.category.nil? %></td>
-                    <td><%= acronym member.project.accounting_type %></td>
-                    <td style="text-align: left"><%= member.name %></td>
-                    <td><%= member.user.skill %></td>
-                  </tr>
-              <% end %>
-            <% end %>
-            <% reset_cycle('resources') %>
-            <tr><th colspan="5" style="text-align: right;">Project Category (Count)</th></tr>
-            <% @categories.each do |category| %>
-              <tr style="background-color: #eee;">
-                <td colspan="5" style="text-align: right;"><%= category %></td>
-              </tr>
-            <% end %>
-            <tr style="background-color: #eee;"><td colspan="5" style="text-align: right;">Uncategorized</td></tr>
-            <tr style="background-color: #eee;"><td colspan="5" style="text-align: right;">Bench</td></tr>
-            <tr style="background-color: #eee;"><td colspan="5" style="text-align: right;">Total Allocated</td></tr>
-            <tr style="background-color: #eee;"><td colspan="5" style="text-align: right;">Current Total Resources</td></tr>
-            <tr><th colspan="5" style="text-align: right;">Project Category (Percentage)</th></tr>
-            <% @categories.each do |category| %>
-              <tr style="background-color: #eee;">
-                <td colspan="5" style="text-align: right;"><%= category %></td>
-              </tr>
-            <% end %>
-            <tr style="background-color: #eee;"><td colspan="5" style="text-align: right;">Uncategorized</td></tr>
-            <tr style="background-color: #eee;"><td colspan="5" style="text-align: right;">Bench</td></tr>
-            <tr style="background-color: #eee;"><td colspan="5" style="text-align: right;">Total Allocated</td></tr>
-          </table>
-        </div>
-        <div class="movable_table_container" style="width: 55%" %>
-          <%= render :partial => 'resource_managements/allocations/weeks' %>
-        </div>
+        <%= render :partial => "resource_managements/allocations/allocation_list" %>
       </div>
     </div>
     <div class="scroll-bar-wrap-vertical ui-widget-content ui-corner-bottom">
@@ -79,8 +33,5 @@
 
 <script>
   j = jQuery.noConflict();
-  allocationFixedHeader();
   synchRowHighlights("");
-  enableHorizontalSlider();
-  //enableVerticalSlider();
 </script>
