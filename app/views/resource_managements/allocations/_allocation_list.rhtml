@@ -2,10 +2,10 @@
 <table id='allocations_fixed_table' class="list fixed">
   <thead>
   <tr>
-    <%= sort_header_tag_without_update('projects.name', :caption => "Project", :width => "36%", :id => "sort_by_lnk") %>
+    <%= sort_header_tag_without_update('projects.name', :caption => "Project", :width => "36%", :class => "sort_by_lnk") %>
     <th width='15%'>Category</th>
     <th width='6%'>Acctg Type</th>
-    <th width='27%'>Resource</th>
+    <%= sort_header_tag_without_update('users.lastname', :caption => "Resource", :width => "27%", :class => "sort_by_lnk") %>
     <th width='16%'>Role</th>
   </tr>
   </thead>
@@ -15,7 +15,7 @@
           <td style="text-align: left"><%= link_to member.project.name, {:controller => 'resource_costs', :action => 'index', :project_id => member.project.identifier }, {:target => '_blank'} %></td>
           <td><%= member.project.category.gsub('Project', '') unless member.project.category.nil? %></td>
           <td><%= acronym member.project.accounting_type %></td>
-          <td style="text-align: left"><%= member.name %></td>
+          <td style="text-align: left"><%= member.user.display_name %></td>
           <td><%= member.user.skill %></td>
         </tr>
     <% end %>
@@ -48,9 +48,10 @@
 
 <script type="text/javascript">
 jQuery(function(){
+  allocationFixedHeader();
   enableHorizontalSlider();
   //enableVerticalSlider();
-  jQuery("#sort_by_lnk").click(function(){
+  jQuery(".sort_by_lnk").click(function(){
     jQuery('#fixed_header #weeks_header_holder').empty();
   });
 });

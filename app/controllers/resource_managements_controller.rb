@@ -226,13 +226,12 @@ class ResourceManagementsController < ApplicationController
   end
   
   def get_projects_members
-    sort_init "prpjects.name"
-    sort_update %w(projects.name)
-    @projects = Project.active.development.find(:all, :include => [:accounting], :order => sort_clause)
-    @members = []
-    @projects.each{|project| @members += project.members.all(:include => [:user],
-                             :conditions => ["proj_team = true"],
-                             :order => "users.firstname ASC, users.lastname ASC").select {|m| !m.user.is_resigned}}
+    sort_init 'users.lastname', 'asc'
+    sort_update %w(projects.name users.lastname)
+    @projects = Project.active.development.find(:all, :include => [:accounting])
+    @members = Member.find(:all, :include => [:user, :project], 
+                           :conditions => ["members.proj_team = true AND members.project_id IN (#{@projects.collect(&:id).join(',')})"],
+                           :order => sort_clause).select {|m| !m.user.is_resigned}
   end
   
   def get_forecast_list(order)
