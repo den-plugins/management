@@ -56,16 +56,6 @@ module Management
       def display_name
         name :lastname_coma_firstname
       end
-  
-      def location
-        c = custom_values.detect {|v| v.mgt_custom "Location"}
-        c ? c.value : nil
-      end
-      
-      def skill
-        c = custom_values.detect {|v| v.mgt_custom "Skill or Role"}
-        c ? c.value : nil
-      end
       
       def is_resigned
         r = custom_values.detect {|v| v.mgt_custom "Employment End"}
