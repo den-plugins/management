@@ -51,14 +51,15 @@ class ResourceManagementsController < ApplicationController
   def forecasts
     sort_init "lastname"
     sort_update %w(lastname)
-    location = nil
-    skill = nil
-    location = params[:location] if params[:location]
-    skill = params[:skill] if params[:skill]
+    location = skill = lastname = nil
 
-    location = nil if params[:location] == "N/A"
-    skill = nil if params[:skill] == "N/A"
-    get_forecast_list(sort_clause, location, skill)
+    location = params[:location] unless params[:location].nil? || params[:location] == "N/A"
+    skill = params[:skill] unless params[:skill].nil? || params[:skill] == "N/A"
+    lastname = params[:lastname].capitalize unless params[:lastname].nil? || params[:lastname].blank?
+
+    condition = forecast_conditions(location, skill, lastname)
+
+    get_forecast_list(sort_clause, condition)
 
     if params[:sort]
       render :update do |page|
@@ -187,13 +188,15 @@ class ResourceManagementsController < ApplicationController
 
   def load_weekly_forecasts
     clause = session['resource_managements_forecasts_sort'].gsub(/:/, " ")
-    location = nil
-    skill = nil
-    location = params[:location] if params[:location]
-    skill = params[:skill] if params[:skill]
-    location = nil if params[:location] == "N/A"
-    skill = nil if params[:skill] == "N/A"
-    get_forecast_list(clause, location, skill)
+    location = skill = lastname = nil
+
+    location = params[:location] unless params[:location].nil? || params[:location] == "N/A"
+    skill = params[:skill] unless params[:skill].nil? || params[:skill] == "N/A"
+    lastname = params[:lastname].capitalize unless params[:lastname].nil? || params[lastname].blank?
+
+    condition = forecast_conditions(location, skill, lastname)
+
+    get_forecast_list(clause, condition)
 
     @forecasts = {}
     @summary = {}
@@ -259,7 +262,7 @@ class ResourceManagementsController < ApplicationController
                            :order => sort_clause).select {|m| !m.user.is_resigned}
   end
   
-  def get_forecast_list(order, location, skill)
+  def get_forecast_list(order, query)
     limit = per_page_option
     dev_projects = Project.development.find(:all, :include => [:accounting])
     acctg = params[:acctg].to_s.blank? ? "Billable" : params[:acctg]
@@ -269,15 +272,10 @@ class ResourceManagementsController < ApplicationController
       @projects = dev_projects.collect {|p| p.id if (p.accounting_type.eql?( acctg))}.compact.uniq
     end
 
-    forecast_conditions = []
-    forecast_conditions << "location = '#{location}'" if location
-    forecast_conditions << "skill = '#{skill}'" if skill
-    forecast_conditions = forecast_conditions.compact.join(" and ")
-
     if @projects.empty?
       @resources = []
     else
-      @resources_no_limit = User.active.engineers.find(:all, :conditions => forecast_conditions, :order => order, :include => [:projects, :members]).select do |resource|
+      @resources_no_limit = User.active.engineers.find(:all, :conditions => query, :order => order, :include => [:projects, :members]).select do |resource|
         resource unless resource.memberships.select {|m| m.project.active? and @projects.include?(m.project_id) }.empty?
       end
       @resource_count = @resources_no_limit.count
@@ -557,6 +555,14 @@ class ResourceManagementsController < ApplicationController
       end
     end
     
+  end
+
+  def forecast_conditions(location, skill, lastname)
+    conditions = []
+    conditions << "location = '#{location}'" if location
+    conditions << "skill = '#{skill}'" if skill
+    conditions << "lastname = '#{lastname}'" if lastname
+    conditions = conditions.compact.join(" and ")
   end
 
 end

@@ -67,7 +67,8 @@
     <div class="clear"></div>
     <% remote_form_for :forecasts, :url => {:controller => 'resource_managements', :action => 'load_weekly_forecasts',
                              :total_res_available => total_res_available, :page => params[:page], :acctg => params[:acctg],
-                             :location => params[:location], :skill => params[:skill]}, :html => {:id => "load_forecasts_form"} do |f| %>
+                             :location => params[:location], :lastname => params[:lastname], :skill => params[:skill]},
+                             :html => {:id => "load_forecasts_form"} do |f| %>
        <%# submit_tag "Go" %>
     <% end %>
   </div>
