@@ -51,7 +51,14 @@ class ResourceManagementsController < ApplicationController
   def forecasts
     sort_init "lastname"
     sort_update %w(lastname)
-    get_forecast_list(sort_clause)
+    location = nil
+    skill = nil
+    location = params[:location] if params[:location]
+    skill = params[:skill] if params[:skill]
+
+    location = nil if params[:location] == "N/A"
+    skill = nil if params[:skill] == "N/A"
+    get_forecast_list(sort_clause, location, skill)
 
     if params[:sort]
       render :update do |page|
@@ -180,7 +187,13 @@ class ResourceManagementsController < ApplicationController
 
   def load_weekly_forecasts
     clause = session['resource_managements_forecasts_sort'].gsub(/:/, " ")
-    get_forecast_list(clause)
+    location = nil
+    skill = nil
+    location = params[:location] if params[:location]
+    skill = params[:skill] if params[:skill]
+    location = nil if params[:location] == "N/A"
+    skill = nil if params[:skill] == "N/A"
+    get_forecast_list(clause, location, skill)
 
     @forecasts = {}
     @summary = {}
@@ -237,7 +250,7 @@ class ResourceManagementsController < ApplicationController
                            :order => sort_clause).select {|m| !m.user.is_resigned}
   end
   
-  def get_forecast_list(order)
+  def get_forecast_list(order, location, skill)
     limit = per_page_option
     dev_projects = Project.development.find(:all, :include => [:accounting])
     acctg = params[:acctg].to_s.blank? ? "Billable" : params[:acctg]
@@ -247,10 +260,15 @@ class ResourceManagementsController < ApplicationController
       @projects = dev_projects.collect {|p| p.id if (p.accounting_type.eql?( acctg))}.compact.uniq
     end
 
+    forecast_conditions = []
+    forecast_conditions << "location = '#{location}'" if location
+    forecast_conditions << "skill = '#{skill}'" if skill
+    forecast_conditions = forecast_conditions.compact.join(" and ")
+
     if @projects.empty?
       @resources = []
     else
-      @resources_no_limit = User.active.engineers.find(:all, :order => order, :include => [:projects, :members]).select do |resource|
+      @resources_no_limit = User.active.engineers.find(:all, :conditions => forecast_conditions, :order => order, :include => [:projects, :members]).select do |resource|
         resource unless resource.memberships.select {|m| m.project.active? and @projects.include?(m.project_id) }.empty?
       end
       @resource_count = @resources_no_limit.count

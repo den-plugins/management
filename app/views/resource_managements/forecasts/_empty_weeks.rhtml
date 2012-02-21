@@ -4,7 +4,9 @@
     setTimeout(function() {
       $('weekly_forecasts_form').request({
         parameters: { 'total_res_available': '<%= params[:total_res_available] %>',
-                                   'acctg': '<%= params[:acctg] %>'},
+                                   'acctg': '<%= params[:acctg] %>',
+                                   'location': '<%= params[:location] %>',
+                                   'skill': '<%= params[:skill] %>'},
         onLoading: Element.hide('ajax-indicator')
       });
     }, 10000);

@@ -5,10 +5,7 @@
   <h4>Resource Forecast Summary</h4>
 
   <div style="padding: 10px;" id="project_acctg_form">
-    <% form_tag({}, :id => 'project_accounting_select') do %>
-      Project Accounting: <%= select_tag 'acctg', options_for_select(%w(Billable Non-billable Both), (params[:acctg] || 'Billable')),
-                                                                        :onchange => "$('project_accounting_select').submit();" %>
-    <% end %>
+    <%= render :partial => "resource_managements/forecasts/filters" %>
     <%= image_tag('reload.png', :class => 'contextual linkish-icon', :style => "display: none;", :id => "icon_reload_forecasts") %>
     <p class="contextual zero" id="updated_at_text" style="display: none"></p>
   </div>

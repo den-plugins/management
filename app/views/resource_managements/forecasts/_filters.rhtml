@@ -1,0 +1,16 @@
+<fieldset>
+  <legend><%= l(:label_filter_plural) %></legend>
+
+   <% form_tag({}, :id => 'project_accounting_select') do %>
+      Project Accounting: <%= select_tag 'acctg', options_for_select(%w(Billable Non-billable Both), (params[:acctg] || 'Billable')),
+                                                                        :onchange => "$('project_accounting_select').submit();" %>
+      Location:
+      <%= select_tag 'location', options_for_select((CustomField.find_by_name('Location').possible_values), (params[:location] || 'N/A')),
+                                                       :onchange => "$('project_accounting_select').submit();" %>
+      Skill:
+      <%= select_tag 'skill', options_for_select((CustomField.find_by_name('Skill or Role').possible_values), (params[:skill] || 'N/A')),
+                                                       :onchange => "$('project_accounting_select').submit();" %>
+
+    <% end %>
+
+</fieldset>

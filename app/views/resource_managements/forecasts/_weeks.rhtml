@@ -77,6 +77,8 @@
       new Ajax.Request('/resource_managements/load_weekly_forecasts', {
         parameters: { 'total_res_available': '<%= params[:total_res_available] %>',
                                    'acctg': '<%= params[:acctg] %>',
+                                   'location': '<%= params[:location] %>',
+                                   'skill': '<%= params[:skill] %>',
                                    'reload' : 'true',
                                    'updated_at' : '<%= @updated_at.to_s %>'},
         onLoading: "$('ajax-indicator').hide()"
