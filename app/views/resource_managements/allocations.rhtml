@@ -6,6 +6,29 @@
 
 <div id='resource_allocation'>
   <h4>Resource Allocation</h4>
+  <fieldset>  
+    <legend>
+      <%= l(:label_filter_plural) %> 
+      <%=link_to "(hide/show)", "", :id => "toggle_filter_content" %> 
+    </legend>
+    <div id="filter_content" style="padding: 5px;">
+    <% form_remote_tag(:url => {},
+                       :html => {:method => :get, :id => "filter_for_allocations_form"}, 
+                       :method => :get) do %>
+      <div class="filter_group">
+        <%= label_tag("filters[projects]", "Projects") %>
+        <%= select_tag 'filters[projects][]', options_from_collection_for_select(@projects, :id, :name), 
+                                              :multiple => true, :size => 5 %>
+        <%= mgt_custom_field_tag "Location", params %>
+        <%= mgt_custom_field_tag "Skill or Role", params %>
+        <%= link_to l(:button_apply), "#", :class => "icon icon-checked",
+                                              :onclick => "$('filter_for_allocations_form').onsubmit();",
+                                              :style => "margin-left: 15px;" %>
+    <% end %>
+      </div>
+    </div>
+  </fieldset>
+  <br />
   <% if @members.any? %>
     <div class="scroll-pane" style="height: 510px;" id="mgt_allocations_scroll_pane">
       <div class='tables_container' id="mgt_allocations_table_container">
@@ -33,5 +56,9 @@
 
 <script>
   j = jQuery.noConflict();
+  jQuery("#toggle_filter_content").click(function(){
+    jQuery("#filter_content").toggle();
+    return false;
+  });
   synchRowHighlights("");
 </script>

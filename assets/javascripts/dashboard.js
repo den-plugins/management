@@ -22,3 +22,13 @@ function plot_billability_forecast(id, data) {
     highlighter: {show: true, sizeAdjust: 7.5}
   });
 }
+
+
+function toggle_multi_select(id){
+  select = $(id);
+  if (select.multiple == true) {
+      select.multiple = false;
+  } else {
+      select.multiple = true;
+  }
+}

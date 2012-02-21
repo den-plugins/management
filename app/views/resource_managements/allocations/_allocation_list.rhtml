@@ -48,10 +48,14 @@
 
 <script type="text/javascript">
 jQuery(function(){
+  jQuery('#toggle_filter_content').bind('click', function(){
+    allocationFixedHeader();
+    fixed_header_pos();
+  });
   allocationFixedHeader();
   enableHorizontalSlider();
   //enableVerticalSlider();
-  jQuery(".sort_by_lnk").click(function(){
+  jQuery(".sort_by_lnk, .icon-checked").click(function(){
     jQuery('#fixed_header #weeks_header_holder').empty();
   });
 });
