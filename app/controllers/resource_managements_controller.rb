@@ -41,7 +41,7 @@ class ResourceManagementsController < ApplicationController
   
   def allocations
     @categories = Project.project_categories
-    if params[:sort]
+    if params[:sort] || params[:filters]
       render :update do |page|
         page.replace_html :mgt_allocations_table_container, :partial => "resource_managements/allocations/allocation_list"
       end
@@ -231,9 +231,18 @@ class ResourceManagementsController < ApplicationController
     sort_clear
     sort_init 'users.lastname', 'asc'
     sort_update %w(projects.name users.lastname)
+    user_conditions = []
+    
     @projects = Project.active.development.find(:all, :include => [:accounting])
+    project_ids = @projects.collect(&:id).join(',')
+    unless params[:filters].blank?
+      filters = params[:filters]
+      user_conditions << "users.location = '#{filters[:location]}'" unless filters[:location].blank?
+      user_conditions << "users.skill = '#{filters[:skill_or_role]}'" unless filters[:skill_or_role].blank?
+      project_ids = filters[:projects].join(',') if filters[:projects]
+    end
     @members = Member.find(:all, :include => [:user, :project], 
-                           :conditions => ["members.proj_team = true AND members.project_id IN (#{@projects.collect(&:id).join(',')})"],
+                           :conditions => (["members.proj_team = true AND members.project_id IN (#{project_ids})"] + user_conditions).compact.join(' AND '),
                            :order => sort_clause).select {|m| !m.user.is_resigned}
   end
   
