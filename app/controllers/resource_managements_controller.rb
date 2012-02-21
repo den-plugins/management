@@ -406,17 +406,9 @@ class ResourceManagementsController < ApplicationController
 
 	    @skill_selected = params[:skill]
 	    @location_selected = params[:location]
-#      @skill_ids = []
-#      skill = CustomValue.find(:all, :conditions => ["value = ? and custom_field_id = ?", @skill_selected, @skill])
-#      skill.each do |x|
-#      	@skill_ids << x.customized_id
-#      end if skill
-
-#      @skill_ids = [0] if @skill_ids.empty? and @skill_selected != 0 and @skill_selected != nil
       available_user_conditions = []
       available_user_conditions << "\"users\".\"status\" = 1"
       available_user_conditions << eng_only
-#      available_user_conditions << ("id in (#{@skill_ids.join(',')})") if !@skill_ids.empty? and @skill_selected != "0" and @skill_selected != ""
       available_user_conditions << "skill = '#{@skill_selected}'" if !@skill_selected.blank? and @skill_selected != "0"
       available_user_conditions << "location = '#{@location_selected}'" if !@location_selected.blank? and @location_selected != "0"
       available_user_conditions << ( (params[:selectednames].blank?)? nil : "id not in (#{params[:selectednames].join(',')})")

@@ -11,7 +11,9 @@ jQuery('#sort_by').live('click', function(){
   jQuery('#fixed_header #weeks_header_holder').empty();
 });
 
-jQuery("#myform").attr("onsubmit", "if(xhr) xhr.abort();");
+jQuery("#submit_filters").click(function(){
+  if(xhr) xhr.abort();
+});
 
 var myurl = jQuery("#myform").attr('action');
 xhr = jQuery.ajax({
@@ -26,6 +28,9 @@ xhr = jQuery.ajax({
   success: function(html){
     var str = "";
     <% @selected_users.each do |u| %>
+    <% unless params[:selectednames].blank? %>
+      $('selectednames[]').insert('<option value="<%= u.id %>"><%= u.name %></option>');
+    <% end %>
     <% s = @summary.detect {|x| x[:id] == u.id} %>
     str += "<tr class='<%= cycle('odd','even') %> <%= color_code_log_time s %>'>";
     str += "<td><%= s[:location] %></td>";

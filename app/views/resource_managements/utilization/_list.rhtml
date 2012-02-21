@@ -56,7 +56,9 @@ jQuery(document).ready(function(){
     jQuery('#ajax-indicator').show();
     jQuery('#fixed_header #weeks_header_holder').empty();
   });
-  jQuery("#myform").attr("onsubmit", "if(xhr) xhr.abort();");
+  jQuery("#submit_filters").click(function(){
+    if(xhr) xhr.abort();
+  });
   var myurl = jQuery("#myform").attr('action');
   xhr = jQuery.ajax({
     url: myurl, 
