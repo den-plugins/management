@@ -246,7 +246,7 @@ class ResourceManagementsController < ApplicationController
   def get_projects_members
     sort_clear
     sort_init 'users.lastname', 'asc'
-    sort_update %w(projects.name users.lastname)
+    sort_update %w(projects.name users.lastname custom_values.value)
     user_conditions = []
     
     @projects = Project.active.development.find(:all, :include => [:accounting])
@@ -257,8 +257,8 @@ class ResourceManagementsController < ApplicationController
       user_conditions << "users.skill = '#{filters[:skill_or_role]}'" unless filters[:skill_or_role].blank?
       project_ids = filters[:projects].join(',') if filters[:projects]
     end
-    @members = Member.find(:all, :include => [:user, :project], 
-                           :conditions => (["members.proj_team = true AND members.project_id IN (#{project_ids})"] + user_conditions).compact.join(' AND '),
+    @members = Member.find(:all, :include => [:user, {:project, [:custom_values => :custom_field]}],
+                           :conditions => (["members.proj_team = true AND members.project_id IN (#{project_ids}) AND custom_fields.name = E'Category'"] + user_conditions).compact.join(' AND '),
                            :order => sort_clause).select {|m| !m.user.is_resigned}
   end
   

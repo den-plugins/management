@@ -3,7 +3,7 @@
   <thead>
   <tr>
     <%= sort_header_tag_without_update('projects.name', :caption => "Project", :width => "36%", :class => "sort_by_lnk") %>
-    <th width='15%'>Category</th>
+    <%= sort_header_tag_without_update('custom_values.value', :caption => "Category", :width => "15%", :class => "sort_by_lnk") %>
     <th width='6%'>Acctg Type</th>
     <%= sort_header_tag_without_update('users.lastname', :caption => "Resource", :width => "27%", :class => "sort_by_lnk") %>
     <th width='16%'>Role</th>
