@@ -95,3 +95,13 @@ function setFixedHeaderWidth(){
   jQuery("#fixed_header .movable_table_container").css({width: jQuery(".movable_table_container:last").width()});
   jQuery("#weeks_header_holder").css("width", jQuery("#floating_tables_holder").css("width"));
 }
+
+//extras
+function ClearOptionsFast(id)
+{
+	var selectObj = document.getElementById(id);
+	var selectParentNode = selectObj.parentNode;
+	var newSelectObj = selectObj.cloneNode(false); // Make a shallow copy
+	selectParentNode.replaceChild(newSelectObj, selectObj);
+	return newSelectObj;
+}

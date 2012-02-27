@@ -61,13 +61,7 @@ class ResourceManagementsController < ApplicationController
 
     get_forecast_list(sort_clause, condition)
 
-#    if params[:sort]
-#      render :update do |page|
-#        page.replace_html :mgt_forecast_list, :partial => "resource_managements/forecasts/list"
-#      end
-#    else
-      render :template => 'resource_managements/forecasts.rhtml', :layout => !request.xhr?
-#    end
+    render :template => 'resource_managements/forecasts.rhtml', :layout => !request.xhr?
   end
   
   def users
@@ -96,17 +90,11 @@ class ResourceManagementsController < ApplicationController
     @selected_users = []
     utilization_filters(sort_clause)
 
-    if params[:sort] && params[:lazy_load].blank?
-      render :update do |page|
-        page.replace_html :mgt_resources_list, :partial => "resource_managements/utilization/list"
-      end
-    else
-      respond_to do |format|
-        if params[:lazy_load].blank?
-          format.html { render :layout => !request.xhr? }
-        else
-          format.js {render :layout => false}
-        end
+    respond_to do |format|
+      if params[:lazy_load].blank?
+        format.html { render :layout => !request.xhr? }
+      else
+        format.js {render :layout => false}
       end
     end
   end
