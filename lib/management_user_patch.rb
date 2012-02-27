@@ -22,8 +22,8 @@ module Management
     
     module ClassMethods
       def resource_skills
-        res_skills = CustomField.find(:first, :conditions => "type = 'UserCustomField' and name = 'Skill or Role'")
-        return (res_skills.nil? ? [] : res_skills.possible_values)
+        res_skills = find(:all, :select => "distinct(skill)", :conditions => "skill is not NULL")
+        res_skills.empty? ? [] : res_skills.map {|u| u.skill}
       end
 
       def generate_user_mgt_condition(filters)
