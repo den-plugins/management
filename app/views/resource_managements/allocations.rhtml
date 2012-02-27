@@ -19,8 +19,10 @@
         <%= label_tag("filters[projects]", "Projects") %>
         <%= select_tag 'filters[projects][]', options_from_collection_for_select(@projects, :id, :name), 
                                               :multiple => true, :size => 5 %>
-        <%= mgt_custom_field_tag "Location", params %>
-        <%= mgt_custom_field_tag "Skill or Role", params %>
+        <%= label_tag("filters[location]", "Location") %>
+        <%= select_tag "filters[location]", options_for_select([""] + location_possible_values, @location) %>
+        <%= label_tag("filters[skill_or_role]", "Skill or Role") %>
+        <%= select_tag "filters[skill_or_role]", options_for_select([""] + skill_possible_values, @skill) %>
         <%= link_to l(:button_apply), "#", :class => "icon icon-checked",
                                               :onclick => "$('filter_for_allocations_form').onsubmit();",
                                               :style => "margin-left: 15px;" %>

@@ -33,10 +33,8 @@ module Management
         c = ARCondition.new("status = 1")
         c << "LOWER(users.lastname) LIKE '#{filters[:lastname].strip.downcase}'" unless filters[:lastname].blank?
         c << "users.is_engineering is true" if !filters[:is_engineering].blank? and filters[:is_engineering].to_i.eql?(1)
-        c << "users.id in (select users.id from users #{custom_values_join} #{custom_fields_join} \
-                    where custom_fields.name='Skill or Role' and custom_values.value='#{filters[:skill_or_role]}')" unless filters[:skill_or_role].blank?
-        c << "users.id in (select users.id from users #{custom_values_join} #{custom_fields_join} \
-                    where custom_fields.name='Location' and custom_values.value='#{filters[:location]}')" unless filters[:location].blank?
+        c << "users.skill = '#{filters[:skill_or_role]}'" unless filters[:skill_or_role].blank?
+        c << "users.location = '#{filters[:location]}'" unless filters[:location].blank?
         c << "users.id in (select users.id from users #{custom_values_join} #{custom_fields_join} \
                     where custom_fields.name='Organization' and custom_values.value='#{filters[:organization]}')" unless filters[:organization].blank?
         c

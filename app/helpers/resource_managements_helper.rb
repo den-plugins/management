@@ -287,4 +287,12 @@ module ResourceManagementsHelper
   def color_code_log_time(user)
     "lred" if user[:total_hours_on_selected].to_f < user[:forecasted_hours_on_selected].to_f
   end
+
+  def skill_possible_values
+    %w(Java RoR Architect PM/BA Interactive QA Sys Ad Mobile Tech Support Tech Writer Others N/A)
+  end
+
+  def location_possible_values
+    %w(Manila Cebu US N/A)
+  end
 end

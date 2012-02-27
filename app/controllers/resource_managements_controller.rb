@@ -78,7 +78,7 @@ class ResourceManagementsController < ApplicationController
     if filters = params[:filters]
       # temporarily put in the controller
       c = User.generate_user_mgt_condition(filters)
-      
+      @location, @skill = filters[:location], filters[:skill_or_role]
       limit = per_page_option
       @users_count  = User.count(:all, :conditions => c.conditions)
       @user_pages = Paginator.new self, @users_count, limit, params['page']
@@ -253,8 +253,9 @@ class ResourceManagementsController < ApplicationController
     project_ids = @projects.collect(&:id).join(',')
     unless params[:filters].blank?
       filters = params[:filters]
-      user_conditions << "users.location = '#{filters[:location]}'" unless filters[:location].blank?
-      user_conditions << "users.skill = '#{filters[:skill_or_role]}'" unless filters[:skill_or_role].blank?
+      @location, @role = filters[:location], filters[:skill_or_role]
+      user_conditions << "users.location = '#{@location}'" unless filters[:location].blank?
+      user_conditions << "users.skill = '#{@role}'" unless filters[:skill_or_role].blank?
       project_ids = filters[:projects].join(',') if filters[:projects]
     end
     @members = Member.find(:all, :include => [:user, {:project, [:custom_values => :custom_field]}, {:project, :accounting}],
@@ -413,29 +414,29 @@ class ResourceManagementsController < ApplicationController
     end if projtypes
 
     if @query == "user"
-      @skill = CustomField.find_by_name("Skill or Role")
-      if @skill
-        @skill_values = [["All", "0"]]
-	    	@skill.possible_values.each do |line|
-	    		@skill_values << line
-	    	end
-	    end
+#      @skill = CustomField.find_by_name("Skill or Role")
+#      if @skill
+#        @skill_values = [["All", "0"]]
+#	    	@skill.possible_values.each do |line|
+#	    		@skill_values << line
+#	    	end
+#	    end
 
-	    @location = CustomField.find_by_name("Location")
-      if @location
-        @location_values = [["All", "0"]]
-	    	@location.possible_values.each do |line|
-	    		@location_values << line
-	    	end
-	    end
+#	    @location = CustomField.find_by_name("Location")
+#      if @location
+#        @location_values = [["All", "0"]]
+#	    	@location.possible_values.each do |line|
+#	    		@location_values << line
+#	    	end
+#	    end
 
 	    @skill_selected = params[:skill]
 	    @location_selected = params[:location]
       available_user_conditions = []
       available_user_conditions << "\"users\".\"status\" = 1"
       available_user_conditions << eng_only
-      available_user_conditions << "skill = '#{@skill_selected}'" if !@skill_selected.blank? and @skill_selected != "0"
-      available_user_conditions << "location = '#{@location_selected}'" if !@location_selected.blank? and @location_selected != "0"
+      available_user_conditions << "skill = '#{@skill_selected}'" if !@skill_selected.blank? and !@skill_selected.eql?("All")
+      available_user_conditions << "location = '#{@location_selected}'" if !@location_selected.blank? and !@location_selected.eql?("All")
       available_user_conditions << ( (params[:selectednames].blank?)? nil : "id not in (#{params[:selectednames].join(',')})")
       available_user_conditions = available_user_conditions.compact.join(" and ")
       @available_users = User.all(:select => user_select,

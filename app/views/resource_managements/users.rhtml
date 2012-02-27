@@ -14,8 +14,10 @@
                                :id => 'filter_for_forecasts_form') do %>
       <div class="filter_group">
         <%= mgt_field_tag "Engineering Only", "is_engineering", params, {:format => "bool"} %>
-        <%= mgt_custom_field_tag "Location", params %>
-        <%= mgt_custom_field_tag "Skill or Role", params %>
+        <%= label_tag("filters[location]", "Location") %>
+        <%= select_tag "filters[location]", options_for_select([""] + location_possible_values, @location) %>
+        <%= label_tag("filters[skill_or_role]", "Skill or Role") %>
+        <%= select_tag "filters[skill_or_role]", options_for_select([""] + skill_possible_values, @skill) %>
         <%= mgt_custom_field_tag "Organization", params %>
         <%= mgt_field_tag "Lastname", "lastname", params, {:format => "text"} %>
         <%= link_to_remote l(:button_apply), "#", :class => "icon icon-checked",

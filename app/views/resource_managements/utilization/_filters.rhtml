@@ -55,13 +55,13 @@
          <% if @query == 'user' %>
          <div style="float:right; margin-right:30px;">
            Skill: 
-           <%= select_tag 'skill', options_for_select(@skill_values, params[:skill]),
+           <%= select_tag 'skill', options_for_select(["All"] + skill_possible_values, params[:skill]),
                                       :onchange => "selectAllOptions( document.getElementById('selectedprojects[]') );selectAllOptions( document.getElementById('selectednames[]') ); this.form.onsubmit();",
                                       :style => "width:150px" %>
          </div>
          <div style="float:right; margin-right:30px;">
            Location: 
-            <%= select_tag 'location', options_for_select(@location_values, params[:location]),
+            <%= select_tag 'location', options_for_select(["All"] + location_possible_values, params[:location]),
                                        :onchange => "selectAllOptions( document.getElementById('selectedprojects[]') );selectAllOptions( document.getElementById('selectednames[]') ); this.form.onsubmit();",
                                        :style => "width:150px" %>
          </div>
