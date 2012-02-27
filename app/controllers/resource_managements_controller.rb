@@ -246,7 +246,7 @@ class ResourceManagementsController < ApplicationController
   def get_projects_members
     sort_clear
     sort_init 'users.lastname', 'asc'
-    sort_update %w(projects.name users.lastname custom_values.value)
+    sort_update %w(projects.name users.lastname users.skill custom_values.value)
     user_conditions = []
     
     @projects = Project.active.development.find(:all, :include => [:accounting])
