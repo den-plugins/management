@@ -4,9 +4,9 @@
       <table id='allocations_fixed_table' class="list fixed">
       <thead>
         <tr>
-          <th width='20%'>Location</th>
-          <%= sort_header_tag_without_update('lastname', :caption => "Resource", :width => "50%") %>
-          <th width='30%'>Role</th>
+          <%= sort_header_tag('location', :caption => "Location", :width => "20%") %>
+          <%= sort_header_tag('lastname', :caption => "Resource", :width => "50%") %>
+          <%= sort_header_tag('skill', :caption => "Role", :width => "30%") %>
         </tr>
       </thead>
         <% resource_count = {} %>

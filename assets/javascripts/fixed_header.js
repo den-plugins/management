@@ -23,10 +23,12 @@ function forecastsFixedHeader() {
 function toggle_fixed_header(){
   jQuery(window).scroll(function(){
     var tables_container = jQuery("#forecasts_tables_container");
-    if(jQuery(this).scrollLeft() > 0){
-      jQuery("#fixed_header").css({'left': ((tables_container.position().left - jQuery(this).scrollLeft()) + 'px')});
-    }else{
-      jQuery("#fixed_header").css({'left': (tables_container.position().left + 'px')});
+    if(tables_container.position() != null){
+      if(jQuery(this).scrollLeft() > 0){
+        jQuery("#fixed_header").css({'left': ((tables_container.position().left - jQuery(this).scrollLeft()) + 'px')});
+      }else{
+        jQuery("#fixed_header").css({'left': (tables_container.position().left + 'px')});
+      }
     }
     if(jQuery("#allocations_fixed_table thead").is(":in-viewport")){
       jQuery("#fixed_header").addClass("hide");

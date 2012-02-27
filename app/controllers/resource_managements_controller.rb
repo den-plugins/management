@@ -50,7 +50,7 @@ class ResourceManagementsController < ApplicationController
   
   def forecasts
     sort_init "lastname"
-    sort_update %w(lastname)
+    sort_update %w(lastname location skill)
     location = skill = lastname = nil
 
     location = params[:location] unless params[:location].nil? || params[:location] == "N/A"
@@ -61,13 +61,13 @@ class ResourceManagementsController < ApplicationController
 
     get_forecast_list(sort_clause, condition)
 
-    if params[:sort]
-      render :update do |page|
-        page.replace_html :mgt_forecast_list, :partial => "resource_managements/forecasts/list"
-      end
-    else
+#    if params[:sort]
+#      render :update do |page|
+#        page.replace_html :mgt_forecast_list, :partial => "resource_managements/forecasts/list"
+#      end
+#    else
       render :template => 'resource_managements/forecasts.rhtml', :layout => !request.xhr?
-    end
+#    end
   end
   
   def users
@@ -192,7 +192,7 @@ class ResourceManagementsController < ApplicationController
 
     location = params[:location] unless params[:location].nil? || params[:location] == "N/A"
     skill = params[:skill] unless params[:skill].nil? || params[:skill] == "N/A"
-    lastname = params[:lastname].capitalize unless params[:lastname].nil? || params[lastname].blank?
+    lastname = params[:lastname].capitalize unless params[:lastname].nil? || params[:lastname].blank?
 
     condition = forecast_conditions(location, skill, lastname)
 
