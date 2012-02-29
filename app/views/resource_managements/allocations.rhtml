@@ -16,16 +16,15 @@
                        :html => {:method => :get, :id => "filter_for_allocations_form"}, 
                        :method => :get) do %>
       <div class="filter_group">
-        <%= label_tag("filters[projects]", "Projects") %>
-        <%= select_tag 'filters[projects][]', options_from_collection_for_select(@projects, :id, :name), 
-                                              :multiple => true, :size => 5 %>
+        <%= render :partial => "resource_managements/allocations/project_select_fields" %>
+        <div class="clear"></div><br />
         <%= label_tag("filters[location]", "Location") %>
         <%= select_tag "filters[location]", options_for_select([""] + location_possible_values, @location) %>
         <%= label_tag("filters[skill_or_role]", "Skill or Role") %>
         <%= select_tag "filters[skill_or_role]", options_for_select([""] + skill_possible_values, @skill) %>
-        <%= link_to l(:button_apply), "#", :class => "icon icon-checked",
-                                              :onclick => "$('filter_for_allocations_form').onsubmit();",
-                                              :style => "margin-left: 15px;" %>
+        <div class="clear"></div><br />
+        <%= submit_tag l(:button_apply), :id => 'submit_filters', 
+            :onclick => "selectAllOptions(document.getElementById('filters[projects][]') );" %>
     <% end %>
       </div>
     </div>
@@ -50,6 +49,7 @@
 
 <% content_for :header_tags do %>
   <%= javascript_include_tag 'jquery_tools', :plugin => 'management' %>
+  <%= javascript_include_tag 'selectbox' %>
   <%= stylesheet_link_tag 'management', :plugin => 'management' %>
   <%= javascript_include_tag 'fixed_header.js', :plugin => 'management' %>
   <%= javascript_include_tag 'jquery-ui-1.8.17.custom.min.js', :plugin => 'management' %>

@@ -1,0 +1,34 @@
+<div style="position:relative;">
+      <div style="vertical-align:top; float:left; margin: 0px; padding: 0px; width:300px;">
+      Available Projects
+      <%= select_tag 'availableprojects', options_from_collection_for_select(@projects, :id, :name), 
+                                  :multiple => true, 
+                                  :size => 10,
+                                  "onDblClick" => "moveSelectedOptions($('availableprojects'),$('filters[projects][]'),true,'')",
+                                  :style => "width:270px;",
+                                  :name => "availableprojects",
+                                  :class => "project" %>
+      </div>
+      <div style="vertical-align:top; float:left; margin: 0px; padding: 0px; width:100px; align:center;">
+        <br/>
+        <input type="button" name="right" value="&gt;&gt;" onclick="moveSelectedOptions($('availableprojects'),$('filters[projects][]'),true,'');selectAllOptions($('filters[projects][]'));" class="project">
+        <br/><br/>
+        <input type="button" name="right" value="ALL &gt;&gt;" onclick="moveAllOptions($('availableprojects'),$('filters[projects][]'),true,'');selectAllOptions($('filters[projects][]'));" class="project">
+        <br/><br/>
+        <input type="button" name="left" id="leftproject" value="&lt;&lt;" onclick="moveSelectedOptions($('filters[projects][]'),$('availableprojects'),true,'');selectAllOptions($('filters[projects][]'));" class="project">
+        <br/><br/>
+        <input type="button" name="left" value="ALL &lt;&lt;" onclick="moveAllOptions($('filters[projects][]'),$('availableprojects'),true,'');selectAllOptions($('filters[projects][]'));" class="project">
+		  </div>
+		  <div style="vertical-align:top; float:left; margin: 0px; padding: 0px; width:300px;">
+		  Selected projects
+		    <%= select_tag 'filters[projects][]', options_from_collection_for_select([], :id, :name), 
+                                      :multiple => true, 
+                                      :size => 10,
+                                      "onDblClick" => "moveSelectedOptions($('filters[projects][]'),$('availableprojects'],true,'')",
+                                      :onblur => "if((event.explicitOriginalTarget.id||document.activeElement.id) != 'leftproject'){selectAllOptions($('filters[projects][]'))}",
+                                      :style => "width:270px;",
+                                      :name => "filters[projects][]",
+                                      :id => "filters[projects][]",
+                                      :class => "project" %>
+		  </div>
+</div>
