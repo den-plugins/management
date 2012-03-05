@@ -1,4 +1,4 @@
-class ForecastJob < Struct.new(:accounting, :resources, :skill_set, :projects, :total_available_resources)
+class ForecastJob < Struct.new(:accounting, :resources_no_limit, :resources, :skill_set, :projects, :total_available_resources)
   include ResourceManagementsHelper
   
   def perform
@@ -7,6 +7,10 @@ class ForecastJob < Struct.new(:accounting, :resources, :skill_set, :projects, :
     else
       mgt = {}
     end
+
+    @resources_no_limit = User.find(:all, :conditions => ["id IN (#{resources_no_limit.join(',')})"])
+    @resources = User.find(:all, :conditions => ["id IN (#{resources.join(',')})"])
+    @projects = projects
     
     forecasts, summary = {}, {}
     updated_at = Time.now
@@ -22,9 +26,9 @@ class ForecastJob < Struct.new(:accounting, :resources, :skill_set, :projects, :
       summary_this_week["resource_count"] = {}
       summary_this_week["resource_count_per_day"] = {}
 
-      resources.each do |r|
-        resource = User.find(r)
-        alloc = resource.allocations(week, projects)
+      @resources_no_limit.each do |resource|
+#        resource = User.find(r)
+        alloc = resource.allocations(week, @projects)
         skill = resource.skill
         skill_allocations[skill] ||= 0
         skill_allocations[skill] += alloc unless resource.is_resigned

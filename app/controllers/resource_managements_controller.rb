@@ -175,6 +175,7 @@ class ResourceManagementsController < ApplicationController
   end
 
   def load_weekly_forecasts
+    @resources_no_limit = @resources = []
     clause = session['resource_managements_forecasts_sort'].gsub(/:/, " ")
     location = skill = lastname = nil
 
@@ -282,7 +283,8 @@ class ResourceManagementsController < ApplicationController
   def delay_job
     acctg = params[:acctg].to_s.blank? ? "Billable" : params[:acctg]
     resources_no_limit = @resources_no_limit.collect {|r| r.id }
-    handler = ForecastJob.new(acctg, resources_no_limit, @skill_set, @projects, params[:total_res_available])
+    resources = @resources.collect {|r| r.id}
+    handler = ForecastJob.new(acctg, resources_no_limit, resources, @skill_set, @projects, params[:total_res_available])
     Delayed::Job.enqueue handler unless Delayed::Job.find_by_handler(handler.to_yaml)
   end
   
@@ -548,9 +550,9 @@ class ResourceManagementsController < ApplicationController
 
   def forecast_conditions(location, skill, lastname)
     conditions = []
-    conditions << "location = '#{location}'" if location
-    conditions << "skill = '#{skill}'" if skill
-    conditions << "lastname = '#{lastname}'" if lastname
+    conditions << "location = '#{location}'" unless location.blank?
+    conditions << "skill = '#{skill}'" unless skill.blank?
+    conditions << "lastname = '#{lastname}'" unless lastname.blank?
     conditions = conditions.compact.join(" and ")
   end
 
