@@ -175,7 +175,6 @@ class ResourceManagementsController < ApplicationController
   end
 
   def load_weekly_forecasts
-    @resources_no_limit = @resources = []
     clause = session['resource_managements_forecasts_sort'].gsub(/:/, " ")
     location = skill = lastname = nil
 
