@@ -1,4 +1,4 @@
-class ForecastJob < Struct.new(:accounting, :resources_no_limit, :resources, :skill_set, :projects, :total_available_resources)
+class ForecastJob < Struct.new(:accounting, :resources_no_limit, :skill_set, :projects, :total_available_resources)
   include ResourceManagementsHelper
   
   def perform
@@ -9,7 +9,6 @@ class ForecastJob < Struct.new(:accounting, :resources_no_limit, :resources, :sk
     end
 
     @resources_no_limit = User.find(:all, :conditions => ["id IN (#{resources_no_limit.join(',')})"])
-    @resources = User.find(:all, :conditions => ["id IN (#{resources.join(',')})"])
     @projects = projects
     
     forecasts, summary = {}, {}
@@ -43,11 +42,11 @@ class ForecastJob < Struct.new(:accounting, :resources_no_limit, :resources, :sk
       current_total_allocated_resources = 0         # current_res_allocated
       
       skill_set.each do |skill|
-        resource_count[skill] ||= 0
-        resource_count[skill] += resource_countby(skill, week, accounting).to_i
+#        resource_count[skill] ||= 0
+#        resource_count[skill] += resource_countby(skill, week, accounting).to_i
         current_total_available_resources += resource_count[skill]
-        skill_allocations[skill] ||= 0
-        skill_allocations[skill] += get_total_allocations_per_skill(skill, week, accounting)
+#        skill_allocations[skill] ||= 0
+#        skill_allocations[skill] += get_total_allocations_per_skill(skill, week, accounting)
         resource_count_per_day = skill_allocations[skill].to_f/week.count.to_f
         current_total_allocated_resources += resource_count_per_day
 

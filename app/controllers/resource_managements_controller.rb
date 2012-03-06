@@ -282,8 +282,7 @@ class ResourceManagementsController < ApplicationController
   def delay_job
     acctg = params[:acctg].to_s.blank? ? "Billable" : params[:acctg]
     resources_no_limit = @resources_no_limit.collect {|r| r.id }
-    resources = @resources.collect {|r| r.id}
-    handler = ForecastJob.new(acctg, resources_no_limit, resources, @skill_set, @projects, params[:total_res_available])
+    handler = ForecastJob.new(acctg, resources_no_limit, @skill_set, @projects, params[:total_res_available])
     Delayed::Job.enqueue handler unless Delayed::Job.find_by_handler(handler.to_yaml)
   end
   
