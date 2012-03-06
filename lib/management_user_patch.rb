@@ -8,6 +8,10 @@ module Management
       base.send(:include, InstanceMethods)
       base.class_eval do
         unloadable
+
+        const_set("SKILLS", ["Java", "RoR", "Architect", "PM/BA", "Interactive", "QA", "Sys Ad", 
+                  "Mobile", "Tech Support", "Tech Writer", "Others", "N/A"])
+        const_set("LOCATIONS", ["Manila", "Cebu", "US", "N/A"])
         
         has_many :assumptions, :foreign_key => :owner
         has_many :risks, :foreign_key => :owner

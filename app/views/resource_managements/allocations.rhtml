@@ -19,9 +19,9 @@
         <%= render :partial => "resource_managements/allocations/project_select_fields" %>
         <div class="clear"></div><br />
         <%= label_tag("filters[location]", "Location") %>
-        <%= select_tag "filters[location]", options_for_select([""] + location_possible_values, @location) %>
+        <%= select_tag "filters[location]", options_for_select([""] + User::LOCATIONS, @location) %>
         <%= label_tag("filters[skill_or_role]", "Skill or Role") %>
-        <%= select_tag "filters[skill_or_role]", options_for_select([""] + skill_possible_values, @skill) %>
+        <%= select_tag "filters[skill_or_role]", options_for_select([""] + User::SKILLS, @skill) %>
         <div class="clear"></div><br />
         <%= submit_tag l(:button_apply), :id => 'submit_filters', 
             :onclick => "selectAllOptions(document.getElementById('filters[projects][]') );" %>

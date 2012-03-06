@@ -288,11 +288,4 @@ module ResourceManagementsHelper
     "lred" if user[:total_hours_on_selected].to_f < user[:forecasted_hours_on_selected].to_f
   end
 
-  def skill_possible_values
-    ["Java", "RoR", "Architect", "PM/BA", "Interactive", "QA", "Sys Ad", "Mobile", "Tech Support", "Tech Writer", "Others", "N/A"]
-  end
-
-  def location_possible_values
-    ["Manila", "Cebu", "US", "N/A"]
-  end
 end
