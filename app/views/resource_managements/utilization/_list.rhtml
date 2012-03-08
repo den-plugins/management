@@ -1,5 +1,6 @@
 <div class="scroll-pane" style="max-height: 510px; width: 100%;" id="mgt_allocations_scroll_pane">
   <div class='tables_container' id="mgt_allocations_table_container">
+    <% from, to = ((params[:from] && params[:to])? [@from, @to] : [(Date.today - 4.weeks), Date.today]) %>
     <div class='fixed_table_container' style="width: 60%;">
       <table id='allocations_fixed_table' class="list fixed">
       <thead>
@@ -18,8 +19,8 @@
         <% s = @summary.detect {|x| x[:id] == u.id} %>
         <tr class="<%= cycle('odd','even') %> <%= color_code_log_time s %>">
           <td><%= s[:location] %></td>
-          <td><%= s[:name] %></td>
-          <td><%= s[:skill] %></td>
+          <td class="left"><%=link_to s[:name], "/ticker/user_timelogs?user_id=#{s[:id]}&from=#{from}&to=#{to}&type=#{@columns}", :target => "_blank" %></td>
+          <td class="left"><%= s[:skill] %></td>
           <td><%= html_hours("%.2f" % s[:total_hours].to_f) %></td>
           <td><%= html_hours("%.2f" % s[:total_hours_on_selected].to_f) %></td>
           <td><%= html_hours("%.2f" % s[:billable_hours].to_f) %></td>
@@ -32,7 +33,6 @@
       </tbody>
       </table>
     </div>
-    <% from, to = ((params[:from] && params[:to])? [@from, @to] : [(Date.today - 4.weeks), Date.today]) %>
     <% dates = (@columns == "week")? get_weeks_range(from, to) : get_months_range(from, to) %>
     <%= render :partial => "resource_managements/utilization/utilization_per_date", 
                :locals => {:dates => dates, :acctg => params[:show_only]} %>
