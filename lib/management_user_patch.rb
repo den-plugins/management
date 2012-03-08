@@ -96,12 +96,13 @@ module Management
         rate ? [days, cost] : days
       end
 
-      def total_expected(from, to)
+      def total_expected(from, to, project_ids)
         weeks = get_weeks_range(from, to)
         texpected = 0
         weeks.each do |week|
-          texpected += (week.count * 8) # 40 hours is the expected hours per week, 8 hours per day and 5 days a week
+          texpected += allocations(week, project_ids) * 8 # 40 hours is the expected hours per week, 8 hours per day and 5 days a week
         end
+        p texpected
         texpected
       end
       
