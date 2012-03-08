@@ -72,8 +72,6 @@ th.rotated {position: relative; text-align: left; font-size: 10px; left: -10px; 
 .not-applicable:after {content: "NA" }
 .nocolor:after {content: "?"}
 
-td.left { text-align: left!important; }
-
 /**************************************
             User Management
 ***************************************/
