@@ -49,9 +49,9 @@ tr.lred, td.lred, th.lred { background-color: #E57E7C; color: #000; }
 tr.lgray, td.lgray, th.lgray, div.lgray { background-color: #9a9a9a; color: #FFF; }
 tr.vlgray, td.vlgray, th.vlgray, div.vlgray { background-color: #d9d9d9; color: #000;}
 
-tr.green, td.green, th.green, span.green {background-color: #9FC35B; border: 1px solid #FFF; }
-tr.red, td.red, th.red, span.red {background-color: #E57E7C; border: 1px solid #FFF; }
-tr.yellow, td.yellow, th.yellow, span.yellow {background-color: #f7d959; border: 1px solid #FFF; }
+tr.green, td.green, th.green, span.green {background-color: #9FC35B; border: 1px solid #97b846; }
+tr.red, td.red, th.red, span.red {background-color: #dc594e; border: 1px solid #Db493f; }
+tr.yellow, td.yellow, th.yellow, span.yellow {background-color: #f7d959; border: 1px solid #F4c91a; }
 tr.gray, td.gray, th.gray, span.gray {background-color: #808080; border: 1px solid #FFF; }
 
 tr.summary_total {height: 27px; ha:;}
@@ -67,7 +67,7 @@ tr.summary_total td { color: black; font-weight: bold; text-align: center; backg
 .btn_show_chart:hover{ color: #34c134;}
 .center {align: center; text-align: center }
 th.rotated {position: relative; text-align: left; font-size: 10px; left: -10px; background-color: transparent; -moz-transform: rotate(300deg); -webkit-transform: rotate(300deg); -o-transform: rotate(300deg); }
-.circle { display: block; width: 10px; height: 10px; text-align: center; -moz-border-radius: 10px; -webkit-border-radius: 40px; padding: 0; color: transparent; margin: auto; }
+.circle { display: block; width: 12px; height: 12px; text-align: center; -moz-border-radius: 15px; -webkit-border-radius: 15px; border-radius: 15px; padding: 0; color: transparent; margin: auto; }
 .not-applicable, .nocolor {color: black; }
 .not-applicable:after {content: "NA" }
 .nocolor:after {content: "?"}
@@ -122,12 +122,3 @@ table#project_health_table tr td { vertical-align: middle; border: 1px solid whi
 }
 #floating_tables_holder .time_logging tr td { text-align: center; }
 #utilization_pie_chart_wrapper {width: 50%; margin: 10px auto; }
-
-
-
-
-
-
-
-
-
