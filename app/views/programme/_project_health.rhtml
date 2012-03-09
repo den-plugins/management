@@ -1,8 +1,16 @@
+<% if @devt_projects_sorted.any? %>
 <div class="auto_scroll_y">
 <table class="list" id="project_health_table">
   <thead>
-  <tr style="height: 65px; background-color: #bfbfbf; border-bottom: 2px solid white;">
+  <tr style="<%= @header.include?('Pre-sales') ? 'height:45px' : 'height:65px' %>; background-color: #bfbfbf; border-bottom: 2px solid white;">
     <%= sort_header_tag_without_update('name', :caption => l(:field_project), :style => "width: 47%") %>
+    <% if @header.include?("Pre-sales") %>
+    <th>Schedule</th>
+    <th>Risk</th>
+    <th>Issue</th>
+    <th>Contract</th>
+    <%= sort_header_tag_without_update('proj_manager', :caption => 'PM') %>
+    <% else %>
     <th class="rotated">Cost</th>
     <th class="rotated">Schedule</th>
     <th class="rotated">Efficiency</th>
@@ -10,6 +18,8 @@
     <th class="rotated">Issue</th>
     <th class="rotated">Contract</th>
     <%= sort_header_tag_without_update('proj_manager', :caption => 'PM', :class => "rotated") %>
+    <% end %>
+    
   </tr>
   </thead>
   <tbody>
@@ -18,9 +28,13 @@
     <td class="<%= color_code_for_category project %>">
       <%= link_to project.name, {:controller => 'pm_dashboards', :action => 'index', :project_id => project.identifier }, {:target => '_blank'} %>
     </td>
+    <% if @header.include?("Pre-sales") %>
+    <td><span class="circle <%= color_code_for_schedule_status project %>"></span></td>
+    <% else %>
     <td><span class="circle <%= color_code_for_cost_status project %>"></span></td>
     <td><span class="circle <%= color_code_for_schedule_status project %>"></span></td>
     <td class=""></td>
+    <% end %>
     <td><span class="circle <%= color_code_for_risk_average project %>"></span></td>
     <td><span class="circle <%= color_code_for_issue_average project %>"></span></td>
     <td class=""></td>
@@ -36,3 +50,6 @@
   <div class="legsquare lgray"></div>Internal Project
   <div class="legsquare podd"></div>Others
 </div>
+<% else %>
+<p class="nodata"><%= l(:label_no_data) %></p>
+<% end %>

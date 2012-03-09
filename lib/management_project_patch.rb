@@ -52,6 +52,10 @@ module Management
         (category && development?) ? category.eql?("Interactive") : false
       end
 
+      def pre_sales?
+        (category && development?) ? category.eql?("Pre-Sales") : false
+      end
+
       def fixed_cost?
         billing_model.scan(/^(Fixed)/i).flatten.present? if billing_model
       end
