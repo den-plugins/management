@@ -4,6 +4,7 @@ class ProgrammeController < ApplicationController
   
   menu_item :dashboard, :only => :index
   menu_item :interactive, :only => :interactive
+  menu_item :pre_sales, :only => :pre_sales
 
   before_filter :require_pmanagement
   
@@ -57,6 +58,10 @@ class ProgrammeController < ApplicationController
     else
       render :template => 'programme/index'
     end
+  end
+
+  def pre_sales
+
   end
 
   private
