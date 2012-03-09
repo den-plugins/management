@@ -1,7 +1,8 @@
-<% if @devt_projects.any? %>
 <div class="auto_scroll_y">
 <div id="project_sched_chart"></div>
 </div>
+
+<% if @devt_projects.any? %>
 
 <div class="chart_legend">
 <div class="legend_wrapper">
@@ -43,5 +44,5 @@
   jQuery("#project_sched_chart .jqplot-point-label").css({"color":"#333", "font-size":"7.5pt"});
 </script>
 <% else %>
-  <p class="nodata"><%= l(:label_no_data) %></p>
+  <p class="nodata">No Development Projects Found.</p>
 <% end %>

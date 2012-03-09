@@ -1,7 +1,7 @@
 <%= render :partial => "header" %>
 
-<div id="programme_dashboard" style="min-height:635px;">
-  <div class="singleCol-wide" style="<%= @header.include?('Pre-sales') ? 'width:100%' : '' %>">
+<div id="programme_dashboard">
+  <div class="singleCol-wide">
     <div class="box">
       <div class="box2" style="float: left">
       <h3>Project Health</h3>
@@ -30,7 +30,7 @@
       </div>
     </div>
   </div>
-  <% if !@header.include?("Pre-sales") %>
+
   <div class="singleCol">
     <div class="box">
       <h3>Fixed Cost Projects - Financial Status</h3>
@@ -41,7 +41,6 @@
       <%= render :partial => "programme/charts/t_and_m_projects" %>
     </div>
   </div>
-  <% end %>
 </div>
 
 <% content_for :header_tags do %>
