@@ -1,15 +1,19 @@
 class ProgrammeController < ApplicationController
   helper :sort
   include SortHelper
+  
+  menu_item :dashboard, :only => :index
+  menu_item :interactive, :only => :interactive
 
   before_filter :require_pmanagement
   
   def index
     sort_init 'name', 'asc'
     sort_update({"name" =>  "name", "proj_manager" => "#{User.table_name}.firstname"})
-
-    @projects = Project.find(:all, :include => [:manager], 
-                             :conditions => ["projects.status = ?", Project::STATUS_ACTIVE], 
+    
+    @header = "Engineering Programme Dashboard"
+    @projects = Project.find(:all, :include => [:manager],
+                             :conditions => ["projects.status = ?", Project::STATUS_ACTIVE],
                              :order => sort_clause)
     @devt_projects_sorted = @projects.select(&:development?)
     @devt_projects = @devt_projects_sorted.sort_by {|s| s.name.downcase }
@@ -29,6 +33,32 @@ class ProgrammeController < ApplicationController
     end
   end
   
+  def interactive
+    sort_init 'name', 'asc'
+    sort_update({"name" =>  "name", "proj_manager" => "#{User.table_name}.firstname"})
+    
+    @header = "Interactive Programme Dashboard"
+    @projects = Project.find(:all, :include => [:manager],
+                             :conditions => ["projects.status = ?", Project::STATUS_ACTIVE],
+                             :order => sort_clause)
+    @devt_projects_sorted = @projects.select(&:dev_interactive?)
+    @devt_projects = @devt_projects_sorted.sort_by {|s| s.name.downcase }
+
+    @fixed_cost_projects = @projects.select(&:fixed_cost?).sort_by {|s| s.name.downcase }
+    @t_and_m_projects = @projects.select(&:t_and_m?).sort_by {|s| s.name.downcase }
+    
+    load_billability_file
+    load_fixed_cost_file
+    
+    if request.xhr?
+      render :update do |page|
+        page.replace_html :programme_project_health, :partial => "programme/project_health"
+      end
+    else
+      render :template => 'programme/index'
+    end
+  end
+
   private
   def require_pmanagement
     return unless require_login

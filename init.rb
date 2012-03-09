@@ -50,5 +50,10 @@ Redmine::Plugin.register :management do
     menu.push :utilization, {:controller => 'resource_managements', :action => 'utilization'}, :caption => 'Time Logging'
     menu.push :users, {:controller => 'resource_managements', :action => 'users'}, :caption => 'User Management'
   end
+  
+  Redmine::MenuManager.map :programme_dashboard do |menu|
+    menu.push :dashboard, {:controller => 'programme', :action => 'index' }, :caption => 'Engineering Programme Dashboard'
+    menu.push :interactive, {:controller => 'programme', :action => 'interactive'}, :caption => 'Interactive Programme Dashboard'
+  end
 
 end
