@@ -76,6 +76,10 @@ module ProgrammeHelper
     end
   end
   
+  def color_code_for_warranty(project)
+    project.in_warranty? ? "warrantied" : ""
+  end
+
   def daily_rate(rate)
     rate.to_f * 8
   end

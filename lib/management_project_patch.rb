@@ -59,6 +59,13 @@ module Management
       def t_and_m?
         billing_model.scan(/^(T and M)/i).flatten.present? if billing_model
       end
+      
+      def in_warranty?
+        if (from=actual_end_date) && (to=maintenance_end)
+          from, to = to, from if from && to && from > to
+          (from .. to).include?(Date.today)
+        end
+      end
     end
   end
 end

@@ -15,7 +15,7 @@
   <tbody>
   <% @devt_projects_sorted.each do |project| %>
   <tr class="<%= cycle 'podd', 'peven' %>">
-    <td class="<%= color_code_for_category project %>">
+    <td class="pname <%= color_code_for_category project %> <%= color_code_for_warranty(project) %>">
       <%= link_to project.name, {:controller => 'pm_dashboards', :action => 'index', :project_id => project.identifier }, {:target => '_blank'} %>
     </td>
     <td><span class="circle <%= color_code_for_cost_status project %>"></span></td>
