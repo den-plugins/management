@@ -191,7 +191,7 @@ module ResourceManagementsHelper
     forecast, billable = [], []
     projects.each do |p|
       ticks << p.name
-      forecast << cost_compute_forecasted_hours(range, p.members.project_team.all, "both")
+      forecast << cost_compute_forecasted_hours(range, p.members.project_team.all, "billable")
       billable << p.members.project_team.all.collect { |m| m.spent_time(range.first, range.last, "Billable").to_f }.sum
     end
     data = [forecast, billable]
