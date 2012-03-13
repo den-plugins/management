@@ -54,7 +54,8 @@ Redmine::Plugin.register :management do
   Redmine::MenuManager.map :programme_dashboard do |menu|
     menu.push :dashboard, {:controller => 'programme', :action => 'index' }, :caption => 'Engineering Programme Dashboard'
     menu.push :interactive, {:controller => 'programme', :action => 'interactive'}, :caption => 'Interactive'
-    menu.push :pre_sales, {:controller => 'programme', :action => 'pre_sales'}, :caption => 'Pre-sales Programme Dashboard'
+    menu.push :pre_sales, {:controller => 'programme', :action => 'pre_sales'}, :caption => 'Pre-sales'
+    menu.push :maintenance, {:controller => 'programme', :action => 'maintenance'}, :caption => "Maintenance"
   end
 
 end

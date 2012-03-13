@@ -5,6 +5,7 @@ class ProgrammeController < ApplicationController
   menu_item :dashboard, :only => :index
   menu_item :interactive, :only => :interactive
   menu_item :pre_sales, :only => :pre_sales
+  menu_item :maintenance, :only => :maintenance
 
   before_filter :require_pmanagement
   
@@ -61,7 +62,32 @@ class ProgrammeController < ApplicationController
   end
 
   def pre_sales
+  end
+  
+  def maintenance
+    sort_init 'name', 'asc'
+    sort_update({"name" =>  "name", "proj_manager" => "#{User.table_name}.firstname"})
+    
+    @header = "Maintenance Programme Dashboard"
+    @projects = Project.find(:all, :include => [:manager],
+                             :conditions => ["projects.status = ?", Project::STATUS_ACTIVE],
+                             :order => sort_clause)
+    @devt_projects_sorted = @projects.select(&:in_warranty?)
+    @devt_projects = @devt_projects_sorted.sort_by {|s| s.name.downcase }
 
+    @fixed_cost_projects = @projects.select(&:fixed_cost?).sort_by {|s| s.name.downcase }
+    @t_and_m_projects = @projects.select(&:t_and_m?).sort_by {|s| s.name.downcase }
+    
+    load_billability_file
+    load_fixed_cost_file
+    
+    if request.xhr?
+      render :update do |page|
+        page.replace_html :programme_project_health, :partial => "programme/project_health"
+      end
+    else
+      render :template => 'programme/index'
+    end
   end
 
   private
