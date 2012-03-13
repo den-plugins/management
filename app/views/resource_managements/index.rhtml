@@ -76,6 +76,23 @@
       </div>
      <%# render :partial => "resource_managements/charts/billability_skill" %>
     </div>
+
+    <div class="box">
+      <% options = ["last month", "last 3 months", "last 6 months", "this year", "last year"] %>
+      <h3>Forecast vs Billable 
+      <span style="float:right;">
+      <%= select_tag "selection", options_for_select(options, options[2]), 
+                     :onchange => "jQuery('#selection_hidden').val(jQuery('#selection').val());" %>
+      </span>
+      </h3>
+      <div class="auto_scroll_x"><div id="forecast_billable_chart"></div></div>
+      <div id="show_forecast_billable">
+        <% form_remote_tag(:url => {:action => 'load_chart', :chart => 'forecast_billable'}) do %>
+          <%= hidden_field_tag "selection", "", :id => "selection_hidden" %>
+          <%= submit_tag "Show Graph", :class => 'btn_show_chart' %>
+        <% end %>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -88,6 +105,7 @@
   <%= javascript_include_tag 'plugins/jqplot.barRenderer.min.js', :plugin => 'redmine_burndown' %>
   <%= javascript_include_tag 'plugins/jqplot.canvasAxisLabelRenderer.min.js', :plugin => 'redmine_burndown' %>
   <%= javascript_include_tag 'plugins/jqplot.canvasTextRenderer.min.js', :plugin => 'redmine_burndown' %>
+  <%= javascript_include_tag 'plugins/jqplot.canvasAxisTickRenderer.min.js', :plugin => 'redmine_burndown' %>
   <%= javascript_include_tag 'plugins/jqplot.categoryAxisRenderer.min.js', :plugin => 'redmine_burndown' %>
   <%= javascript_include_tag 'plugins/jqplot.cursor.min.js', :plugin => 'redmine_burndown' %>
   <%= javascript_include_tag 'plugins/jqplot.dateAxisRenderer.min.js', :plugin => 'redmine_burndown' %>

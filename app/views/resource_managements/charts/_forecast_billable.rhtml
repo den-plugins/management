@@ -1,0 +1,71 @@
+<% form_remote_tag(:url => {:action => 'load_chart', :chart => 'forecast_billable'}) do %>
+  <%= hidden_field_tag "selection", "", :id => "selection_hidden" %>
+<% end %>
+
+<% if @projects.any? %>
+<div id="chartpseudotooltip"></div>
+<% jticks, jdata = json_forecast_billable(@projects, (@from .. @to)).collect %>
+<script type="text/javascript">
+  <% if @projects.count > 7 %>
+  jQuery("#forecast_billable_chart").width('<%= @projects.count * 55 %>px');
+  <% end %>
+  jQuery(function(){
+    jQuery("#selection").removeAttr("onchange").change(function(){
+      jQuery('#selection_hidden').val(jQuery('#selection').val()).closest('form').submit();
+    });
+    jQuery("#forecast_billable_chart").empty();
+
+    var plot = jQuery.jqplot('forecast_billable_chart', <%= jdata %>, {
+        seriesDefaults:{
+            renderer:jQuery.jqplot.BarRenderer,
+            rendererOptions: {fillToZero: true, barPadding: 1, barWidth: 9}
+        },
+        seriesColors: ["#dc594e", "#5296d9"],
+        series:[
+            {label:'Forecast'},
+            {label:'Billable'}
+        ],
+        legend: { show: true, location: 'nw' },
+        axes: {
+            xaxis: {
+                renderer: jQuery.jqplot.CategoryAxisRenderer,
+                ticks: <%= jticks %>,
+                tickRenderer: jQuery.jqplot.CanvasAxisTickRenderer,
+                tickOptions: {angle: -45, fontSize: '7pt', showGridline: false}
+            },
+            yaxis: {
+                label: "Hours",
+                labelRenderer: jQuery.jqplot.CanvasAxisLabelRenderer,
+                tickOptions: {formatString: '%.2f%d'}
+            }
+        },
+        grid: {gridLineColor: '#c7c7c7'}
+    });
+  });
+
+  // custom highlighter for chart since jqplot has a bug on highlighter when using BarRenderer
+  jQuery("#forecast_billable_chart").bind('jqplotDataHighlight', 
+    function (ev, seriesIndex, pointIndex, data ) {
+      mouseX = ev.pageX;
+      mouseY = ev.pageY;
+      jQuery('#chartpseudotooltip').html('PHP '+numberWithCommas(data[1]));
+      var cssObj = {
+          'left' : mouseX + 'px',
+          'top' : (mouseY-20) + 'px'
+        };
+      jQuery('#chartpseudotooltip').css(cssObj).fadeIn();
+    }
+  ).bind('jqplotDataUnhighlight', 
+    function (ev) {
+      jQuery('#chartpseudotooltip').fadeOut();
+    }
+  );   
+  function numberWithCommas(x) {
+    x = parseFloat(x.toFixed(2));
+    return x.toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",");
+  }
+</script>
+
+<% else %>
+  <p class='nodata'><%= l(:label_no_data) %></p>
+<% end %>

@@ -186,6 +186,18 @@ module ResourceManagementsHelper
     return res_billability_forecast.to_json
   end
 
+  def json_forecast_billable(projects, range)
+    data, ticks = [], []
+    forecast, billable = [], []
+    projects.each do |p|
+      ticks << p.name
+      forecast << cost_compute_forecasted_hours(range, p.members.project_team.all, "both")
+      billable << p.members.project_team.all.collect { |m| m.spent_time(range.first, range.last, "Billable").to_f }.sum
+    end
+    data = [forecast, billable]
+    return [ticks.to_json, data.to_json]
+  end
+
   def allocation_to_class(allocation, is_shadowed=false)
     if is_shadowed
       "lgray"

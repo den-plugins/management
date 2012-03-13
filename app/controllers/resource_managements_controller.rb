@@ -28,11 +28,28 @@ class ResourceManagementsController < ApplicationController
   end
 
   def load_chart
-    if params[:chart] != "resource_allocation"
+    if params[:chart] == "forecast_billable"
+      @projects = Project.active.all
+      selection = (params[:selection].blank? ? "last 6 months" : params[:selection])
+      today = Date.today
+      case selection
+        when "last month"
+          @from, @to = (today - 1.month).beginning_of_month, (today - 1.month).end_of_month
+        when "last 3 months"
+          @from, @to = (today - 3.months).beginning_of_month, (today - 1.month).end_of_month
+        when "last 6 months"
+          @from, @to = (today - 6.months).beginning_of_month, (today - 1.month).end_of_month
+        when "this year"
+          @from, @to = today.beginning_of_year, (today - 1.month).end_of_month
+        when "last year"
+          @from, @to = (today - 1.year).beginning_of_year, (today - 1.year).end_of_year
+      end
+      p "from: #{@from}, @to: #{@to}"
+    elsif params[:chart] == "resource_allocation"
+      @categories = Project.project_categories.sort
+    else
       @users = User.active.engineers
       @skill_set = User.resource_skills.sort
-    else
-      @categories = Project.project_categories.sort
     end
     render :update do |page|
       page.replace_html "show_#{params[:chart]}".to_sym, :partial => "resource_managements/charts/#{params[:chart]}"
