@@ -49,7 +49,11 @@ module Management
       end
       
       def dev_interactive?
-        (category && development?) ? category.eql?("Interactive") : false
+        (category && development?) ? category.downcase.include?("interactive") : false
+      end
+      
+      def dev_pre_sales?
+        (category && development?) ? category.downcase.include?("pre-sales") : false
       end
 
       def fixed_cost?
@@ -65,6 +69,10 @@ module Management
           from, to = to, from if from && to && from > to
           (from .. to).include?(Date.today)
         end
+      end
+      
+      def in_programme?
+        development? and !dev_interactive? and !dev_pre_sales? and !in_warranty?
       end
     end
   end
