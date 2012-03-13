@@ -29,7 +29,8 @@ class ResourceManagementsController < ApplicationController
 
   def load_chart
     if params[:chart] == "forecast_billable"
-      @projects = Project.active.all
+      @projects = Project.active.find(:all, :order => "name ASC", :limit => 5, :offset => params[:offset].to_i)
+      @total_projects = params[:total_projects].to_i
       selection = (params[:selection].blank? ? "last 6 months" : params[:selection])
       today = Date.today
       case selection

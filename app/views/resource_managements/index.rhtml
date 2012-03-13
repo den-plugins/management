@@ -85,9 +85,11 @@
                      :onchange => "jQuery('#selection_hidden').val(jQuery('#selection').val());" %>
       </span>
       </h3>
+      <div id="forecast_billable_json_data" style="display:none;"> "[[],[[],[]]]" </div>
       <div class="auto_scroll_x"><div id="forecast_billable_chart"></div></div>
       <div id="show_forecast_billable">
-        <% form_remote_tag(:url => {:action => 'load_chart', :chart => 'forecast_billable'}) do %>
+        <% form_remote_tag(:url => {:action => 'load_chart', :chart => 'forecast_billable', 
+                                    :total_projects => @projects.count}) do %>
           <%= hidden_field_tag "selection", "", :id => "selection_hidden" %>
           <%= submit_tag "Show Graph", :class => 'btn_show_chart' %>
         <% end %>
