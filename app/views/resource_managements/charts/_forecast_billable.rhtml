@@ -11,6 +11,7 @@
   jQuery("#forecast_billable_json_data").html(JSON.stringify(json_data));
   
   jQuery('#loading_data').remove();
+  jQuery('#done').remove();
   if(json_data[0].length > 7) jQuery("#forecast_billable_chart").width((json_data[0].length * 55) + 'px');
   jQuery(function(){
     jQuery("#selection").removeAttr("onchange").unbind('change').change(function(){
@@ -82,7 +83,7 @@
     })
     <% else %>
       jQuery('<div id="done" class="flash notice">Done</div>').insertBefore("#show_forecast_billable");
-      jQuery('#done').fadeOut(3000).remove();
+      jQuery('#done').fadeOut(3000);
     <% end %>
   });
 </script>
