@@ -82,7 +82,7 @@
     })
     <% else %>
       jQuery('<div id="done" class="flash notice">Done</div>').insertBefore("#show_forecast_billable");
-      jQuery('#done').fadeOut(3000);
+      jQuery('#done').fadeOut(3000).remove();
     <% end %>
   });
 </script>
