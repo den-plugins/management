@@ -15,6 +15,7 @@
   jQuery(function(){
     jQuery("#selection").removeAttr("onchange").unbind('change').change(function(){
       jQuery('#selection_hidden').val(jQuery('#selection').val()).closest('form').submit();
+      jQuery("#forecast_billable_json_data").html("\"[[],[[],[]]]\"");
     });
     jQuery("#forecast_billable_chart").empty();
 
@@ -77,8 +78,7 @@
       }
     });
     jQuery("#selection").bind("change", function(){ 
-      if(xhr) xhr.abort(); 
-      jQuery("#forecast_billable_json_data").html("\"[[],[[],[]]]\"");
+      if(xhr) xhr.abort();
     })
     <% else %>
       jQuery('<div id="done" class="flash notice">Done</div>').insertBefore("#show_forecast_billable");
