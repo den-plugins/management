@@ -47,7 +47,7 @@
         grid: {gridLineColor: '#c7c7c7'}
     });
     // custom highlighter for chart since jqplot has a bug on highlighter when using BarRenderer
-    jQuery("#forecast_billable_chart").bind('jqplotDataHighlight', 
+    jQuery("#forecast_billable_chart").unbind('jqplotDataHighlight').bind('jqplotDataHighlight', 
       function (ev, seriesIndex, pointIndex, data ) {
         mouseX = ev.pageX;
         mouseY = ev.pageY;
@@ -58,7 +58,7 @@
           };
         jQuery('#chartpseudotooltip').css(cssObj).fadeIn();
       }
-    ).bind('jqplotDataUnhighlight', 
+    ).unbind('jqplotDataUnhighlight').bind('jqplotDataUnhighlight', 
       function (ev) {
         jQuery('#chartpseudotooltip').fadeOut();
       }

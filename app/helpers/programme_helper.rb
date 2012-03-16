@@ -65,9 +65,16 @@ module ProgrammeHelper
   end
   
   def color_code_for_schedule_status(project)
-    if project.planned_start_date && project.planned_end_date
-      if project.actual_end_date
-        (project.actual_end_date < project.planned_end_date) ? "red" : "green"
+    if project.is_a?(Project)
+      start_date, end_date = project.planned_start_date, project.planned_end_date
+      actual_end_date = project.actual_end_date
+    elsif project.is_a?(Issue)
+      start_date, end_date = project.start_date, project.due_date
+      actual_end_date = Date.today
+    end
+    if start_date && end_date
+      if actual_end_date
+        (actual_end_date < end_date) ? "red" : "green"
       else
         "yellow"
       end

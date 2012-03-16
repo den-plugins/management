@@ -62,6 +62,22 @@ class ProgrammeController < ApplicationController
   end
 
   def pre_sales
+    sort_init 'subject', 'asc'
+    sort_update({"subject" =>  "subject", "proj_manager" => "#{User.table_name}.firstname"})
+    
+    @header = "Pre-sales Programme Dashboard"
+    @pre_sales = Project.find(:first, :conditions => "name = 'Exist Pre-Sales'")
+    @features = @pre_sales.issues.find(:all, :include => [:assigned_to, :tracker], 
+                                             :conditions => "trackers.name = 'Task'",
+                                             :order => sort_clause)
+    
+    if request.xhr?
+      render :update do |page|
+        page.replace_html :programme_project_health, :partial => "programme/pre_sales/project_health"
+      end
+    else
+      render :template => 'programme/pre_sales'
+    end
   end
   
   def maintenance

@@ -1,0 +1,46 @@
+<% if @features.any? %>
+<div class="auto_scroll_y">
+  <div id="project_sched_chart"></div>
+</div>
+<div class="chart_legend">
+<div class="legend_wrapper">
+  <div class="legend_square" style="background-color:#dc594e;"></div> Current Date
+  <div class="legend_square" style="background-color:#5296d9;"></div> Due Date
+</div>
+</div>
+
+<% min_date = get_min_date(@features, false) %>
+<% jdata = sched_chart_data(@features, min_date, false) %>
+
+<script>
+  <% if @features.count > 10 %>
+  jQuery("#project_sched_chart").height(jQuery("#project_health_table").height());
+  <% end %>
+  var plot = jQuery.jqplot('project_sched_chart', <%= jdata %>, {
+    seriesDefaults: {
+      renderer:jQuery.jqplot.BarRenderer,
+      pointLabels: { show: true, location: 'w'},
+      rendererOptions: {barDirection: 'horizontal', shadowOffset: 1, shadowAlpha: 0.05, barPadding: 0, barWidth: 9}
+    },
+    seriesColors: ["#dc594e", "#5296d9"],
+    series: [
+      {label: "Current Date"},
+      {label: "Due Date"}
+    ],
+    axes: {
+      xaxis: {renderer: jQuery.jqplot.DateAxisRenderer,
+              min: <%= min_date.to_json %>,
+              tickRenderer: jQuery.jqplot.CanvasAxisTickRenderer,
+              tickOptions: {angle: -45, formatString:'%b %e', fontSize: '7pt'}},
+      yaxis: {renderer: jQuery.jqplot.CategoryAxisRenderer,
+             tickRenderer: jQuery.jqplot.CanvasAxisTickRenderer,
+             tickOptions: {fontSize: '7pt', showGridline: false}}
+    },
+    legend: {show: false},
+    grid: {gridLineColor: '#c7c7c7'}
+  });
+  jQuery("#project_sched_chart .jqplot-point-label").css({"color":"#333", "font-size":"7.5pt"});
+</script>
+<% else %>
+  <p class="nodata">No Development Projects Found.</p>
+<% end %>

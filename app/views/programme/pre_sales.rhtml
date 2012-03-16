@@ -1,1 +1,54 @@
 <%= render :partial => "header" %>
+
+<div id="programme_dashboard">
+  <div class="singleCol-wide" style="width: 99%">
+    <div class="box">
+      <div class="box2" style="float: left; width: 100%">
+      <h3>Project Health</h3>
+        <div id="programme_project_health">
+          <%= render :partial => "programme/pre_sales/project_health" %>
+        </div>
+      </div>
+      
+      <!--
+      <div class="box2" style="float: right">
+        <h3>Project Schedule - End Date</h3>
+        <%# render :partial => "programme/charts/project_schedule" %>
+      </div>
+      -->
+    </div>
+  
+    <div style="clear: both"></div>
+    <!--
+    <div class="singleCol" style="float: left">
+      <div class="box">
+        <h3>Proposal Health (Proposals currently being handled by PMs)</h3>
+      </div>
+    </div>
+
+    <div class="singleCol" style="float: right">
+      <div class="box">
+        <h3>Project Forecast Comparative Chart</h3>
+      </div>
+    </div>
+    -->
+  </div>
+</div>
+
+<% content_for :header_tags do %>
+  <%= stylesheet_link_tag 'management', :plugin => 'management' %>
+  <%= stylesheet_link_tag 'jquery.jqplot.css', :plugin => 'redmine_burndown' %>
+  <%= javascript_include_tag 'dashboard.js', :plugin => 'management' %>
+  <%= javascript_include_tag 'jquery.min.js', :plugin => 'redmine_burndown' %>
+  <%= javascript_include_tag 'jquery.jqplot.js', :plugin => 'redmine_burndown' %>
+  <%= javascript_include_tag 'plugins/jqplot.barRenderer.min.js', :plugin => 'redmine_burndown' %>
+  <%= javascript_include_tag 'plugins/jqplot.canvasAxisLabelRenderer.min.js', :plugin => 'redmine_burndown' %>
+  <%= javascript_include_tag 'plugins/jqplot.canvasTextRenderer.min.js', :plugin => 'redmine_burndown' %>
+  <%= javascript_include_tag 'plugins/jqplot.categoryAxisRenderer.min.js', :plugin => 'redmine_burndown' %>
+  <%= javascript_include_tag 'plugins/jqplot.canvasAxisTickRenderer.min.js', :plugin => 'redmine_burndown' %>
+  <%= javascript_include_tag 'plugins/jqplot.cursor.min.js', :plugin => 'redmine_burndown' %>
+  <%= javascript_include_tag 'plugins/jqplot.dateAxisRenderer.min.js', :plugin => 'redmine_burndown' %>
+  <%= javascript_include_tag 'plugins/jqplot.highlighter.min.js', :plugin => 'redmine_burndown' %>
+  <%= javascript_include_tag 'plugins/jqplot.pieRenderer.min.js', :plugin => 'redmine_burndown' %>
+  <%= javascript_include_tag 'plugins/jqplot.pointLabels.min.js', :plugin => 'redmine_burndown' %>
+<% end %>

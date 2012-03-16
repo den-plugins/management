@@ -1,0 +1,36 @@
+<div class="auto_scroll_y">
+<table class="list" id="project_health_table">
+  <thead>
+  <tr style="height: 65px; background-color: #bfbfbf; border-bottom: 2px solid white;">
+    <%= sort_header_tag_without_update('subject', :caption => "Features", :style => "width: 47%") %>
+    <th style="text-align:center">Schedule</th>
+    <th style="text-align:center">Risk</th>
+    <th style="text-align:center">Issue</th>
+    <th style="text-align:center">Contract</th>
+    <%= sort_header_tag_without_update('proj_manager', :caption => 'PM', :style => "text-align:center") %>
+  </tr>
+  </thead>
+  <tbody>
+  <% @features.each do |feature| %>
+  <tr class="<%= cycle 'podd', 'peven' %>">
+    <td class="pname">
+      <%= link_to feature.subject, {:controller => 'issues', :action => 'show', :id => feature.id }, {:target => '_blank'} %>
+    </td>
+    <td><span class="circle <%= color_code_for_schedule_status feature %>"></span></td>
+    <td class=""></td>
+    <td class=""></td>
+    <td class=""></td>
+    <td class="center"><span><%= (m=feature.assigned_to) ? initials(m.firstname, m.lastname) : "?" %></span></td>
+  </tr>
+  <% end %>
+  </tbody>
+</table>
+</div>
+<!--
+<div class="smallfont plegend">
+  <p><em>Project Color Coding</em></p>
+  <div class="legsquare vlgray"></div>For Time Logging Only
+  <div class="legsquare lgray"></div>Internal Project
+  <div class="legsquare podd"></div>Others
+</div>
+-->
