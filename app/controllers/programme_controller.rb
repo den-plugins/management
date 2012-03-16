@@ -68,8 +68,8 @@ class ProgrammeController < ApplicationController
     @header = "Pre-sales Programme Dashboard"
     @pre_sales = Project.find(:first, :conditions => "name = 'Exist Pre-Sales'")
     @features = @pre_sales.issues.find(:all, :include => [:assigned_to, :tracker], 
-                                             :conditions => "trackers.name = 'Task'",
-                                             :order => sort_clause)
+                                             :conditions => "trackers.name = 'Feature'",
+                                             :order => sort_clause) if @pre_sales
     
     if request.xhr?
       render :update do |page|

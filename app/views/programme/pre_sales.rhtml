@@ -4,10 +4,18 @@
   <div class="singleCol-wide" style="width: 99%">
     <div class="box">
       <div class="box2" style="float: left; width: 100%">
+      <% if @pre_sales %>
       <h3>Project Health</h3>
         <div id="programme_project_health">
+          <% if @features.any? %>
           <%= render :partial => "programme/pre_sales/project_health" %>
+          <% else %>
+          <p class="nodata">No features found.</p>
+          <% end %>
         </div>
+      <% else %>
+        <p class="nodata">'Exist Pre-Sales' project does not exist.</p>
+      <% end %>
       </div>
       
       <!--
