@@ -14,7 +14,7 @@ table#allocations_fixed_table_clone tr td { text-overflow: clip; overflow: hidde
 table#allocation_week tr td, table#allocation_week tr th { text-align: center; text-overflow: ellipsis; overflow: hidden; }
 
 #programme_dashboard div.singleCol-wide .auto_scroll_y {height: 450px; }
-div.singleCol { float: left; width: 32%; margin: 3px 6px; }
+div.singleCol { float: left; width: 32%; margin: 3px 6px; min-height: 660px;}
 div.singleCol-wide {float: left; width: 65%; height: 530px; margin: 3px 6px; }
 div.singleCol-wide .box {height: 100%;min-height: 60px;}
 div.singleCol-wide div.singleCol {float: left; width: 49%; margin: 0; padding: 0 }
