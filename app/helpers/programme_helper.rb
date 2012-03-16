@@ -74,7 +74,8 @@ module ProgrammeHelper
     end
     if start_date && end_date
       if actual_end_date
-        (actual_end_date < end_date) ? "red" : "green"
+        ((actual_end_date < end_date) ? "red" : "green") if project.is_a?(Project)
+        ((actual_end_date > end_date and !project.closed?) ? "red" : "green") if project.is_a?(Issue)
       else
         "yellow"
       end
