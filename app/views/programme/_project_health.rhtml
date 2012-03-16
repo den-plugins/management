@@ -1,3 +1,4 @@
+<% if @devt_projects_sorted.present? %>
 <div class="auto_scroll_y">
 <table class="list" id="project_health_table">
   <thead>
@@ -36,3 +37,6 @@
   <div class="legsquare lgray"></div>Internal Project
   <div class="legsquare podd"></div>Others
 </div>
+<% else %>
+  <p class="nodata"><%= l(:label_no_data) %></p>
+<% end %>
