@@ -8,6 +8,8 @@ class ResourceManagementsController < ApplicationController
 
   helper :users, :custom_fields, :scrums, :resource_utilization
 
+  require 'json'
+
   before_filter :require_management
   before_filter :get_projects_members, :only => [:index, :allocations, :load_chart]
   before_filter :set_cache_buster
@@ -29,11 +31,11 @@ class ResourceManagementsController < ApplicationController
 
   def load_chart
     if params[:chart] == "forecast_billable"
-      @projects = Project.active.find(:all, :order => "name ASC", :limit => 5, :offset => params[:offset].to_i)
-      @total_projects = params[:total_projects].to_i
-      selection = (params[:selection].blank? ? "last 6 months" : params[:selection])
+      @users = User.active.engineers.find(:all, :order => "lastname ASC")
+      @total_users = params[:total_users].to_i
+      @selection = (params[:selection].blank? ? "last 6 months" : params[:selection])
       today = Date.today
-      case selection
+      case @selection
         when "last month"
           @from, @to = (today - 1.month).beginning_of_month, (today - 1.month).end_of_month
         when "last 3 months"
@@ -45,7 +47,11 @@ class ResourceManagementsController < ApplicationController
         when "last year"
           @from, @to = (today - 1.year).beginning_of_year, (today - 1.year).end_of_year
       end
-      p "from: #{@from}, @to: #{@to}"
+      key = @selection.downcase.gsub(' ', '_')
+      data = (params['data'].blank? ? {} : params['data'].each {|k,v| params['data'][k] = JSON.parse(v)})
+      handler = ForecastBillableJob.new(@from, @to, @selection, data, @users.collect {|u| u.id})
+      @job = Delayed::Job.find_by_handler(handler.to_yaml)
+      enqueue_forecast_billable_job(handler, @job) if !File.exists?("#{RAILS_ROOT}/config/forecast_billable.json") || (!data.blank? && data[key].nil?)
     elsif params[:chart] == "resource_allocation"
       @categories = Project.project_categories.sort
     else
@@ -55,6 +61,16 @@ class ResourceManagementsController < ApplicationController
     render :update do |page|
       page.replace_html "show_#{params[:chart]}".to_sym, :partial => "resource_managements/charts/#{params[:chart]}"
     end
+  end
+
+  def forecast_billable
+    @enqueued = params[:enqueued]
+    @json = if File.exists?("#{RAILS_ROOT}/config/forecast_billable.json")
+      File.read("#{RAILS_ROOT}/config/forecast_billable.json")
+    else
+      {}.to_json
+    end
+    render :json => JSON.parse(@json)
   end
   
   def allocations
@@ -570,6 +586,15 @@ class ResourceManagementsController < ApplicationController
     conditions << "skill = '#{skill}'" unless skill.blank?
     conditions << "lastname = '#{lastname}'" unless lastname.blank?
     conditions = conditions.compact.join(" and ")
+  end
+
+  def enqueue_forecast_billable_job(handler, job)
+    unless job
+      puts "enqueuing forecast vs billable job..."
+      @job = Delayed::Job.enqueue handler
+    else
+      @job = nil
+    end
   end
 
 end
