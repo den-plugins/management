@@ -44,13 +44,13 @@ class ForecastJob < Struct.new(:accounting, :resources_no_limit, :skill_set, :pr
       skill_set.each do |skill|
 #        resource_count[skill] ||= 0
 #        resource_count[skill] += resource_countby(skill, week, accounting).to_i
-        current_total_available_resources += resource_count[skill]
+        current_total_available_resources += resource_count[skill].to_i
 #        skill_allocations[skill] ||= 0
 #        skill_allocations[skill] += get_total_allocations_per_skill(skill, week, accounting)
         resource_count_per_day = skill_allocations[skill].to_f/week.count.to_f
         current_total_allocated_resources += resource_count_per_day
 
-        summary_this_week["resource_count"][to_yml(skill)] = resource_count[skill]
+        summary_this_week["resource_count"][to_yml(skill)] = resource_count[skill].to_i
         summary_this_week["resource_count_per_day"][to_yml(skill)] = resource_count_per_day
         resource_count[skill] = 0
         skill_allocations[skill] = 0.0
