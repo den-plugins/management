@@ -79,12 +79,19 @@
 
     <div class="box">
       <% options = ["last month", "last 3 months", "last 6 months", "this year", "last year"] %>
-      <h3>Forecast vs Billable 
-      <span style="float:right;">
-      <%= select_tag "selection", options_for_select(options, options[2]), 
-                     :onchange => "jQuery('#selection_hidden').val(jQuery('#selection').val());" %>
-      </span>
-      </h3>
+      <div id='forecast_billable_header'>
+        <div style="float:left; width:40%; display:inline;">
+        <h3 style="margin:0; padding:0;">Forecast vs Billable</h3>
+        <span class="as_of" style="font-size:8pt;"></span>
+        </div>
+        <div id="forecast_billable_controls" style="float:right; display:inline;">
+        <!--<a href="#" onclick="" title="Refresh" style="float:left; margin:6px;">
+        <%= image_tag('reload.png') %>
+        </a>-->
+        <%= select_tag "selection", options_for_select(options, options[2]), 
+                       :onchange => "jQuery('#selection_hidden').val(jQuery('#selection').val());" %>
+        </div>
+      </div>
       <div class="auto_scroll_x"><div id="forecast_billable_chart"></div></div>
       <div id="show_forecast_billable">
         <% form_remote_tag(:url => {:action => 'load_chart', :chart => 'forecast_billable', 

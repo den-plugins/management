@@ -25,6 +25,8 @@ function initialize(){
     });
     if(jdata.length > 0){
       if(jdata[0].length > 7) jQuery("#forecast_billable_chart").width((jdata[0].length * 55) + 'px');
+      var asOf = jQuery("#forecast_billable_header span.as_of");
+      (jdata[2])? asOf.html('as of ' + jdata[2]) : asOf.html("");
 
       var plot = jQuery.jqplot('forecast_billable_chart', jdata[1], {
           seriesDefaults:{
