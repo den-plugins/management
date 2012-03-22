@@ -12,8 +12,17 @@ function initialize(){
   jQuery("#selection").removeAttr("onchange").unbind('change').change(function(){
     jQuery('#selection_hidden').val(jQuery('#selection').val()).closest('form').submit();
     jQuery("#forecast_billable_chart").empty();
+    jQuery("#forecast_billable_header span.as_of").html("");
+    jQuery("#forecast_billable_header a.refresh").html("");
   });
   jQuery('#notif').remove();
+  <% if params[:refresh] %>
+    <% if @job.nil? %>
+      notif(-1);
+    <% else %>
+      notif(1);
+    <% end %>
+  <% end %>
   var jdata = new Array(), 
       jcount = 0;
   jQuery.getJSON('resource_managements/forecast_billable?selection=<%= @selection %>', function(json_data) {
@@ -71,6 +80,31 @@ function initialize(){
           jQuery('#chartpseudotooltip').fadeOut();
         }
       ); 
+
+      var refresh = jQuery("#forecast_billable_header a.refresh");
+      refresh.html('<%= image_tag('reload.png') %>');
+      refresh.unbind('click').click(function(){
+        jQuery('#notif').remove();
+        jQuery("#forecast_billable_chart").empty();
+        jQuery.ajax({  
+          type: "POST",  
+          url: jQuery('#selection_hidden').val(jQuery('#selection').val()).closest('form').attr('action'),  
+          data: "{'selection': '<%= @selection %>', 'refresh':'true', 'data':"+ JSON.stringify(json_data) +"}",
+          contentType: "application/json; charset=utf-8",
+          beforeSend: function( xhr ) {
+            refresh.unbind('click');
+            refresh.html('<%= image_tag('preload.gif', :width => '16', :plugin => 'management') %>');
+            jQuery("#forecast_billable_chart").css({'height':'0px'});
+          },
+          success: function() {
+            refresh.html('<%= image_tag('reload.png') %>');
+          },
+          error: function() {
+            notif(0);
+          }
+        });
+        return false;
+      });
     }else{
       if(jcount > 0){
         notif(jcount);
@@ -102,12 +136,15 @@ function numberWithCommas(x) {
 
 function notif(flag){
   jQuery('#notif').remove();
-  if( flag > 0){
+  if( flag > 0 ){
     jQuery("#forecast_billable_chart").css({'height':'0px'});
     jQuery('<div id="notif" class="flash notice">Process enqueued...</div>').insertBefore("#forecast_billable_chart");
-  }else{
+  }else if( flag == 0 ){
     jQuery("#forecast_billable_chart").css({'height':'0px'});
     jQuery('<div id="notif" class="flash error">Something went wrong. Please reload page.</div>').insertBefore("#forecast_billable_chart");
+  }else{
+    jQuery("#forecast_billable_chart").css({'height':'0px'});
+    jQuery('<div id="notif" class="flash notice">Process already in queue.</div>').insertBefore("#forecast_billable_chart");
   }
 }
 </script>

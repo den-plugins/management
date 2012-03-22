@@ -49,9 +49,10 @@ class ResourceManagementsController < ApplicationController
       end
       key = @selection.downcase.gsub(' ', '_')
       data = (params['data'].blank? ? {} : params['data'].each {|k,v| params['data'][k] = JSON.parse(v)})
-      handler = ForecastBillableJob.new(@from, @to, @selection, data, @users.collect {|u| u.id})
+      refresh = (params['refresh'].blank? ? nil : key)
+      handler = ForecastBillableJob.new(@from, @to, @selection, data, refresh, @users.collect {|u| u.id})
       @job = Delayed::Job.find_by_handler(handler.to_yaml)
-      enqueue_forecast_billable_job(handler, @job) if !File.exists?("#{RAILS_ROOT}/config/forecast_billable.json") || (!data.blank? && data[key].nil?)
+      enqueue_forecast_billable_job(handler, @job) if !File.exists?("#{RAILS_ROOT}/config/forecast_billable.json") || (!data.blank? && data[key].nil?) || refresh
     elsif params[:chart] == "resource_allocation"
       @categories = Project.project_categories.sort
     else

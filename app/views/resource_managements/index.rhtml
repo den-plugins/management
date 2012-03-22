@@ -85,9 +85,7 @@
         <span class="as_of" style="font-size:8pt;"></span>
         </div>
         <div id="forecast_billable_controls" style="float:right; display:inline;">
-        <!--<a href="#" onclick="" title="Refresh" style="float:left; margin:6px;">
-        <%= image_tag('reload.png') %>
-        </a>-->
+        <a href="#" class="refresh" title="Refresh" style="float:left; margin:6px;"></a>
         <%= select_tag "selection", options_for_select(options, options[2]), 
                        :onchange => "jQuery('#selection_hidden').val(jQuery('#selection').val());" %>
         </div>
