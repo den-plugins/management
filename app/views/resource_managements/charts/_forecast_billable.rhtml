@@ -42,10 +42,11 @@ function initialize(){
               renderer:jQuery.jqplot.BarRenderer,
               rendererOptions: {fillToZero: true, barPadding: 1, barWidth: 9}
           },
-          seriesColors: ["#dc594e", "#5296d9"],
+          seriesColors: ["#dc594e", "#5296d9", "#6fec6f"],
           series:[
               {label:'Forecast'},
-              {label:'Billable'}
+              {label:'Billable'},
+              {label:'Available'}
           ],
           legend: { show: true, location: 'nw' },
           axes: {
