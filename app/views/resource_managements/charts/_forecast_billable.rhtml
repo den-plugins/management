@@ -10,12 +10,13 @@ jQuery(function(){
 });
 function initialize(){
   jQuery("#selection").removeAttr("onchange").unbind('change').change(function(){
+    jQuery('#notif').remove();
     jQuery('#selection_hidden').val(jQuery('#selection').val()).closest('form').submit();
-    var chartCont = jQuery("#forecast_billable_chart"),
-        top = (parseFloat(chartCont.height()) - 10) / 2,
+    var chartCont = jQuery("#forecast_billable_chart");
+    chartCont.empty().width(jQuery("#forecast_billable_chart").parent().width())
+    var top = (parseFloat(chartCont.height()) - 10) / 2,
         left = (parseFloat(chartCont.width()) - 25) / 2;
-    chartCont.empty()
-      .append('<span style="position:relative;top:'+ top +'px;left:'+ left +'px"><%= image_tag('ajax-loader.gif', :width => '25px', :plugin => 'management') %><span>');
+    chartCont.append('<span style="position:relative;top:'+ top +'px;left:'+ left +'px"><%= image_tag('ajax-loader.gif', :width => '25px', :plugin => 'management') %><span>');
     jQuery("#forecast_billable_header span.as_of").html("");
     jQuery("#forecast_billable_header a.refresh").html("");
   });
