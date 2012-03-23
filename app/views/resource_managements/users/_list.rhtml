@@ -12,6 +12,7 @@
 	      <%= content_tag 'th', 'Location' %>
 	      <%= content_tag 'th', 'Skill' %>
 	      <%= content_tag 'th', 'Hired Date' %>
+	      <%= content_tag 'th', 'Resignation Date' %>
 	      <%= content_tag 'th', 'Organization' %>
 	      <%= sort_header_tag('is_engineering', :caption => l(:field_is_engineering), :default_order => 'desc') %>
 	      <th></th>
@@ -28,6 +29,7 @@
 	      <td class="location center"><%= h(user.location) %></td>
 	      <td class="skill center"><%= h(user.skill) %></td>
 	      <td class="hired_date center"><%= user.hired_date %></td>
+	      <td class="resignation_date center"><%= user.resignation_date %></td>
 	      <td class="organization center"><%= h(user.organization) %></td>
 	      <td class="center"><%= image_tag('true.png') if user.is_engineering? %></td>
 	      <td><small><%= update_status_link(user) %></small></td>

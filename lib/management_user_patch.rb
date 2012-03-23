@@ -65,6 +65,11 @@ module Management
         date = r.nil? ? nil : r.value
         return (date.nil? or date.blank?) ? false : true
       end
+
+      def resignation_date
+        r = custom_values.detect {|v| v.mgt_custom "Employment End"}
+        r ? r.value : nil
+      end
       
       def hired_date
         c = custom_values.detect {|v| v.mgt_custom "Employment Start"}
