@@ -12,11 +12,7 @@ function initialize(){
   jQuery("#selection").removeAttr("onchange").unbind('change').change(function(){
     jQuery('#notif').remove();
     jQuery('#selection_hidden').val(jQuery('#selection').val()).closest('form').submit();
-    var chartCont = jQuery("#forecast_billable_chart");
-    chartCont.empty().width(jQuery("#forecast_billable_chart").parent().width())
-    var top = (parseFloat(chartCont.height()) - 10) / 2,
-        left = (parseFloat(chartCont.width()) - 25) / 2;
-    chartCont.append('<span style="position:relative;top:'+ top +'px;left:'+ left +'px"><%= image_tag('ajax-loader.gif', :width => '25px', :plugin => 'management') %><span>');
+    loadingIndicator();
     jQuery("#forecast_billable_header span.as_of").html("");
     jQuery("#forecast_billable_header a.refresh").html("");
   });
@@ -30,6 +26,8 @@ function initialize(){
   <% end %>
   var jdata = new Array(), 
       jcount = 0;
+  
+  loadingIndicator();
   jQuery.getJSON('resource_managements/forecast_billable?selection=<%= @selection %>', function(json_data) {
     jQuery.each(json_data, function(key, val) {
       if(key == '<%= @selection.downcase.gsub(' ', '_') %>'){
@@ -153,6 +151,14 @@ function notif(flag){
     jQuery("#forecast_billable_chart").css({'height':'0px'});
     jQuery('<div id="notif" class="flash notice">Process already in queue.</div>').insertBefore("#forecast_billable_chart");
   }
+}
+
+function loadingIndicator(){
+  var chartCont = jQuery("#forecast_billable_chart");
+  chartCont.empty().width(chartCont.parent().width()).height('300px');
+  var top = (parseFloat(chartCont.height()) - 10) / 2,
+      left = (parseFloat(chartCont.width()) - 25) / 2;
+  chartCont.append('<span style="position:relative;top:'+ top +'px;left:'+ left +'px"><%= image_tag('ajax-loader.gif', :width => '25px', :plugin => 'management') %><span>');
 }
 </script>
 
