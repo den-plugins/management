@@ -4,10 +4,13 @@
 <div id='dashboard'>
   <h4>Resource Forecast Summary</h4>
 
-  <div style="padding: 10px;" id="project_acctg_form">
+  <div id="project_acctg_form">
     <%= render :partial => "resource_managements/forecasts/filters" %>
-    <%= image_tag('reload.png', :class => 'contextual linkish-icon', :style => "display: none;", :id => "icon_reload_forecasts") %>
-    <p class="contextual zero" id="updated_at_text" style="display: none"></p>
+    <div style="float: right; padding: 10px 0 5px 0;">
+      <%= image_tag('reload.png', :class => 'contextual linkish-icon', :style => "display: none;", :id => "icon_reload_forecasts") %>
+      <p class="contextual zero" id="updated_at_text" style="display: none"></p>
+    </div>
+    <div style="clear: both"></div>
   </div>
   <div id="mgt_forecast_list">
     <%= render :partial => "resource_managements/forecasts/list" %>
