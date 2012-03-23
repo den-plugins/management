@@ -14,6 +14,7 @@
                                :id => 'filter_for_forecasts_form') do %>
       <div class="filter_group">
         <%= mgt_field_tag "Engineering Only", "is_engineering", params, {:format => "bool"} %>
+        <%= mgt_field_tag "Currently Employed Only", "is_employed", params, {:format => "bool"} %>
         <%= label_tag("filters[location]", "Location") %>
         <%= select_tag "filters[location]", options_for_select([""] + User::LOCATIONS, @location) %>
         <%= label_tag("filters[skill_or_role]", "Skill or Role") %>
