@@ -181,7 +181,7 @@ module ResourceManagementsHelper
        res_allocations_skill[skill] = 0.0 
      end 
      total_allocated_percent = weekly_resources_count != 0 ? (current_res_allocated / get_float(weekly_resources_count)) * 100 : 0.0
-     res_billability_forecast << [week.last.to_s, total_allocated_percent.round(2)] 
+     res_billability_forecast << [week.last, total_allocated_percent.round(2)] 
     end 
     return res_billability_forecast.to_json
   end
