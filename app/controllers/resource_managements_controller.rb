@@ -109,12 +109,16 @@ class ResourceManagementsController < ApplicationController
       c = User.generate_user_mgt_condition(filters)
       @location, @skill = filters[:location], filters[:skill_or_role]
       limit = per_page_option
-      @users_count  = User.count(:all, :conditions => c.conditions)
+      @users_count = User.count(:all, :conditions => c.conditions)
       @user_pages = Paginator.new self, @users_count, limit, params['page']
       users = User.find :all, :limit => limit, :offset => @user_pages.current.offset, :order => sort_clause,
                                            :conditions => c.conditions
       if !filters[:is_employed].blank? and filters[:is_employed].to_i.eql?(1)
         @users = users.select {|u| !u.is_resigned}
+        all_users  = User.find(:all, :conditions => c.conditions)
+        users_currently_employed  = all_users.select {|u| !u.is_resigned}
+        @users_count  = users_currently_employed.count
+        @user_pages = Paginator.new self, @users_count, limit, params['page']
       else
         @users = users
       end
