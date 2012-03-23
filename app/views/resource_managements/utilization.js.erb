@@ -60,6 +60,17 @@ xhr = jQuery.ajax({
       jQuery('#table_<%= date.first %>').append(str2);
     <% end %>
     <% end %>
+    
+    //update totals on left side table
+    var th = jQuery('#th'),
+        thos = jQuery('#thos'),
+        tbh = jQuery('#tbh'),
+        tnbh = jQuery('#tnbh');
+        
+    th.html((JSON.parse(th.html()) + <%= "%0.2f" % @th.to_f %>).toFixed(2));
+    thos.html((JSON.parse(thos.html()) + <%= "%0.2f" % @thos.to_f %>).toFixed(2));
+    tbh.html((JSON.parse(tbh.html()) + <%= "%0.2f" % @tbh.to_f %>).toFixed(2));
+    tnbh.html((JSON.parse(tnbh.html()) + <%= "%0.2f" % @tnbh.to_f %>).toFixed(2));
   }
 });
 <% else %>

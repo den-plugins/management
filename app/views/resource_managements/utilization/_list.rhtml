@@ -8,10 +8,10 @@
           <th width='8%'>Location</th>
           <%= sort_header_tag('lastname', :caption => "Resource Name", :width => "28%", :id => "sort_by") %>
           <th width='8%'>Skill</th>
-          <th width='14%'>Total Hours (<%= get_string @th %>)</th>
-          <th width='14%'>Total Hours on Selected Projects (<%= get_string @thos %>)</th>
-          <th width='14%'>Billable Hours (<%= get_string @tbh %>)</th>
-          <th width='14%'>Non-billable Hours (<%= get_string @tnbh %>)</th>
+          <th width='14%'>Total Hours (<span id='th'><%= get_string @th %></span>)</th>
+          <th width='14%'>Total Hours on Selected Projects (<span id='thos'><%= get_string @thos %></span>)</th>
+          <th width='14%'>Billable Hours (<span id='tbh'><%= get_string @tbh %></span>)</th>
+          <th width='14%'>Non-billable Hours (<span id='tnbh'><%= get_string @tnbh %></span>)</th>
         </tr>
       </thead>
       <tbody>
