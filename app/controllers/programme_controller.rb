@@ -67,7 +67,7 @@ class ProgrammeController < ApplicationController
     
     @header = "Pre-sales Programme Dashboard"
     @pre_sales = Project.find(:first, :conditions => "name = 'Exist Pre-Sales'")
-    @features = @pre_sales.issues.find(:all, :include => [:assigned_to, :tracker], 
+    @features = @pre_sales.issues.open.find(:all, :include => [:assigned_to, :tracker],
                                              :conditions => "trackers.name = 'Feature'",
                                              :order => sort_clause) if @pre_sales
     
