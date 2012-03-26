@@ -239,6 +239,7 @@ module ResourceManagementsHelper
     label = (label.nil? || label.blank?) ? nil : label
     field_name = "filters[#{field.downcase.gsub(/ /,'_')}]"
     value = params[:filters] ? (params[:filters][field.downcase.gsub(/ /, '_').to_sym] || "") : ""
+    value = params[:filters] ? (params[:filters][field.downcase.gsub(/ /, '_').to_sym] || "") : "1" if field.to_s == "is_employed"
 
     case options[:format]
     when "text"
