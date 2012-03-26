@@ -29,13 +29,10 @@ function initialize(){
   
   loadingIndicator();
   jQuery.getJSON('resource_managements/forecast_billable?selection=<%= @selection %>', function(json_data) {
-    jQuery.each(json_data, function(key, val) {
-      if(key == '<%= @selection.downcase.gsub(' ', '_') %>'){
-        jdata = val;
-      }
-      jcount++;
-    });
-    if(jdata.length > 0){
+    jdata = json_data.<%= @selection.downcase.gsub(' ', '_') %>;
+    jcount = Object.keys(json_data).length;
+    
+    if(jdata && jdata.length > 0){
       if(jdata[0].length > 7) jQuery("#forecast_billable_chart").width((jdata[0].length * 55) + 'px');
       var asOf = jQuery("#forecast_billable_header span.as_of");
       (jdata[2])? asOf.html('as of ' + jdata[2]) : asOf.html("");
