@@ -63,7 +63,7 @@ module Management
       def is_resigned
         r = custom_values.detect {|v| v.mgt_custom "Employment End"}
         date = r.nil? ? nil : r.value
-        return (date.nil? or date.blank?) ? false : true
+        return (date.nil? or date.blank? or date.to_date > Date.today) ? false : true
       end
 
       def resignation_date
