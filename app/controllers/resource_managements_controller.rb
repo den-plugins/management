@@ -316,7 +316,7 @@ class ResourceManagementsController < ApplicationController
         @resources << @resources_no_limit[i]
       end
     end
-    @skill_set = User.resource_skills
+    @skill_set = User::SKILLS
   end
   
   def delay_job
