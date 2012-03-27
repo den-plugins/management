@@ -68,6 +68,11 @@ module Management
         return (date.nil? or date.blank? or date.to_date > Date.today) ? false : true
       end
 
+      def employee_status
+        e = custom_values.detect {|v| v.mgt_custom "Employee Status"}
+        status = e ? e.value : nil
+      end
+
       def resignation_date
         r = custom_values.detect {|v| v.mgt_custom "Employment End"}
         r ? r.value : nil
