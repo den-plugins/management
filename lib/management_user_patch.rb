@@ -41,6 +41,8 @@ module Management
         c << "users.location = '#{filters[:location]}'" unless filters[:location].blank?
         c << "users.id in (select users.id from users #{custom_values_join} #{custom_fields_join} \
                     where custom_fields.name='Organization' and custom_values.value='#{filters[:organization]}')" unless filters[:organization].blank?
+        c << "users.id in (select users.id from users #{custom_values_join} #{custom_fields_join} \
+                    where custom_fields.name='Employee Status' and custom_values.value<>'Resigned')" if !filters[:is_employed].blank? and filters[:is_employed].to_i.eql?(1)
         c
       end
     end
