@@ -66,26 +66,28 @@ function initialize(){
             },
             grid: {gridLineColor: '#c7c7c7'}
         });
+        // custom highlighter for chart since jqplot has a bug on highlighter when using BarRenderer
+        jQuery("#" + id).unbind('jqplotDataHighlight').bind('jqplotDataHighlight',
+          function (ev, seriesIndex, pointIndex, data ) {
+            mouseX = ev.pageX;
+            mouseY = ev.pageY;
+            console.log(mouseX + ", " + mouseY);
+            jQuery('#chartpseudotooltip').html('PHP '+numberWithCommas(data[1]));
+            var cssObj = {
+                'position' : 'fixed',
+                'z-index' : '99999',
+                'left' : mouseX + 'px',
+                'top' : (mouseY-20) + 'px'
+              };
+            jQuery('#chartpseudotooltip').css(cssObj).fadeIn();
+          }
+        ).unbind('jqplotDataUnhighlight').bind('jqplotDataUnhighlight',
+          function (ev) {
+            jQuery('#chartpseudotooltip').fadeOut();
+          }
+        );
       };
       charts.forecast_billable('forecast_billable_chart');
-
-      // custom highlighter for chart since jqplot has a bug on highlighter when using BarRenderer
-      jQuery("#forecast_billable_chart").unbind('jqplotDataHighlight').bind('jqplotDataHighlight',
-        function (ev, seriesIndex, pointIndex, data ) {
-          mouseX = ev.pageX;
-          mouseY = ev.pageY;
-          jQuery('#chartpseudotooltip').html('PHP '+numberWithCommas(data[1]));
-          var cssObj = {
-              'left' : mouseX + 'px',
-              'top' : (mouseY-20) + 'px'
-            };
-          jQuery('#chartpseudotooltip').css(cssObj).fadeIn();
-        }
-      ).unbind('jqplotDataUnhighlight').bind('jqplotDataUnhighlight',
-        function (ev) {
-          jQuery('#chartpseudotooltip').fadeOut();
-        }
-      );
 
       var refresh = jQuery("#forecast_billable_header a.refresh");
       refresh.html('<%= image_tag('reload.png') %>');
