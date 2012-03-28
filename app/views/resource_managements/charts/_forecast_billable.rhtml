@@ -71,7 +71,6 @@ function initialize(){
           function (ev, seriesIndex, pointIndex, data ) {
             mouseX = ev.pageX;
             mouseY = ev.pageY;
-            console.log(mouseX + ", " + mouseY);
             jQuery('#chartpseudotooltip').html('PHP '+numberWithCommas(data[1]));
             var cssObj = {
                 'position' : 'fixed',
