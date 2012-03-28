@@ -26,13 +26,14 @@
       <% end %>
     ],
     axes: {
-      xaxis: {label: 'Weeks', autoscale: true, renderer: jQuery.jqplot.DateAxisRenderer, tickOptions: {showMark: false, fontSize: '8pt', formatString: '%m/%d/%y'}},
+      xaxis: {label: 'Weeks', autoscale: true, renderer: jQuery.jqplot.DateAxisRenderer, tickOptions: {showMark: false, fontSize: '7pt', formatString: '%m/%d<br>%Y'}},
       yaxis: {label: "Allocation Count", labelRenderer: jQuery.jqplot.CanvasAxisLabelRenderer, min: 0}
     },
-    legend: {show: true, location: 'se'},
+    seriesDefaults: {
+      markerOptions: { show: false }
+    },
+    legend: {show: true, location: 'ne', placement: 'outsideGrid'},
     cursor: {show: true, zoom: true},
     highlighter: {show: true, sizeAdjust: 7.5}
   });
 </script>
-
-
