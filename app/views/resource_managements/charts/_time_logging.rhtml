@@ -44,12 +44,15 @@
 
 <script type="text/javascript">
   var data = [['complete', <%= with_complete_logs.to_json %>], ['incomplete', <%= (100.0 - with_complete_logs).to_json %>]];
-  var plot1 = jQuery.jqplot('time_logging_chart', [data], {
-    seriesDefaults: {
-      seriesColors: [ "#6295cd", "#fc787b"],
-      renderer: jQuery.jqplot.PieRenderer,
-      rendererOptions: {showDataLabels: true, highlightMouseOver: false, textColor: "#000" }
-    },
-    legend: { show: true, location: 'e'}
-  });
+  charts.time_logging = function(id) {
+    jQuery.jqplot(id, [data], {
+      seriesDefaults: {
+        seriesColors: [ "#6295cd", "#fc787b"],
+        renderer: jQuery.jqplot.PieRenderer,
+        rendererOptions: {showDataLabels: true, highlightMouseOver: false, textColor: "#000" }
+      },
+      legend: { show: true, location: 'e'}
+    });
+  };
+  charts.time_logging('time_logging_chart');
 </script>

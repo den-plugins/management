@@ -24,9 +24,9 @@ function initialize(){
       notif(1);
     <% end %>
   <% end %>
-  var jdata = new Array(), 
+  var jdata = new Array(),
       jcount = 0;
-  
+
   loadingIndicator();
   jQuery.getJSON('resource_managements/forecast_billable?selection=<%= @selection %>', function(json_data) {
     jdata = json_data.<%= @selection.downcase.gsub(' ', '_') %>;
@@ -38,35 +38,39 @@ function initialize(){
       (jdata[2])? asOf.html('as of ' + jdata[2]) : asOf.html("");
       jQuery("#forecast_billable_chart").empty();
 
-      var plot = jQuery.jqplot('forecast_billable_chart', jdata[1], {
-          seriesDefaults:{
-              renderer:jQuery.jqplot.BarRenderer,
-              rendererOptions: {fillToZero: true, barPadding: 1, barWidth: 9}
-          },
-          seriesColors: ["#dc594e", "#5296d9", "#6fec6f"],
-          series:[
-              {label:'Forecast'},
-              {label:'Billable'},
-              {label:'Available'}
-          ],
-          legend: { show: true, location: 'nw' },
-          axes: {
-              xaxis: {
-                  renderer: jQuery.jqplot.CategoryAxisRenderer,
-                  ticks: jdata[0],
-                  tickRenderer: jQuery.jqplot.CanvasAxisTickRenderer,
-                  tickOptions: {angle: -45, fontSize: '7pt', showGridline: false}
-              },
-              yaxis: {
-                  label: "Hours",
-                  labelRenderer: jQuery.jqplot.CanvasAxisLabelRenderer,
-                  tickOptions: {formatString: '%.2f%d'}
-              }
-          },
-          grid: {gridLineColor: '#c7c7c7'}
-      });
+      charts.forecast_billable = function(id) {
+        jQuery.jqplot(id, jdata[1], {
+            seriesDefaults:{
+                renderer:jQuery.jqplot.BarRenderer,
+                rendererOptions: {fillToZero: true, barPadding: 1, barWidth: 9}
+            },
+            seriesColors: ["#dc594e", "#5296d9", "#6fec6f"],
+            series:[
+                {label:'Forecast'},
+                {label:'Billable'},
+                {label:'Available'}
+            ],
+            legend: { show: true, location: 'nw' },
+            axes: {
+                xaxis: {
+                    renderer: jQuery.jqplot.CategoryAxisRenderer,
+                    ticks: jdata[0],
+                    tickRenderer: jQuery.jqplot.CanvasAxisTickRenderer,
+                    tickOptions: {angle: -45, fontSize: '7pt', showGridline: false}
+                },
+                yaxis: {
+                    label: "Hours",
+                    labelRenderer: jQuery.jqplot.CanvasAxisLabelRenderer,
+                    tickOptions: {formatString: '%.2f%d'}
+                }
+            },
+            grid: {gridLineColor: '#c7c7c7'}
+        });
+      };
+      charts.forecast_billable('forecast_billable_chart');
+
       // custom highlighter for chart since jqplot has a bug on highlighter when using BarRenderer
-      jQuery("#forecast_billable_chart").unbind('jqplotDataHighlight').bind('jqplotDataHighlight', 
+      jQuery("#forecast_billable_chart").unbind('jqplotDataHighlight').bind('jqplotDataHighlight',
         function (ev, seriesIndex, pointIndex, data ) {
           mouseX = ev.pageX;
           mouseY = ev.pageY;
@@ -77,20 +81,20 @@ function initialize(){
             };
           jQuery('#chartpseudotooltip').css(cssObj).fadeIn();
         }
-      ).unbind('jqplotDataUnhighlight').bind('jqplotDataUnhighlight', 
+      ).unbind('jqplotDataUnhighlight').bind('jqplotDataUnhighlight',
         function (ev) {
           jQuery('#chartpseudotooltip').fadeOut();
         }
-      ); 
+      );
 
       var refresh = jQuery("#forecast_billable_header a.refresh");
       refresh.html('<%= image_tag('reload.png') %>');
       refresh.unbind('click').click(function(){
         jQuery('#notif').remove();
         jQuery("#forecast_billable_chart").empty();
-        jQuery.ajax({  
-          type: "POST",  
-          url: jQuery('#selection_hidden').val(jQuery('#selection').val()).closest('form').attr('action'),  
+        jQuery.ajax({
+          type: "POST",
+          url: jQuery('#selection_hidden').val(jQuery('#selection').val()).closest('form').attr('action'),
           data: "{'selection': '<%= @selection %>', 'refresh':'true', 'data':"+ JSON.stringify(json_data) +"}",
           contentType: "application/json; charset=utf-8",
           beforeSend: function( xhr ) {
@@ -110,9 +114,9 @@ function initialize(){
     }else{
       if(jcount > 0){
         notif(jcount);
-        jQuery.ajax({  
-          type: "POST",  
-          url: jQuery('#selection_hidden').val(jQuery('#selection').val()).closest('form').attr('action'),  
+        jQuery.ajax({
+          type: "POST",
+          url: jQuery('#selection_hidden').val(jQuery('#selection').val()).closest('form').attr('action'),
           data: "{'selection': '<%= @selection %>', 'data':"+ JSON.stringify(json_data) +"}",
           contentType: "application/json; charset=utf-8",
           dataType: "json"
@@ -125,10 +129,10 @@ function initialize(){
         }, 20000);
       }
     }
-  }).error(function(){ 
+  }).error(function(){
     notif(0);
   });
-  
+
 }
 
 function numberWithCommas(x) {

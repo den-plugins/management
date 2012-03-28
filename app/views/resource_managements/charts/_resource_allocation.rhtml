@@ -15,25 +15,28 @@
 <% data.sort.each {|k,v| jdata << v} %>
 
 <script type='text/javascript'>
-  var plot = jQuery.jqplot('resource_allocation_chart', <%= jdata.to_json %>, {
-    series: [
-      <% @categories.each do |category| %>
-        <% if @categories.last == category %>
-          {label: '<%= category %>'}
-        <% else %>
-          {label: '<%= category %>'},
+  charts.resource_allocation = function(id){
+    jQuery.jqplot(id, <%= jdata.to_json %>, {
+      series: [
+        <% @categories.each do |category| %>
+          <% if @categories.last == category %>
+            {label: '<%= category %>'}
+          <% else %>
+            {label: '<%= category %>'},
+          <% end %>
         <% end %>
-      <% end %>
-    ],
-    axes: {
-      xaxis: {label: 'Weeks', autoscale: true, renderer: jQuery.jqplot.DateAxisRenderer, tickOptions: {showMark: false, fontSize: '7pt', formatString: '%m/%d<br>%Y'}},
-      yaxis: {label: "Allocation Count", labelRenderer: jQuery.jqplot.CanvasAxisLabelRenderer, min: 0}
-    },
-    seriesDefaults: {
-      markerOptions: { show: false }
-    },
-    legend: {show: true, location: 'ne', placement: 'outsideGrid'},
-    cursor: {show: true, zoom: true},
-    highlighter: {show: true, sizeAdjust: 7.5}
-  });
+      ],
+      axes: {
+        xaxis: {label: 'Weeks', autoscale: true, renderer: jQuery.jqplot.DateAxisRenderer, tickOptions: {showMark: false, fontSize: '7pt', formatString: '%m/%d<br>%Y'}},
+        yaxis: {label: "Allocation Count", labelRenderer: jQuery.jqplot.CanvasAxisLabelRenderer, min: 0}
+      },
+      seriesDefaults: {
+        markerOptions: { show: false }
+      },
+      legend: {show: true, location: 'ne', placement: 'outsideGrid'},
+      cursor: {show: true, zoom: true},
+      highlighter: {show: true, sizeAdjust: 7.5}
+    });
+  };
+  charts.resource_allocation('resource_allocation_chart');
 </script>

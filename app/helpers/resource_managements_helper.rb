@@ -22,13 +22,13 @@ module ResourceManagementsHelper
       weeks
     end
   end
-  
+
   def display_week(range)
     from, to = range.first, range.last
     s = "%s/" % from.mon + "%s" % from.day + " - " +
            "%s/" % to.mon + "%s" % to.day
   end
-  
+
   def set_categories_count(categories)
     temp = {}
     categories.each do |category|
@@ -63,19 +63,19 @@ module ResourceManagementsHelper
       @resources_no_limit.select {|r| r.is_resigned}.count
     end
   end
-  
+
   def acronym(name)
     name.sub('-', ' ').split.collect {|word| word.chars.first.upcase}.to_s if name
   end
-  
+
   def get_string(num)
     "%0.2f" % num.to_f
   end
-  
+
   def get_float(num)
     ("%.2f" % num).to_f
   end
-  
+
   def monday_last_week(format)
      date = (Date.today - 1.week).monday
      h date.strftime(format)
@@ -102,13 +102,13 @@ module ResourceManagementsHelper
     end
     return skill_set.to_json
   end
-  
+
   def count_billabilty_skill(set, users, projects)
     projects = projects.collect {|p| p.id if (p.accounting_type.eql?('Billable') || p.accounting_type.eql?('Non-billable'))}
     users = users.reject do |user|
       user.members.select {|m| m.project.active? && projects.include?(m.project.id)}.empty?
     end
-    
+
     reports, totals = [], []
     report_date =  (Date.today - 1.week).monday
     week = report_date .. (report_date + 4.days)
@@ -123,16 +123,16 @@ module ResourceManagementsHelper
     end if set.is_a? Array
     [reports, totals].to_json
   end
-  
+
   def count_billabilty_skill_set(set, users, projects)
     projects = projects.collect {|p| p.id if (p.accounting_type.eql?('Billable') || p.accounting_type.eql?('Non-billable'))}
     users = users.reject do |user|
       user.members.select {|m| m.project.active? && projects.include?(m.project.id)}.empty?
     end
-    
+
     weeks = get_weeks_range(Date.today - 1.month, Date.today + 6.months)
     resource_count = {}
-    
+
     set.each do |skill|
       temp, resource_count[skill] = [], []
       if skill_users = users.select {|u| u.skill.eql?(skill) && !u.is_resigned}
@@ -148,41 +148,41 @@ module ResourceManagementsHelper
     resource_count.sort.each {|r, v| jdata << v }
     jdata.to_json
   end
-  
+
   def get_resource_billability_forecast
-    start_date, end_date = Date.today - 1.month, Date.today + 6.months 
-    weeks = get_weeks_range(start_date, end_date) 
-    total_days = 0 
-    resource_count = {} 
-    res_count_per_work_days = 0.0 
-    res_allocations_skill = {} 
+    start_date, end_date = Date.today - 1.month, Date.today + 6.months
+    weeks = get_weeks_range(start_date, end_date)
+    total_days = 0
+    resource_count = {}
+    res_count_per_work_days = 0.0
+    res_allocations_skill = {}
     res_billability_forecast = []
     projects = @projects.collect {|p| p.id if (p.accounting_type.eql?('Billable') || p.accounting_type.eql?('Non-billable'))}
     users = @users.reject do |user|
       user.members.select {|m| m.project.active? && projects.include?(m.project.id)}.empty?
-    end 
-    weeks.each do |week| 
-     total_days = week.count 
-     weekly_resources_count = 0 
-     users.each do |resource| 
-       res_allocations = resource.allocations(week, projects) 
-       res_allocations_skill[resource.skill] = 0 if res_allocations_skill[resource.skill].nil? 
-       resource_count[resource.skill] = 0 if resource_count[resource.skill].nil? 
-       res_allocations_skill[resource.skill] += res_allocations if !resource.is_resigned 
-       resource_count[resource.skill] += 1 if !res_allocations.zero? and !resource.is_resigned 
-       weekly_resources_count += 1 
-     end 
-     current_res_allocated = 0.0 
-     @skill_set.each do |skill| 
-       res_allocations_skill[skill] = 0 if res_allocations_skill[skill].nil? 
-       res_allocations_skill[skill] += get_total_allocations_per_skill(skill, week, nil) 
-       res_count_per_work_days = res_allocations_skill[skill] ? (get_float(res_allocations_skill[skill])/get_float( total_days)) : 0.0 
-       current_res_allocated += res_count_per_work_days 
-       res_allocations_skill[skill] = 0.0 
-     end 
+    end
+    weeks.each do |week|
+     total_days = week.count
+     weekly_resources_count = 0
+     users.each do |resource|
+       res_allocations = resource.allocations(week, projects)
+       res_allocations_skill[resource.skill] = 0 if res_allocations_skill[resource.skill].nil?
+       resource_count[resource.skill] = 0 if resource_count[resource.skill].nil?
+       res_allocations_skill[resource.skill] += res_allocations if !resource.is_resigned
+       resource_count[resource.skill] += 1 if !res_allocations.zero? and !resource.is_resigned
+       weekly_resources_count += 1
+     end
+     current_res_allocated = 0.0
+     @skill_set.each do |skill|
+       res_allocations_skill[skill] = 0 if res_allocations_skill[skill].nil?
+       res_allocations_skill[skill] += get_total_allocations_per_skill(skill, week, nil)
+       res_count_per_work_days = res_allocations_skill[skill] ? (get_float(res_allocations_skill[skill])/get_float( total_days)) : 0.0
+       current_res_allocated += res_count_per_work_days
+       res_allocations_skill[skill] = 0.0
+     end
      total_allocated_percent = weekly_resources_count != 0 ? (current_res_allocated / get_float(weekly_resources_count)) * 100 : 0.0
-     res_billability_forecast << [week.last, total_allocated_percent.round(2)] 
-    end 
+     res_billability_forecast << [week.last, total_allocated_percent.round(2)]
+    end
     return res_billability_forecast.to_json
   end
 
@@ -218,12 +218,12 @@ module ResourceManagementsHelper
       end
     end
   end
-  
+
   def mgt_custom_field_tag(name, params)
     custom_field = UserCustomField.find(:first, :conditions => ["name = ?", name])
     field_name = "filters[#{name.downcase.gsub(/ /,'_')}]"
     value = params[:filters] ? (params[:filters][name.downcase.gsub(/ /,'_').to_sym] || "") : ""
-    
+
     case custom_field.field_format
     when "text"
       label_tag(field_name, name) + text_field_tag(field_name, nil, :rows => 3, :value => value)
@@ -234,7 +234,7 @@ module ResourceManagementsHelper
       label_tag(field_name, name) + check_box_tag(field_name, value, (value.to_i.eql?(1) ? true : false)) + hidden_field_tag(field_name, '0')
     end
   end
-  
+
   def mgt_field_tag(label, field, params, options={})
     label = (label.nil? || label.blank?) ? nil : label
     field_name = "filters[#{field.downcase.gsub(/ /,'_')}]"
@@ -254,7 +254,7 @@ module ResourceManagementsHelper
 
   def update_status_link(user)
     url = {:action => 'edit_user', :id => user, :filters => params[:filters]}
-    
+
     if user.locked?
       link_to l(:button_unlock), url.merge(:user => {:status => User::STATUS_ACTIVE}), :method => :post, :class => 'icon icon-unlock'
     elsif user.registered?
@@ -263,7 +263,7 @@ module ResourceManagementsHelper
       link_to l(:button_lock), url.merge(:user => {:status => User::STATUS_LOCKED}), :method => :post, :class => 'icon icon-lock'
     end
   end
-  
+
   def to_yml(string)
     if string.is_a? Date
       string.strftime("%m/%d/%Y")
@@ -271,7 +271,7 @@ module ResourceManagementsHelper
       string.gsub(/ /, '_')
     end
   end
-  
+
   def compute_percentage_utilization(members, from, to)
     with_complete_logs = 0
     if from && to && !members.empty?
@@ -293,7 +293,7 @@ module ResourceManagementsHelper
   def actual_hours_on_memberships(user, range, acctg, projects = [])
     ah = 0
     if projects.any?
-      memberships = user.memberships.find(:all, 
+      memberships = user.memberships.find(:all,
                                           :conditions => ["project_id IN (#{projects.collect(&:id).compact.join(',')})"])
     else
       memberships = user.memberships
@@ -304,9 +304,14 @@ module ResourceManagementsHelper
     end
     ah.to_f
   end
-  
+
   def color_code_log_time(user)
     "lred" if user[:total_hours].to_f < user[:forecasted_hours_on_selected].to_f
+  end
+
+  def link_to_zoomed_chart(chart_name, options={})
+    link = link_to('zoom', '#', options.merge(:id => "zoom_#{chart_name}", :class => 'zoom', :title => 'Zoom'))
+    content_tag(:div, link, :style => 'overflow: hidden')
   end
 
 end

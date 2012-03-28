@@ -3,25 +3,13 @@
 <div id='dashboard'>
   <h4>Resource Management Dashboard</h4>
   <h6 style="text-indent: 10px">Reporting Date: <%= monday_last_week "%B %d" %></h6>
-  
+
   <div class="singleCol">
     <div class="box">
       <h3>Resource Inventory</h3>
-        <div id="chart1"></div>
-            <script type="text/javascript">
-              var data = <%= count_user_skill(@users) %>;
-              var plot1 = jQuery.jqplot ('chart1', [data],
-                {
-                  seriesDefaults: {
-                    renderer: jQuery.jqplot.PieRenderer,
-                    seriesColors: [ "#7ea5e2", "#e57e7c", "#bdde85", "#9b81bd", "#79cdea", "#fba665", "#a0bcec", "#f3a8a6", "#fd7f2ac", "#c7b6e2"],
-                    rendererOptions: { showDataLabels: true }
-                  },
-                  legend: { show:true, location: 'e' }
-                }
-              );
-            </script>
-        </div>
+      <div id="chart1"></div>
+      <%= link_to_zoomed_chart 'resource_inventory' %>
+    </div>
     <div class="box">
       <h3>Resource Allocation as of <%= monday_last_week "%d-%b" %></h3>
       <div id="resource_allocation_chart"></div>
@@ -31,6 +19,7 @@
         <% end %>
       </div>
       <%# render :partial => "resource_managements/charts/resource_allocation" %>
+      <%= link_to_zoomed_chart 'resource_allocation', :style => 'display: none' %>
     </div>
     <div class="box">
       <h3>Time Logging as of <%= monday_last_week "%d-%b" %></h3>
@@ -41,6 +30,7 @@
         <% end %>
       </div>
       <%# render :partial => "resource_managements/charts/time_logging" %>
+      <%= link_to_zoomed_chart 'time_logging', :style => 'display: none' %>
     </div>
   </div>
   <div class="singleCol">
@@ -53,16 +43,18 @@
         <% end %>
       </div>
       <%# render :partial => "resource_managements/charts/billability_forecast" %>
+      <%= link_to_zoomed_chart 'billability_forecast', :style => 'display: none' %>
     </div>
     <div class="box">
       <h3>Billability Forecast by Skill Set</h3>
-	    <div id="chart3"></div>
-	    <div id="show_line_graph">
+      <div id="chart3"></div>
+      <div id="show_line_graph">
         <% form_remote_tag(:url => {:action => 'load_chart', :chart => 'line_graph'}) do %>
           <%= submit_tag "Show Graph", :class => 'btn_show_chart' %>
         <% end %>
       </div>
      <%# render :partial => "resource_managements/charts/line_graph" %>
+     <%= link_to_zoomed_chart 'line_graph', :style => 'display: none' %>
     </div>
   </div>
   <div class="singleCol">
@@ -75,6 +67,7 @@
         <% end %>
       </div>
      <%# render :partial => "resource_managements/charts/billability_skill" %>
+     <%= link_to_zoomed_chart 'billability_skill', :style => 'display: none' %>
     </div>
 
     <div class="box">
@@ -86,18 +79,19 @@
         </div>
         <div id="forecast_billable_controls" style="float:right; display:inline;">
         <a href="#" class="refresh" title="Refresh" style="float:left; margin:6px;"></a>
-        <%= select_tag "selection", options_for_select(options, options[2]), 
+        <%= select_tag "selection", options_for_select(options, options[2]),
                        :onchange => "jQuery('#selection_hidden').val(jQuery('#selection').val());" %>
         </div>
       </div>
       <div class="auto_scroll_x"><div id="forecast_billable_chart"></div></div>
       <div id="show_forecast_billable">
-        <% form_remote_tag(:url => {:action => 'load_chart', :chart => 'forecast_billable', 
+        <% form_remote_tag(:url => {:action => 'load_chart', :chart => 'forecast_billable',
                                     :total_users => @users.count}) do %>
           <%= hidden_field_tag "selection", "", :id => "selection_hidden" %>
           <%= submit_tag "Show Graph", :class => 'btn_show_chart' %>
         <% end %>
       </div>
+      <%= link_to_zoomed_chart 'forecast_billable', :style => 'display: none' %>
     </div>
   </div>
 </div>
@@ -105,7 +99,7 @@
 <% content_for :header_tags do %>
   <%= stylesheet_link_tag 'management', :plugin => 'management' %>
   <%= stylesheet_link_tag 'jquery.jqplot.css', :plugin => 'redmine_burndown' %>
-  <%= javascript_include_tag 'dashboard.js', :plugin => 'management' %>
+  <%= stylesheet_link_tag 'facebox.css', :plugin => 'facebox_render' %>
   <%= javascript_include_tag 'jquery.min.js', :plugin => 'redmine_burndown' %>
   <%= javascript_include_tag 'jquery.jqplot.js', :plugin => 'redmine_burndown' %>
   <%= javascript_include_tag 'plugins/jqplot.barRenderer.min.js', :plugin => 'redmine_burndown' %>
@@ -118,7 +112,23 @@
   <%= javascript_include_tag 'plugins/jqplot.highlighter.min.js', :plugin => 'redmine_burndown' %>
   <%= javascript_include_tag 'plugins/jqplot.pieRenderer.min.js', :plugin => 'redmine_burndown' %>
   <%= javascript_include_tag 'plugins/jqplot.pointLabels.min.js', :plugin => 'redmine_burndown' %>
+  <%= javascript_include_tag 'facebox.js', :plugin => 'facebox_render' %>
+  <%= javascript_include_tag 'dashboard.js', :plugin => 'management' %>
+  <script type="text/javascript">
+    jQuery(document).ready(function($) {
+      charts.resource_inventory = function(id) {
+        return jQuery.jqplot(id, [<%= count_user_skill(@users) %>],
+          {
+            seriesDefaults: {
+              renderer: jQuery.jqplot.PieRenderer,
+              seriesColors: [ "#7ea5e2", "#e57e7c", "#bdde85", "#9b81bd", "#79cdea", "#fba665", "#a0bcec", "#f3a8a6", "#fd7f2ac", "#c7b6e2"],
+              rendererOptions: { showDataLabels: true }
+            },
+            legend: { show:true, location: 'e' },
+          }
+        );
+      };
+      charts.resource_inventory('chart1');
+    });
+  </script>
 <% end %>
-
-
-

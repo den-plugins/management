@@ -3,25 +3,29 @@
 <% end %>
 
 <script type='text/javascript'>
-  var skill_set_plot = jQuery.jqplot('chart3', <%= jdata %>, {
-    series: [
-      <% @skill_set.each do |skill| %>
-        <% if @skill_set.last == skill %>
-          {label: '<%= skill %>'}
-        <% else %>
-          {label: '<%= skill %>'},
+  charts.line_graph = function(id) {
+    jQuery.jqplot(id, <%= jdata %>, {
+      series: [
+        <% @skill_set.each do |skill| %>
+          <% if @skill_set.last == skill %>
+            {label: '<%= skill %>'}
+          <% else %>
+            {label: '<%= skill %>'},
+          <% end %>
         <% end %>
-      <% end %>
-    ],
-    axes: {
-      xaxis: {label: 'Weeks', autoscale: true, renderer: jQuery.jqplot.DateAxisRenderer, tickOptions: {showMark: false, fontSize: '7pt', formatString: '%m/%d<br>%Y'}},
-      yaxis: {label: "Allocation Count", labelRenderer: jQuery.jqplot.CanvasAxisLabelRenderer, min: 0}
-    },
-    seriesDefaults: {
-      markerOptions: { show: false }
-    },
-    legend: {show: true, location: 'ne', placement: 'outsideGrid'},
-    cursor: {show: true, zoom: true},
-    highlighter: {show: true, sizeAdjust: 7.5}
-  });
+      ],
+      axes: {
+        xaxis: {label: 'Weeks', autoscale: true, renderer: jQuery.jqplot.DateAxisRenderer, tickOptions: {showMark: false, fontSize: '7pt', formatString: '%m/%d<br>%Y'}},
+        yaxis: {label: "Allocation Count", labelRenderer: jQuery.jqplot.CanvasAxisLabelRenderer, min: 0}
+      },
+      seriesDefaults: {
+        markerOptions: { show: false }
+      },
+      legend: {show: true, location: 'ne', placement: 'outsideGrid'},
+      cursor: {show: true, zoom: true},
+      highlighter: {show: true, sizeAdjust: 7.5}
+    });
+  };
+
+  charts.line_graph('chart3');
 </script>
