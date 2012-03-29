@@ -306,7 +306,7 @@ class ResourceManagementsController < ApplicationController
       @resources = []
     else
       @resources_no_limit = User.active.engineers.find(:all, :conditions => query, :order => order, :include => [:projects, :members]).select do |resource|
-        resource unless resource.memberships.select {|m| m.project.active? and @projects.include?(m.project_id) }.empty?
+        resource unless resource.memberships.select {|m| @projects.include?(m.project_id) }.empty?
       end
       @resource_count = @resources_no_limit.count
       @resource_pages = Paginator.new self, @resource_count, limit, params['page']
