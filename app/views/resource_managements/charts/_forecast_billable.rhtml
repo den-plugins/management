@@ -28,7 +28,7 @@ function initialize(){
       jcount = 0;
 
   loadingIndicator();
-  jQuery.getJSON('resource_managements/forecast_billable?selection=<%= @selection %>', function(json_data) {
+  jQuery.getJSON('resource_managements/load_json?selection=<%= @selection %>&chart=forecast_billable', function(json_data) {
     jdata = json_data.<%= @selection.downcase.gsub(' ', '_') %>;
     jcount = Object.keys(json_data).length;
     

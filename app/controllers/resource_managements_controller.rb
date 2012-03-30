@@ -65,10 +65,10 @@ class ResourceManagementsController < ApplicationController
     end
   end
 
-  def forecast_billable
+  def load_json
     @enqueued = params[:enqueued]
-    @json = if File.exists?("#{RAILS_ROOT}/config/forecast_billable.json")
-      File.read("#{RAILS_ROOT}/config/forecast_billable.json")
+    @json = if File.exists?("#{RAILS_ROOT}/config/#{params['chart']}.json")
+      File.read("#{RAILS_ROOT}/config/#{params['chart']}.json")
     else
       {}.to_json
     end
