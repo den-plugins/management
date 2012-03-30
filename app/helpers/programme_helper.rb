@@ -9,7 +9,7 @@ module ProgrammeHelper
       end
     end
   end
-  
+
   def code_by_billability_rate(percent)
     if percent
       case
@@ -19,13 +19,13 @@ module ProgrammeHelper
       end
     end
   end
-  
+
   def color_code_for_category(project)
     pcode = project.for_time_logging_only? ? "vlgray" : ""
     pcode = "lgray" if project.category.eql?("Internal Project")
     pcode
   end
-  
+
   def color_code_for_cost_status(project)
     return "not-applicable" if project.category.eql?("Internal Project")
     if project.planned_start_date && project.planned_start_date
@@ -44,7 +44,7 @@ module ProgrammeHelper
     end
     code
   end
-  
+
   def color_code_for_issue_average(project)
     issue_ave = PmDashboardIssue.average(:impact, :conditions => ["project_id = ? AND date_close IS NULL", project])
     case issue_ave.to_f.ceil
@@ -54,7 +54,7 @@ module ProgrammeHelper
     when 3; "red"
     end
   end
-  
+
   def color_code_for_risk_average(project)
     risk_ave = Risk.average(:final_risk_rating, :conditions => ["project_id = ? AND status <> 'C'", project])
     case risk_ave.to_f.ceil
@@ -63,7 +63,7 @@ module ProgrammeHelper
       when 15 .. 25; "red"
     end
   end
-  
+
   def color_code_for_schedule_status(project)
     if project.is_a?(Project)
       start_date, end_date = project.planned_start_date, project.planned_end_date
@@ -74,7 +74,7 @@ module ProgrammeHelper
     end
     if start_date && end_date
       if actual_end_date
-        ((actual_end_date < end_date) ? "red" : "green") if project.is_a?(Project)
+        ((actual_end_date > end_date) ? "red" : "green") if project.is_a?(Project)
         ((actual_end_date > end_date and !project.closed?) ? "red" : "green") if project.is_a?(Issue)
       else
         "yellow"
@@ -83,7 +83,7 @@ module ProgrammeHelper
       "nocolor"
     end
   end
-  
+
   def color_code_for_warranty(project)
     project.in_warranty? ? "warrantied" : ""
   end
@@ -91,7 +91,7 @@ module ProgrammeHelper
   def daily_rate(rate)
     rate.to_f * 8
   end
-  
+
   def display_by_billing_model(project)
     if project.billing_model
       if project.billing_model.scan(/^(Fixed)/).flatten.present?
@@ -106,11 +106,11 @@ module ProgrammeHelper
     min_date = (projects.map(&:planned_end_date) | projects.map(&:actual_end_date)).compact.min {|a,b| a <=> b}
     min_date = (min_date ? (min_date - 2.months) : nil)
   end
-  
+
   def initials(first, last)
     [first, last].map {|c| c.chars.first.upcase } if first && last
   end
-  
+
   def jsoned_billability_percentage(projects, bill)
     ticks = []
     data = []
