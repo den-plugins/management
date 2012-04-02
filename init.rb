@@ -23,7 +23,7 @@ Redmine::Plugin.register :management do
   project_module :management do
     permission :manage_resources, {:resource_managements => [:index, :get, :allocations, :users, :add_user, :edit_user, :edit_membership, :destroy_membership]}, :public => false
   end
-  
+
   project_module :programme_dashboard do
     permission :view_programme_dashboard, {:programme => [:index] }
   end
@@ -50,12 +50,12 @@ Redmine::Plugin.register :management do
     menu.push :utilization, {:controller => 'resource_managements', :action => 'utilization'}, :caption => 'Time Logging'
     menu.push :users, {:controller => 'resource_managements', :action => 'users'}, :caption => 'User Management'
   end
-  
+
   Redmine::MenuManager.map :programme_dashboard do |menu|
     menu.push :dashboard, {:controller => 'programme', :action => 'index' }, :caption => 'Enterprise'
     menu.push :interactive, {:controller => 'programme', :action => 'interactive'}, :caption => 'Interactive'
-    menu.push :pre_sales, {:controller => 'programme', :action => 'pre_sales'}, :caption => 'Sales'
-    menu.push :maintenance, {:controller => 'programme', :action => 'maintenance'}, :caption => "Maintenance"
+    menu.push :pre_sales, {:controller => 'programme', :action => 'pre_sales'}, :caption => 'Pre-sales'
+    menu.push :maintenance, {:controller => 'programme', :action => 'maintenance'}, :caption => 'Projects in Warranty Period'
   end
 
 end
