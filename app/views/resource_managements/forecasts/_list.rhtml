@@ -11,7 +11,7 @@
       </thead>
         <% resource_count = {} %>
         <% @resources.each do |resource| %>
-          <tr class="<%= cycle('even', 'odd', :name => 'resources') %>">
+          <tr class="<%= cycle('even', 'odd', :name => 'resources') %> <%= class_of_resignation(resource) %>">
             <td><%= resource.location %></td>
             <td style="text-align: left"><%= resource.display_name %></td>
             <td><%= resource.skill %></td>

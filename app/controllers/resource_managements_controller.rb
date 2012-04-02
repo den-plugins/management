@@ -31,7 +31,7 @@ class ResourceManagementsController < ApplicationController
 
   def load_chart
     if params[:chart] == "forecast_billable"
-      @users = User.active.engineers.find(:all, :order => "lastname ASC")
+      @users = User.engineers.find(:all, :order => "lastname ASC")
       @total_users = params[:total_users].to_i
       @selection = (params[:selection].blank? ? "last 6 months" : params[:selection])
       today = Date.today

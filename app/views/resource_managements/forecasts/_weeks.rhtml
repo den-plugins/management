@@ -13,7 +13,8 @@
         </thead>
         <tbody>
         <% @resources.each do |resource| %>
-        <tr class="<%= cycle('even', 'odd', :name => 'week_days') %> <%= allocation_to_class(allocation=(fweek && fweek[resource.id] ? fweek[resource.id] : 0)) %>">
+        <tr class="<%= cycle('even', 'odd', :name => 'week_days') %> <%= allocation_to_class(allocation=(fweek && fweek[resource.id] ? fweek[resource.id] : 0)) %>
+                              <%= class_of_resignation(resource) %> ">
             <td><%= get_string allocation %></td>
         </tr>
         <% end %>
