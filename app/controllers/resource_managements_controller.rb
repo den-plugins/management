@@ -6,7 +6,7 @@ class ResourceManagementsController < ApplicationController
   menu_item :users, :only => :users
   menu_item :utilization, :only => :utilization
 
-  helper :users, :custom_management, :custom_fields, :scrums, :resource_utilization
+  helper :users, :custom_management, :custom_fields, :scrums, :resource_utilization, :resource_costs
 
   require 'json'
 
