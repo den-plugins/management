@@ -181,7 +181,11 @@ class ResourceManagementsController < ApplicationController
         @user.errors.add_to_base "Please check employment end date."
         render :template => 'resource_managements/users/edit_user.rhtml', :layout => !request.xhr?
       else
-        @user.custom_values.find_by_custom_field_id(23).update_attribute :value, "Resigned" unless @user.resignation_date.nil? && @user.resignation_date.to_date > Date.today
+        if !@user.resignation_date.empty? && !@user.resignation_date.nil?
+          if @user.resignation_date.to_date <= Date.today
+            @user.custom_values.find_by_custom_field_id(23).update_attribute :value, "Resigned"
+          end
+        end
         if @user.save
           Mailer.deliver_account_activated(@user) if was_activated
           flash[:notice] = l(:notice_successful_update)
