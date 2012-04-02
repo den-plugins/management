@@ -194,9 +194,9 @@ module ResourceManagementsHelper
       tmp_availables, tmp_forecasts, tmp_billables = [], [], []
       ticks << m.first.strftime("%b %Y")
       users.each do |u|
-        tmp_availables << u.total_expected(m.first, m.last, u.projects.active.map(&:id))
+        tmp_availables << u.total_expected(m.first, m.last, u.projects.map(&:id))
         tmp_forecasts << cost_compute_forecasted_hours(m, u.memberships.all, "billable")
-        tmp_billables << u.memberships.all.collect { |mem| mem.spent_time(m.first, m.last, "Billable").to_f }.sum
+        tmp_billables << u.memberships.all.collect { |mem| mem.spent_time(m.first, m.last, "Billable", true).to_f }.sum
       end
       available << tmp_availables.sum
       forecast << tmp_forecasts.sum
