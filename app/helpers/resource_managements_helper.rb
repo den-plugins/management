@@ -308,6 +308,10 @@ module ResourceManagementsHelper
   def color_code_log_time(user)
     "lred" if user[:total_hours].to_f < user[:forecasted_hours_on_selected].to_f
   end
+  
+  def class_of_resignation(user)
+    user.is_resigned ? "resigned" : nil
+  end
 
   def link_to_zoomed_chart(chart_name, options={})
     link = link_to('zoom', '#', options.merge(:id => "zoom_#{chart_name}", :class => 'zoom', :title => 'Zoom'))

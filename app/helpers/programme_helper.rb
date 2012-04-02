@@ -72,16 +72,19 @@ module ProgrammeHelper
       start_date, end_date = project.start_date, project.due_date
       actual_end_date = Date.today
     end
+    color = "nocolor"
     if start_date && end_date
       if actual_end_date
-        ((actual_end_date > end_date) ? "red" : "green") if project.is_a?(Project)
-        ((actual_end_date > end_date and !project.closed?) ? "red" : "green") if project.is_a?(Issue)
+        if project.is_a?(Project)
+          color = (actual_end_date > end_date ? "red" : "green")
+        elsif project.is_a?(Issue)
+          color = (actual_end_date > end_date && !project.closed? ? "red" : "green")
+        end
       else
-        "yellow"
+        color = "yellow"
       end
-    else
-      "nocolor"
     end
+    return color
   end
 
   def color_code_for_warranty(project)

@@ -1,18 +1,18 @@
 class ProgrammeController < ApplicationController
   helper :sort
   include SortHelper
-  
+
   menu_item :dashboard, :only => :index
   menu_item :interactive, :only => :interactive
   menu_item :pre_sales, :only => :pre_sales
   menu_item :maintenance, :only => :maintenance
 
   before_filter :require_pmanagement
-  
+
   def index
     sort_init 'name', 'asc'
     sort_update({"name" =>  "name", "proj_manager" => "#{User.table_name}.firstname"})
-    
+
     @header = "Programme Dashboard"
     @projects = Project.find(:all, :include => [:manager],
                              :conditions => ["projects.status = ?", Project::STATUS_ACTIVE],
@@ -22,10 +22,10 @@ class ProgrammeController < ApplicationController
 
     @fixed_cost_projects = @devt_projects.select(&:fixed_cost?).sort_by {|s| s.name.downcase }
     @t_and_m_projects = @devt_projects.select(&:t_and_m?).sort_by {|s| s.name.downcase }
-    
+
     load_billability_file
     load_fixed_cost_file
-    
+
     if request.xhr?
       render :update do |page|
         page.replace_html :programme_project_health, :partial => "programme/project_health"
@@ -34,11 +34,11 @@ class ProgrammeController < ApplicationController
       render :template => 'programme/index'
     end
   end
-  
+
   def interactive
     sort_init 'name', 'asc'
     sort_update({"name" =>  "name", "proj_manager" => "#{User.table_name}.firstname"})
-    
+
     @header = "Interactive Programme Dashboard"
     @projects = Project.find(:all, :include => [:manager],
                              :conditions => ["projects.status = ?", Project::STATUS_ACTIVE],
@@ -48,10 +48,10 @@ class ProgrammeController < ApplicationController
 
     @fixed_cost_projects = @devt_projects.select(&:fixed_cost?).sort_by {|s| s.name.downcase }
     @t_and_m_projects = @devt_projects.select(&:t_and_m?).sort_by {|s| s.name.downcase }
-    
+
     load_billability_file
     load_fixed_cost_file
-    
+
     if request.xhr?
       render :update do |page|
         page.replace_html :programme_project_health, :partial => "programme/project_health"
@@ -64,13 +64,13 @@ class ProgrammeController < ApplicationController
   def pre_sales
     sort_init 'subject', 'asc'
     sort_update({"subject" =>  "subject", "proj_manager" => "#{User.table_name}.firstname"})
-    
+
     @header = "Pre-sales Programme Dashboard"
     @pre_sales = Project.find(:first, :conditions => "name = 'Exist Pre-Sales'")
     @features = @pre_sales.issues.open.find(:all, :include => [:assigned_to, :tracker],
                                              :conditions => "trackers.name = 'Feature'",
                                              :order => sort_clause) if @pre_sales
-    
+
     if request.xhr?
       render :update do |page|
         page.replace_html :programme_project_health, :partial => "programme/pre_sales/project_health"
@@ -79,12 +79,12 @@ class ProgrammeController < ApplicationController
       render :template => 'programme/pre_sales'
     end
   end
-  
+
   def maintenance
     sort_init 'name', 'asc'
     sort_update({"name" =>  "name", "proj_manager" => "#{User.table_name}.firstname"})
-    
-    @header = "Maintenance Programme Dashboard"
+
+    @header = "Projects in Warranty Period Programme Dashboard"
     @projects = Project.find(:all, :include => [:manager],
                              :conditions => ["projects.status = ?", Project::STATUS_ACTIVE],
                              :order => sort_clause)
@@ -93,10 +93,10 @@ class ProgrammeController < ApplicationController
 
     @fixed_cost_projects = @devt_projects.select(&:fixed_cost?).sort_by {|s| s.name.downcase }
     @t_and_m_projects = @devt_projects.select(&:t_and_m?).sort_by {|s| s.name.downcase }
-    
+
     load_billability_file
     load_fixed_cost_file
-    
+
     if request.xhr?
       render :update do |page|
         page.replace_html :programme_project_health, :partial => "programme/project_health"
@@ -115,7 +115,7 @@ class ProgrammeController < ApplicationController
     end
     true
   end
-  
+
   def load_billability_file
     @billabilities = if File.exists?("#{RAILS_ROOT}/config/billability.yml")
       YAML.load(File.open("#{RAILS_ROOT}/config/billability.yml")) || {}
