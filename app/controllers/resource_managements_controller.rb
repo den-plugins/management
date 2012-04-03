@@ -177,13 +177,13 @@ class ResourceManagementsController < ApplicationController
       @user.attributes = params[:user]
       # Was the account actived ? (do it before User#save clears the change)
       was_activated = (@user.status_change == [User::STATUS_REGISTERED, User::STATUS_ACTIVE])
-      if @user.employee_status == "Resigned" and @user.resignation_date.blank? || @user.resignation_date.to_date > Date.today
+      if @user.employee_status == "Resigned" and @user.resignation_date.blank? || @user.resignation_date.to_date >= Date.today
         @user.errors.add_to_base "Please check employment end date."
         render :template => 'resource_managements/users/edit_user.rhtml', :layout => !request.xhr?
       else
         if @user.save
           if !@user.resignation_date.empty? && !@user.resignation_date.nil?
-            if @user.resignation_date.to_date <= Date.today
+            if @user.resignation_date.to_date < Date.today
               @user.custom_values.find_by_custom_field_id(23).update_attribute :value, "Resigned"
             end
           end
