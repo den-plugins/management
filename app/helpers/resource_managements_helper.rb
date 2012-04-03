@@ -318,4 +318,12 @@ module ResourceManagementsHelper
     content_tag(:div, link, :style => 'overflow: hidden')
   end
 
+  def to_date_safe(date)
+    begin
+      Date.parse date
+    rescue
+      nil
+    end
+  end
+
 end

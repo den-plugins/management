@@ -135,4 +135,4 @@ td.warrantied {background-image: url('../images/warranty.png'); background-repea
 }
 #floating_tables_holder .time_logging tr td { text-align: center; }
 #utilization_pie_chart_wrapper {width: 50%; margin: 10px auto; }
-div#facebox { z-index: 99999; }
+div#facebox { z-index: 9999; }

@@ -109,7 +109,10 @@ module Management
       end
 
       def total_expected(from, to, project_ids)
-        weeks = get_weeks_range(from, to)
+        h_date, r_date = to_date_safe(hired_date), to_date_safe(resignation_date)
+        f = (((from..to).include_with_range?(h_date))? h_date : from)
+        t = (((from..to).include_with_range?(r_date))? r_date : to)
+        weeks = get_weeks_range(f, t)
         texpected = 0
         weeks.each do |week|
           texpected += allocations(week, project_ids) * 8 # 40 hours is the expected hours per week, 8 hours per day
