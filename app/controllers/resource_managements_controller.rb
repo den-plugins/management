@@ -11,7 +11,7 @@ class ResourceManagementsController < ApplicationController
   require 'json'
 
   before_filter :require_management
-  before_filter :get_projects_members, :only => [:index, :allocations, :load_chart]
+  before_filter :get_projects_members, :only => [:allocations]
   before_filter :set_cache_buster
   def set_cache_buster
     response.headers["Cache-Control"] = "no-cache, no-store, max-age=0, must-revalidate"
@@ -26,7 +26,6 @@ class ResourceManagementsController < ApplicationController
     @users = User.active.engineers
     @skill_set = User.resource_skills.sort
     @categories = Project.project_categories.sort
-    @projects = Project.active.all
   end
 
   def load_chart
@@ -54,8 +53,10 @@ class ResourceManagementsController < ApplicationController
       @job = Delayed::Job.find_by_handler(handler.to_yaml)
       enqueue_forecast_billable_job(handler, @job) if !File.exists?("#{RAILS_ROOT}/config/forecast_billable.json") || (!data.blank? && data[key].nil?) || refresh
     elsif params[:chart] == "resource_allocation"
+      get_projects_members
       @categories = Project.project_categories.sort
     else
+      get_projects_members
       @users = User.active.engineers
       @skill_set = User.resource_skills.sort
     end
@@ -283,7 +284,7 @@ class ResourceManagementsController < ApplicationController
     sort_update %w(projects.name enumerations.name users.lastname users.skill custom_values.value)
     user_conditions = []
 
-    @projects = Project.active.development.find(:all, :include => [:accounting])
+    @projects = Project.development.find(:all, :include => [:accounting])
     project_ids = @projects.collect(&:id).join(',')
     unless params[:filters].blank?
       filters = params[:filters]
@@ -304,14 +305,14 @@ class ResourceManagementsController < ApplicationController
     if acctg.eql?('Both')
       @projects = dev_projects.collect {|p| p.id if (p.accounting_type.eql?('Billable') || p.accounting_type.eql?('Non-billable'))}.compact.uniq
     else
-      @projects = dev_projects.collect {|p| p.id if (p.accounting_type.eql?( acctg))}.compact.uniq
+      @projects = dev_projects.collect {|p| p.id if (p.accounting_type.eql?(acctg))}.compact.uniq
     end
 
     if @projects.empty?
       @resources = []
     else
       @resources_no_limit = User.active.engineers.find(:all, :conditions => query, :order => order, :include => [:projects, :members]).select do |resource|
-        resource unless resource.memberships.select {|m| @projects.include?(m.project_id) }.empty?
+        resource unless resource.members.select {|m| @projects.include?(m.project_id) }.empty?
       end
       @resource_count = @resources_no_limit.count
       @resource_pages = Paginator.new self, @resource_count, limit, params['page']
