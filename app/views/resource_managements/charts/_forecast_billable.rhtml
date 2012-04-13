@@ -9,6 +9,7 @@ jQuery(function(){
   initialize();
 });
 function initialize(){
+  jQuery("#forecast_billable_header h3").css({'margin': '0px', 'padding': '0px'});
   jQuery("#selection").removeAttr("onchange").unbind('change').change(function(){
     jQuery('#notif').remove();
     jQuery('#selection_hidden').val(jQuery('#selection').val()).closest('form').submit();

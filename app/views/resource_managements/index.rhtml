@@ -46,10 +46,19 @@
       <%= link_to_zoomed_chart 'billability_forecast', :style => 'display: none' %>
     </div>
     <div class="box">
-      <h3>Billability Forecast by Skill Set</h3>
+      <div id='billability_forecast_header'>
+        <div style="float:left; width:60%; display:inline;">
+          <h3>Billability Forecast by Skill Set</h3>
+        </div>
+        <div id="billability_forecast_controls" style="float:right; display:inline;">
+          <%= select_tag "skill_selection", options_for_select(["All"] + @skill_set),
+                         :onchange => "jQuery('#skill_selection_hidden').val(jQuery('#skill_selection').val());" %>
+        </div>
+      </div><div class="clear"></div>
       <div id="chart3"></div>
       <div id="show_line_graph">
         <% form_remote_tag(:url => {:action => 'load_chart', :chart => 'line_graph'}) do %>
+          <%= hidden_field_tag "skill_selection", "", :id => "skill_selection_hidden" %>
           <%= submit_tag "Show Graph", :class => 'btn_show_chart' %>
         <% end %>
       </div>
@@ -74,7 +83,7 @@
       <% options = ["last month", "last 3 months", "last 6 months", "this year", "last year"] %>
       <div id='forecast_billable_header'>
         <div style="float:left; width:60%; display:inline;">
-        <h3 style="margin:0; padding:0;">Available vs Forecast vs Billable</h3>
+        <h3>Available vs Forecast vs Billable</h3>
         <span class="as_of" style="font-size:8pt;"></span>
         </div>
         <div id="forecast_billable_controls" style="float:right; display:inline;">

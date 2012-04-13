@@ -1,17 +1,21 @@
+<% form_remote_tag(:url => {:action => 'load_chart', :chart => 'line_graph'}) do %>
+  <%= hidden_field_tag "skill_selection", "", :id => "skill_selection_hidden" %>
+<% end %>
+
 <% if @skill_set && @users %>
-  <% jdata = count_billabilty_skill_set(@skill_set, @users, @projects) %>
+  <% jdata, jlabels = count_billabilty_skill_set(@skill_set, @users, @projects).collect %>
 <% end %>
 
 <script type='text/javascript'>
+  jQuery("#skill_selection").removeAttr("onchange").unbind('change').change(function(){
+    jQuery('#skill_selection_hidden').val(jQuery('#skill_selection').val()).closest('form').submit();
+    jQuery("#chart3").empty();
+  });
   charts.line_graph = function(id) {
     jQuery.jqplot(id, <%= jdata %>, {
       series: [
-        <% @skill_set.each do |skill| %>
-          <% if @skill_set.last == skill %>
-            {label: '<%= skill %>'}
-          <% else %>
-            {label: '<%= skill %>'},
-          <% end %>
+        <% jlabels.each do |skill| %>
+          {label: '<%= skill %>'},
         <% end %>
       ],
       axes: {
@@ -21,7 +25,9 @@
       seriesDefaults: {
         markerOptions: { show: false }
       },
+      <% if @sel_skill.blank? or @sel_skill.eql?("All") %>
       legend: {show: true, location: 'ne', placement: 'outsideGrid'},
+      <% end %>
       cursor: {show: true, zoom: true},
       highlighter: {show: true, sizeAdjust: 7.5}
     });

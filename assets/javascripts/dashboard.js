@@ -46,6 +46,12 @@ jQuery(document).ready(function($) {
     if(charts.hasOwnProperty(chartName)) {
       jQuery.facebox('<h1 id="zoom_chart_title"></h1> <div id="zoom_chart"></div>');
       jQuery('#zoom_chart_title').text(chartTitle);
+      if(chartName == 'line_graph'){
+        sel_skill = $(this).parents('.box').find('select').val();
+        if(sel_skill != "All"){
+          jQuery('#zoom_chart_title').text(chartTitle + " (" + sel_skill + ")");
+        }
+      }
       charts[chartName]('zoom_chart');
     }
   });

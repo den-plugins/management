@@ -24,7 +24,7 @@ class ResourceManagementsController < ApplicationController
 
   def index
     @users = User.active.engineers
-    @skill_set = User.resource_skills.sort
+    @skill_set = User::SKILLS  #.resource_skills.sort
     @categories = Project.project_categories.sort
   end
 
@@ -58,7 +58,8 @@ class ResourceManagementsController < ApplicationController
     else
       get_projects_members
       @users = User.active.engineers
-      @skill_set = User.resource_skills.sort
+      @sel_skill = params[:skill_selection]
+      @skill_set = ((@sel_skill.blank? or @sel_skill.eql?("All"))? User::SKILLS : [@sel_skill])
     end
     render :update do |page|
       page.replace_html "show_#{params[:chart]}".to_sym, :partial => "resource_managements/charts/#{params[:chart]}"

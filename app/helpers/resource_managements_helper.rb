@@ -145,8 +145,12 @@ module ResourceManagementsHelper
       end
     end if set.is_a? Array
     jdata = []
-    resource_count.sort.each {|r, v| jdata << v }
-    jdata.to_json
+    jlabels = []
+    resource_count.sort.each do |r, v|
+      jdata << v
+      jlabels << r
+    end
+    [jdata.to_json, jlabels]
   end
 
   def get_resource_billability_forecast
