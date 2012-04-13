@@ -58,7 +58,7 @@ tr.yellow, td.yellow, th.yellow, span.yellow {background-color: #f7d959; border:
 tr.gray, td.gray, th.gray, span.gray {background-color: #808080; border: 1px solid #FFF; }
 tr.summary_total {height: 27px; ha:;}
 tr.summary_total td { color: black; font-weight: bold; text-align: center; background-color: #eee; vertical-align: middle;}
-tr.resigned {color: #DDD;}
+tr.resigned {color: #ccc;}
 
 td.left { text-align: left!important; }
 
