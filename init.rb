@@ -54,7 +54,7 @@ Redmine::Plugin.register :management do
   Redmine::MenuManager.map :programme_dashboard do |menu|
     menu.push :dashboard, {:controller => 'programme', :action => 'index' }, :caption => 'Enterprise'
     menu.push :interactive, {:controller => 'programme', :action => 'interactive'}, :caption => 'Interactive'
-    menu.push :pre_sales, {:controller => 'programme', :action => 'pre_sales'}, :caption => 'Pre-sales'
+    menu.push :pre_sales, {:controller => 'programme', :action => 'pre_sales'}, :caption => 'Pre-Sales'
     menu.push :maintenance, {:controller => 'programme', :action => 'maintenance'}, :caption => 'Projects in Warranty Period'
   end
 
