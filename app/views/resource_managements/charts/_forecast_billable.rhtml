@@ -3,7 +3,8 @@
 <% end %>
 
 <% if @total_users > 0 %>
-<div id="chartpseudotooltip"></div>
+<div id="forecast_cost_tooltip" class="chart_pseudo_tooltip"></div>
+<div id="ratio_vs_availability_tooltip" class="chart_pseudo_tooltip"></div>
 <script type="text/javascript">
 jQuery(function(){
   initialize();
@@ -40,7 +41,8 @@ function initialize(){
       jQuery("#forecast_billable_chart").empty();
 
       charts.forecast_billable = function(id) {
-        jQuery.jqplot(id, jdata[1], {
+        jQuery('#' + id).css('position', 'relative');
+        var plot = jQuery.jqplot(id, jdata[1], {
             seriesDefaults:{
                 renderer:jQuery.jqplot.BarRenderer,
                 rendererOptions: {fillToZero: true, barPadding: 1, barWidth: 9}
@@ -70,20 +72,21 @@ function initialize(){
         // custom highlighter for chart since jqplot has a bug on highlighter when using BarRenderer
         jQuery("#" + id).unbind('jqplotDataHighlight').bind('jqplotDataHighlight',
           function (ev, seriesIndex, pointIndex, data ) {
-            mouseX = ev.pageX;
-            mouseY = ev.pageY;
-            jQuery('#chartpseudotooltip').html('PHP '+numberWithCommas(data[1]));
-            var cssObj = {
-                'position' : 'fixed',
-                'z-index' : '99999',
-                'left' : mouseX + 'px',
-                'top' : (mouseY-20) + 'px'
-              };
-            jQuery('#chartpseudotooltip').css(cssObj).fadeIn();
+            var tooltipLeft = plot.axes.xaxis.u2p(data[0]) - 20,
+              tooltipTop = plot.axes.yaxis.u2p(data[1]);
+            jQuery('#forecast_cost_tooltip').text('PHP '+numberWithCommas(data[1]));
+            jQuery('#forecast_cost_tooltip').css({ 'z-index': '99999', 'left': tooltipLeft + 'px', 'top': tooltipTop + 'px' }).fadeIn();
+            if(seriesIndex === 0 || seriesIndex === 1) { // for forecast and billable only
+              jQuery('#ratio_vs_availability_tooltip').text(
+                (100.0 * (parseFloat(data[1]) / parseFloat(plot.data[2][pointIndex]))).toFixed(2) + '%'
+              );
+              jQuery('#ratio_vs_availability_tooltip').css({ 'z-index': '99999', 'left': tooltipLeft + 'px', 'top': (tooltipTop + 20) + 'px' }).fadeIn();
+            }
           }
         ).unbind('jqplotDataUnhighlight').bind('jqplotDataUnhighlight',
           function (ev) {
-            jQuery('#chartpseudotooltip').fadeOut();
+            jQuery('#forecast_cost_tooltip').hide();
+            jQuery('#ratio_vs_availability_tooltip').hide();
           }
         );
       };

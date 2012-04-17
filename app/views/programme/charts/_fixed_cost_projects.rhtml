@@ -9,7 +9,7 @@
   <div class="legend_square" style="background-color:#940f00;"></div> Forecast
 </div>
 </div>
-<div id="chartpseudotooltip"></div>
+<div id="cost_tooltip" class="chart_pseudo_tooltip"></div>
 
 <% jticks, jdata = fixed_cost_projects_chart_data(@fixed_cost_projects, @fixed_costs).collect %>
 <script>
@@ -46,16 +46,16 @@
       function (ev, seriesIndex, pointIndex, data ) {
         mouseX = ev.pageX;
         mouseY = ev.pageY;
-        jQuery('#chartpseudotooltip').html('PHP '+numberWithCommas(data[1]));
+        jQuery('#cost_tooltip').html('PHP '+numberWithCommas(data[1]));
         var cssObj = {
             'left' : mouseX + 'px',
             'top' : (mouseY-20) + 'px'
           };
-        jQuery('#chartpseudotooltip').css(cssObj).fadeIn();
+        jQuery('#cost_tooltip').css(cssObj).fadeIn();
       }
     ).bind('jqplotDataUnhighlight', 
       function (ev) {
-        jQuery('#chartpseudotooltip').fadeOut();
+        jQuery('#cost_tooltip').fadeOut();
       }
     );   
     function numberWithCommas(x) {
