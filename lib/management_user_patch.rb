@@ -34,15 +34,17 @@ module Management
         custom_values_join = "left outer join custom_values on users.id=custom_values.customized_id and custom_values.customized_type='User' "
         custom_fields_join = "left outer join custom_fields on custom_fields.id=custom_values.custom_field_id"
 
-        c = ARCondition.new("status = 1")
-        c << "LOWER(users.lastname) LIKE '#{filters[:lastname].strip.downcase}'" unless filters[:lastname].blank?
-        c << "users.is_engineering is true" if !filters[:is_engineering].blank? and filters[:is_engineering].to_i.eql?(1)
-        c << "users.skill = '#{filters[:skill_or_role]}'" unless filters[:skill_or_role].blank?
-        c << "users.location = '#{filters[:location]}'" unless filters[:location].blank?
-        c << "users.id in (select users.id from users #{custom_values_join} #{custom_fields_join} \
-                    where custom_fields.name='Organization' and custom_values.value='#{filters[:organization]}')" unless filters[:organization].blank?
-        c << "users.id in (select users.id from users #{custom_values_join} #{custom_fields_join} \
-                    where custom_fields.name='Employee Status' and custom_values.value<>'Resigned')" if !filters[:is_employed].blank? and filters[:is_employed].to_i.eql?(1)
+        c = ARCondition.new("users.status = 1")
+        unless filters.empty?
+          c << "LOWER(users.lastname) LIKE '#{filters[:lastname].strip.downcase}'" if filters[:lastname] and !filters[:lastname].blank?
+          c << "users.is_engineering is true" if filters[:is_engineering] and !filters[:is_engineering].blank? and filters[:is_engineering].to_i.eql?(1)
+          c << "users.skill = '#{filters[:skill_or_role]}'" if filters[:skill_or_role] and !filters[:skill_or_role].blank?
+          c << "users.location = '#{filters[:location]}'" if filters[:location] and !filters[:location].blank?
+          c << "users.id in (select users.id from users #{custom_values_join} #{custom_fields_join} \
+                      where custom_fields.name='Organization' and custom_values.value='#{filters[:organization]}')" if filters[:organization] and !filters[:organization].blank?
+          c << "users.id in (select users.id from users #{custom_values_join} #{custom_fields_join} \
+                      where custom_fields.name='Employee Status' and custom_values.value<>'Resigned')" if filters[:is_employed] and !filters[:is_employed].blank? and filters[:is_employed].to_i.eql?(1)
+        end
         c
       end
     end

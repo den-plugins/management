@@ -63,11 +63,11 @@ class ProgrammeController < ApplicationController
 
   def pre_sales
     sort_init 'subject', 'asc'
-    sort_update({"subject" =>  "subject", "proj_manager" => "#{User.table_name}.firstname"})
+    sort_update({"subject" =>  "subject", "proj_manager" => "#{User.table_name}.firstname", "category" => "#{IssueCategory.table_name}.name"})
 
-    @header = "Pre-sales Programme Dashboard"
+    @header = "Pre-Sales Programme Dashboard"
     @pre_sales = Project.find(:first, :conditions => "name = 'Exist Pre-Sales'")
-    @features = @pre_sales.issues.open.find(:all, :include => [:assigned_to, :tracker],
+    @features = @pre_sales.issues.open.find(:all, :include => [:assigned_to, :tracker, :category],
                                              :conditions => "trackers.name = 'Feature'",
                                              :order => sort_clause) if @pre_sales
 

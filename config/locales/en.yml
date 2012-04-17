@@ -1,5 +1,6 @@
 en:
   field_skill: Skill
   field_hired_date: Hired Date
+  field_resignation_date: Resignation Date
   field_organization: Organization
   field_is_engineering: Engineer

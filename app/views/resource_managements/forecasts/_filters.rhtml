@@ -1,22 +1,22 @@
 <fieldset>
   <legend><%= l(:label_filter_plural) %></legend>
-
-   <% form_tag({}, :id => 'project_accounting_select') do %>
-      Project Accounting: <%= select_tag 'acctg', options_for_select(%w(Billable Non-billable Both), (params[:acctg] || 'Billable')),
-                                                                        :onchange => "$('project_accounting_select').submit();" %>
-      Location:
-      <%= select_tag 'location', options_for_select(User::LOCATIONS, (params[:location] || 'N/A')),
-                                                       :onchange => "$('project_accounting_select').submit();" %>
-      Skill:
-      <%= select_tag 'skill', options_for_select(User::SKILLS, (params[:skill] || 'N/A')),
-                                                       :onchange => "$('project_accounting_select').submit();" %>
-
-      Lastname:
-      <%= text_field_tag 'lastname', params[:lastname] || "" %>
-      <%= link_to_remote l(:button_apply), "#", :class => "icon icon-checked",
-                                              :onclick => "$('project_accounting_select').submit();",
-                                              :style => "margin-left: 15px;" %>
+  <div class="filter_content">
+    <% form_tag({}, :id => 'project_accounting_select') do %>
+      <div class="filter_group">
+        <label>Project Accounting</label>
+        <%= select_tag 'acctg', options_for_select(%w(Billable Non-billable Both), (params[:acctg] || 'Billable')) %>
+        <label>Location</label>
+        <%= select_tag 'location', options_for_select(User::LOCATIONS, (params[:location] || 'N/A')) %>
+        <label>Skill</label>
+        <%= select_tag 'skill', options_for_select(User::SKILLS, (params[:skill] || 'N/A')) %>
+        <label>Currently Employed Only</label>
+        <%= check_box_tag 'is_employed', '1', params[:is_employed] %>
+        <label>Lastname</label>
+        <%= text_field_tag 'lastname', params[:lastname] || "" %>
+        <%= link_to_remote l(:button_apply), "#", :class => "icon icon-checked",
+                                                :onclick => "$('project_accounting_select').submit();",
+                                                :style => "margin-left: 15px;" %>
+      </div>
     <% end %>
-
-
+  </div>
 </fieldset>

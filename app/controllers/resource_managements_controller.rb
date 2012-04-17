@@ -89,15 +89,9 @@ class ResourceManagementsController < ApplicationController
   def forecasts
     sort_init "lastname"
     sort_update %w(lastname location skill)
-    location = skill = lastname = nil
-
-    location = params[:location] unless params[:location].nil? || params[:location] == "N/A"
-    skill = params[:skill] unless params[:skill].nil? || params[:skill] == "N/A"
-    lastname = params[:lastname].capitalize unless params[:lastname].nil? || params[:lastname].blank?
-
-    condition = forecast_conditions(location, skill, lastname)
-
-    get_forecast_list(sort_clause, condition)
+    
+    conditions = forecast_conditions(params)
+    get_forecast_list(sort_clause, conditions)
 
     render :template => 'resource_managements/forecasts.rhtml', :layout => !request.xhr?
   end
@@ -105,7 +99,7 @@ class ResourceManagementsController < ApplicationController
   def users
     sort_clear
     sort_init 'lastname', 'asc'
-    sort_update %w(login firstname lastname is_engineering)
+    sort_update %w(login firstname lastname is_engineering custom_values.value)
 
     if filters = params[:filters]
       # temporarily put in the controller
@@ -114,8 +108,8 @@ class ResourceManagementsController < ApplicationController
       limit = per_page_option
       @users_count = User.count(:all, :conditions => c.conditions)
       @user_pages = Paginator.new self, @users_count, limit, params['page']
-      @users = User.find :all, :limit => limit, :offset => @user_pages.current.offset, :order => sort_clause,
-                                           :conditions => c.conditions
+      @users = User.find :all, :include => [:custom_values => :custom_field], :limit => limit, :offset => @user_pages.current.offset, :order => sort_clause,
+                                           :conditions => ["custom_fields.name = E'Employment Start'"] + c.conditions
     end
     render :template => 'resource_managements/users.rhtml', :layout => !request.xhr?
   end
@@ -186,7 +180,8 @@ class ResourceManagementsController < ApplicationController
         if @user.save
           if !@user.resignation_date.empty? && !@user.resignation_date.nil?
             if @user.resignation_date.to_date < Date.today
-              @user.custom_values.find_by_custom_field_id(23).update_attribute :value, "Resigned"
+              employee_status_field_id = CustomField.find_by_name("Employee Status")
+              @user.custom_values.find_by_custom_field_id(employee_status_field_id).update_attribute :value, "Resigned"
             end
           end
           Mailer.deliver_account_activated(@user) if was_activated
@@ -224,15 +219,9 @@ class ResourceManagementsController < ApplicationController
 
   def load_weekly_forecasts
     clause = session['resource_managements_forecasts_sort'].gsub(/:/, " ")
-    location = skill = lastname = nil
 
-    location = params[:location] unless params[:location].nil? || params[:location] == "N/A"
-    skill = params[:skill] unless params[:skill].nil? || params[:skill] == "N/A"
-    lastname = params[:lastname].capitalize unless params[:lastname].nil? || params[:lastname].blank?
-
-    condition = forecast_conditions(location, skill, lastname)
-
-    get_forecast_list(clause, condition)
+    conditions = forecast_conditions(params)
+    get_forecast_list(clause, conditions)
 
     @forecasts = {}
     @summary = {}
@@ -312,7 +301,9 @@ class ResourceManagementsController < ApplicationController
     if @projects.empty?
       @resources = []
     else
-      @resources_no_limit = User.active.engineers.find(:all, :conditions => query, :order => order, :include => [:projects, :members]).select do |resource|
+      # @resources_no_limit = User.active.engineers.find(:all, :conditions => query, :order => order, :include => [:projects, :members]).select do |resource|
+      # added active.engineers condition to forecast_conditions
+      @resources_no_limit = User.find(:all, :conditions => query, :order => order, :include => [:projects, :members]).select do |resource|
         resource unless resource.members.select {|m| @projects.include?(m.project_id) }.empty?
       end
       @resource_count = @resources_no_limit.count
@@ -596,12 +587,23 @@ class ResourceManagementsController < ApplicationController
 
   end
 
-  def forecast_conditions(location, skill, lastname)
-    conditions = []
-    conditions << "location = '#{location}'" unless location.blank?
-    conditions << "skill = '#{skill}'" unless skill.blank?
-    conditions << "lastname = '#{lastname}'" unless lastname.blank?
-    conditions = conditions.compact.join(" and ")
+  def forecast_conditions(params)
+    location = skill = lastname = nil
+    location = params[:location].eql?('N/A') ? nil : params[:location]
+    skill = params[:skill].eql?('N/A') ? nil : params[:skill]
+    lastname = params[:lastname].blank? ? nil :params[:lastname].capitalize
+    
+    custom_filters = Hash.new
+    # in resource cost forecast summary, resources must be 'active.engineers'
+    custom_filters[:is_engineering] = '1'
+    custom_filters[:is_employed] = params[:is_employed] unless params[:is_employed].blank?
+
+    conditions = Array.new
+    conditions << User.generate_user_mgt_condition(custom_filters).conditions
+    conditions << "location = '#{location}'" if location
+    conditions << "skill = '#{skill}'" if skill
+    conditions << "lastname = '#{lastname}'" if lastname
+    conditions = conditions.compact.join(' and ')
   end
 
   def enqueue_forecast_billable_job(handler, job)
