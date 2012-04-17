@@ -1,5 +1,8 @@
 class ForecastJob < Struct.new(:accounting, :resources_no_limit, :skill_set, :projects, :total_available_resources)
+  include Delayed::ScheduledJob
   include ResourceManagementsHelper
+
+  run_every(Time.parse("12am") + 1.day)
   
   def perform
     if FileTest.exists?("#{RAILS_ROOT}/config/rm_forecasts.yml")
