@@ -106,7 +106,7 @@ class ResourceManagementsController < ApplicationController
       c = User.generate_user_mgt_condition(filters)
       conditions = c.conditions
       conditions = (["custom_fields.name = E'Employment Start'"] + c.conditions).compact.join(' AND ') if params[:caption] == "Hired Date"
-      conditions = (["custom_fields.name = E'Employment End'"] + c.conditions).compact.join(' AND ') if params[:caption] == "Resignation Date"
+      conditions = (["custom_fields.name = E'Employment End'"] + c.conditions).compact.join(' AND ') if params[:caption] == "Resignation Date" && !filters[:is_employed].to_i.eql?(1)
       @location, @skill = filters[:location], filters[:skill_or_role]
       limit = per_page_option
       @users_count = User.count(:all, :conditions => c.conditions)
