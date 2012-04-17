@@ -1,7 +1,10 @@
 class ForecastBillableJob < Struct.new(:from, :to, :selection, :data, :key, :user_ids)
+  include Delayed::ScheduledJob
   include ResourceManagementsHelper
   include CostMonitoringHelper
   include ResourceCostsHelper
+
+  run_every(Time.parse("12am") + 1.day)
 
   def perform
     users = User.find(:all, :conditions => "id in (#{user_ids.join(',')})")

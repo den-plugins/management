@@ -331,7 +331,9 @@ class ResourceManagementsController < ApplicationController
     acctg = params[:acctg].to_s.blank? ? "Billable" : params[:acctg]
     resources_no_limit = @resources_no_limit.collect {|r| r.id }
     handler = ForecastJob.new(acctg, resources_no_limit, @skill_set, @projects, params[:total_res_available])
-    Delayed::Job.enqueue handler unless Delayed::Job.find_by_handler(handler.to_yaml)
+    job = Delayed::Job.find_by_handler(handler.to_yaml)
+    job = nil if job and job.run_at.eql?(Time.parse("12am") + 1.day)
+    Delayed::Job.enqueue handler if job.blank?
   end
 
   def render_empty_weeks
