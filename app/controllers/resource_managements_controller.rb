@@ -99,7 +99,7 @@ class ResourceManagementsController < ApplicationController
   def users
     sort_clear
     sort_init 'lastname', 'asc'
-    sort_update %w(login firstname lastname is_engineering)
+    sort_update %w(login firstname lastname is_engineering custom_values.value)
 
     if filters = params[:filters]
       # temporarily put in the controller
@@ -108,8 +108,8 @@ class ResourceManagementsController < ApplicationController
       limit = per_page_option
       @users_count = User.count(:all, :conditions => c.conditions)
       @user_pages = Paginator.new self, @users_count, limit, params['page']
-      @users = User.find :all, :limit => limit, :offset => @user_pages.current.offset, :order => sort_clause,
-                                           :conditions => c.conditions
+      @users = User.find :all, :include => [:custom_values => :custom_field], :limit => limit, :offset => @user_pages.current.offset, :order => sort_clause,
+                                           :conditions => ["custom_fields.name = E'Employment Start'"] + c.conditions
     end
     render :template => 'resource_managements/users.rhtml', :layout => !request.xhr?
   end
