@@ -104,12 +104,15 @@ class ResourceManagementsController < ApplicationController
     if filters = params[:filters]
       # temporarily put in the controller
       c = User.generate_user_mgt_condition(filters)
+      conditions = c.conditions
+      conditions = (["custom_fields.name = E'Employment Start'"] + c.conditions).compact.join(' AND ') if params[:caption] == "Hired Date"
+      conditions = (["custom_fields.name = E'Employment End'"] + c.conditions).compact.join(' AND ') if params[:caption] == "Resignation Date"
       @location, @skill = filters[:location], filters[:skill_or_role]
       limit = per_page_option
       @users_count = User.count(:all, :conditions => c.conditions)
       @user_pages = Paginator.new self, @users_count, limit, params['page']
       @users = User.find :all, :include => [:custom_values => :custom_field], :limit => limit, :offset => @user_pages.current.offset, :order => sort_clause,
-                                           :conditions => ["custom_fields.name = E'Employment Start'"] + c.conditions
+                                           :conditions => conditions
     end
     render :template => 'resource_managements/users.rhtml', :layout => !request.xhr?
   end

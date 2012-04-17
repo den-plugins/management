@@ -74,4 +74,31 @@ module SortHelper
                   {:href => url_for(url_options),
                    :class => css})
   end
+
+  def sort_link(column, caption, default_order)
+    css, order = nil, default_order
+
+    if column.to_s == @sort_criteria.first_key
+      if @sort_criteria.first_asc?
+        css = 'sort asc'
+        order = 'desc'
+      else
+        css = 'sort desc'
+        order = 'asc'
+      end
+    end
+    caption = column.to_s.humanize unless caption
+
+    sort_options = { :sort => @sort_criteria.add(column.to_s, order).to_param }
+    # don't reuse params if filters are present
+    url_options = params.has_key?(:set_filter) ? sort_options : params.merge(sort_options)
+
+     # Add project_id to url_options
+    url_options = url_options.merge(:project_id => params[:project_id]) if params.has_key?(:project_id)
+    url_options = url_options.merge(:caption => caption.to_param)
+    link_to_remote(caption,
+                  {:update => "content", :url => url_options, :method => :get},
+                  {:href => url_for(url_options),
+                   :class => css})
+  end
 end
