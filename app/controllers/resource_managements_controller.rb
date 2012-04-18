@@ -100,7 +100,12 @@ class ResourceManagementsController < ApplicationController
   def users
     sort_clear
     sort_init 'lastname', 'asc'
-    sort_update %w(login firstname lastname is_engineering custom_values.value)
+    sort_update 'login' => "#{User.table_name}.login",
+                'firstname' => "#{User.table_name}.firstname",
+                'lastname' => "#{User.table_name}.lastname",
+                'is_engineering' => "#{User.table_name}.is_engineering",
+                'hired_date' => "#{CustomValue.table_name}.value",
+                'resignation_date' => "#{CustomValue.table_name}.value"
 
     if filters = params[:filters]
       # temporarily put in the controller
