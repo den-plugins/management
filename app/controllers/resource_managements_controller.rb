@@ -224,6 +224,7 @@ class ResourceManagementsController < ApplicationController
     clause = session['resource_managements_forecasts_sort'].gsub(/:/, " ")
 
     conditions = forecast_conditions(params)
+    p conditions
     get_forecast_list(clause, conditions)
 
     @forecasts = {}
@@ -319,6 +320,7 @@ class ResourceManagementsController < ApplicationController
       end
     end
     @skill_set = User::SKILLS
+    p @resources_no_limit
   end
 
   def delay_job
@@ -592,9 +594,9 @@ class ResourceManagementsController < ApplicationController
 
   def forecast_conditions(params)
     location = skill = lastname = nil
-    location = params[:location].eql?('N/A') ? nil : params[:location]
-    skill = params[:skill].eql?('N/A') ? nil : params[:skill]
-    lastname = params[:lastname].blank? ? nil :params[:lastname].capitalize
+    location = ((params[:location].eql?('N/A') or params[:location].blank?)? nil : params[:location])
+    skill = ((params[:skill].eql?('N/A') or params[:skill].blank?)? nil : params[:skill])
+    lastname = (params[:lastname].blank? ? nil : params[:lastname].capitalize)
     
     custom_filters = Hash.new
     # in resource cost forecast summary, resources must be 'active.engineers'
