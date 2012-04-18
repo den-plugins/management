@@ -11,27 +11,34 @@
     jQuery('#skill_selection_hidden').val(jQuery('#skill_selection').val()).closest('form').submit();
     jQuery("#chart3").empty();
   });
-  charts.line_graph = function(id) {
-    jQuery.jqplot(id, <%= jdata %>, {
-      series: [
-        <% jlabels.each do |skill| %>
-          {label: '<%= skill %>'},
+  charts.line_graph = {
+    render: function(id) {
+      var plot = jQuery.jqplot(id, <%= jdata %>, {
+        series: [
+          <% jlabels.each do |skill| %>
+            {label: '<%= skill %>'},
+          <% end %>
+        ],
+        axes: {
+          xaxis: {label: 'Weeks', autoscale: true, renderer: jQuery.jqplot.DateAxisRenderer, tickOptions: {showMark: false, fontSize: '7pt', formatString: '%m/%d<br>%Y'}},
+          yaxis: {label: "Allocation Count", labelRenderer: jQuery.jqplot.CanvasAxisLabelRenderer, min: 0}
+        },
+        seriesDefaults: {
+          markerOptions: { show: false }
+        },
+        <% if @sel_skill.blank? or @sel_skill.eql?("All") %>
+        legend: {show: true, location: 'ne', placement: 'outsideGrid', xOffset: 12 },
         <% end %>
-      ],
-      axes: {
-        xaxis: {label: 'Weeks', autoscale: true, renderer: jQuery.jqplot.DateAxisRenderer, tickOptions: {showMark: false, fontSize: '7pt', formatString: '%m/%d<br>%Y'}},
-        yaxis: {label: "Allocation Count", labelRenderer: jQuery.jqplot.CanvasAxisLabelRenderer, min: 0}
-      },
-      seriesDefaults: {
-        markerOptions: { show: false }
-      },
-      <% if @sel_skill.blank? or @sel_skill.eql?("All") %>
-      legend: {show: true, location: 'ne', placement: 'outsideGrid'},
-      <% end %>
-      cursor: {show: true, zoom: true},
-      highlighter: {show: true, sizeAdjust: 7.5}
-    });
+        cursor: {show: true, zoom: true},
+        highlighter: {show: true, sizeAdjust: 7.5}
+      });
+      jQuery(plot.targetId).find('table.jqplot-table-legend').css({ 'line-height': '0.5em', 'margin': 0 });
+      if(id !== 'zoom_chart') {
+        this.plot = plot;
+      }
+      return plot;
+    }
   };
 
-  charts.line_graph('chart3');
+  charts.line_graph.render('chart3');
 </script>

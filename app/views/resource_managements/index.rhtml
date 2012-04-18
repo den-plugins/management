@@ -51,8 +51,7 @@
           <h3>Billability Forecast by Skill Set</h3>
         </div>
         <div id="billability_forecast_controls" style="float:right; display:inline;">
-          <%= select_tag "skill_selection", options_for_select(["All"] + @skill_set),
-                         :onchange => "jQuery('#skill_selection_hidden').val(jQuery('#skill_selection').val());" %>
+          <%= select_tag "skill_selection", options_for_select(["All"] + @skill_set) %>
         </div>
       </div><div class="clear"></div>
       <div id="chart3"></div>
@@ -88,8 +87,7 @@
         </div>
         <div id="forecast_billable_controls" style="float:right; display:inline;">
         <a href="#" class="refresh" title="Refresh" style="float:left; margin:6px;"></a>
-        <%= select_tag "selection", options_for_select(options, options[2]),
-                       :onchange => "jQuery('#selection_hidden').val(jQuery('#selection').val());" %>
+        <%= select_tag "selection", options_for_select(options, options[2]) %>
         </div>
       </div>
       <div class="auto_scroll_x"><div id="forecast_billable_chart"></div></div>
@@ -125,19 +123,25 @@
   <%= javascript_include_tag 'dashboard.js', :plugin => 'management' %>
   <script type="text/javascript">
     jQuery(document).ready(function($) {
-      charts.resource_inventory = function(id) {
-        return jQuery.jqplot(id, [<%= count_user_skill(@users) %>],
-          {
-            seriesDefaults: {
-              renderer: jQuery.jqplot.PieRenderer,
-              seriesColors: [ "#7ea5e2", "#e57e7c", "#bdde85", "#9b81bd", "#79cdea", "#fba665", "#a0bcec", "#f3a8a6", "#fd7f2ac", "#c7b6e2"],
-              rendererOptions: { showDataLabels: true }
-            },
-            legend: { show:true, location: 'e' },
+      charts.resource_inventory = {
+        render: function(id) {
+          var plot = jQuery.jqplot(id, [<%= count_user_skill(@users) %>],
+            {
+              seriesDefaults: {
+                renderer: jQuery.jqplot.PieRenderer,
+                seriesColors: [ "#7ea5e2", "#e57e7c", "#bdde85", "#9b81bd", "#79cdea", "#fba665", "#a0bcec", "#f3a8a6", "#fd7f2ac", "#c7b6e2"],
+                rendererOptions: { showDataLabels: true }
+              },
+              legend: { show:true, location: 'e' },
+            }
+          );
+          if(id !== 'zoom_chart') {
+            this.plot = plot;
           }
-        );
+          return plot;
+        }
       };
-      charts.resource_inventory('chart1');
+      charts.resource_inventory.render('chart1');
     });
   </script>
 <% end %>
