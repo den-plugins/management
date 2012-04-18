@@ -49,8 +49,9 @@ class ResourceManagementsController < ApplicationController
       key = @selection.downcase.gsub(' ', '_')
       data = (params['data'].blank? ? {} : params['data'].each {|k,v| params['data'][k] = JSON.parse(v)})
       refresh = (params['refresh'].blank? ? nil : key)
-      handler = ForecastBillableJob.new(@from, @to, @selection, data, refresh, @users.collect {|u| u.id})
-      @job = Delayed::Job.find_by_handler(handler.to_yaml)
+      handler = ForecastBillableJob.new(@from, @to, @selection, refresh, @users.collect {|u| u.id})
+      @job = Delayed::Job.find(:first,
+              :conditions => ["handler = ? AND run_at <> ?", "#{handler.to_yaml}", (Time.parse("12am") + 1.day)])
       enqueue_forecast_billable_job(handler, @job) if !File.exists?("#{RAILS_ROOT}/config/forecast_billable.json") || (!data.blank? && data[key].nil?) || refresh
     elsif params[:chart] == "resource_allocation"
       get_projects_members
@@ -224,7 +225,6 @@ class ResourceManagementsController < ApplicationController
     clause = session['resource_managements_forecasts_sort'].gsub(/:/, " ")
 
     conditions = forecast_conditions(params)
-    p conditions
     get_forecast_list(clause, conditions)
 
     @forecasts = {}
@@ -320,7 +320,6 @@ class ResourceManagementsController < ApplicationController
       end
     end
     @skill_set = User::SKILLS
-    p @resources_no_limit
   end
 
   def delay_job
