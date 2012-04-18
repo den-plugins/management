@@ -124,7 +124,7 @@ td.warrantied {background-image: url('../images/warranty.png'); background-repea
 #programme_dashboard .auto_scroll_y { height: 350px; width: 100%; overflow-y: auto; overflow-x: hidden; }
 #programme_dashboard .auto_scroll_x { height: 350px; width: 100%; overflow-x: auto; overflow-y: hidden; }
 .chart_pseudo_tooltip { position: absolute; font-size: 8pt; background-color: #ffffff;
-                        border: 1px solid #e6e6fa; display: none; }
+                        border: 1px solid #e6e6fa; display: none; white-space: nowrap; }
 
 /*******************************************
       Time Logging
