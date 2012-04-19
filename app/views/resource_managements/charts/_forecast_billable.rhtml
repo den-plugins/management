@@ -41,7 +41,6 @@ function initialize(){
 
       charts.forecast_billable = {
         render: function(id) {
-          jQuery('#' + id).css('position', 'relative');
           var plot = jQuery.jqplot(id, jdata[1], {
               seriesDefaults:{
                   renderer:jQuery.jqplot.BarRenderer,
@@ -72,20 +71,23 @@ function initialize(){
           // custom highlighter for chart since jqplot has a bug on highlighter when using BarRenderer
           jQuery("#" + id).unbind('jqplotDataHighlight').bind('jqplotDataHighlight',
             function (ev, seriesIndex, pointIndex, data ) {
-              var tooltipLeft = parseInt(plot.axes.xaxis.u2p(data[0])) - 20,
-                tooltipTop = parseInt(ev.pageY) - jQuery(plot.target).offset().top,//300 - plot.axes.yaxis.u2p(data[1]),
-                tooltipText = 'PHP ' + numberWithCommas(data[1]);
+              var tooltipLeft = parseInt(ev.pageX) - jQuery(window).scrollLeft(),
+                tooltipTop = parseInt(ev.pageY) - jQuery(window).scrollTop(),
+                tooltipText = 'PHP ' + numberWithCommas(data[1]),
+                tooltip = jQuery('#forecast_cost_tooltip');
               if(seriesIndex === 0 || seriesIndex === 1) { // for forecast and billable only
                 tooltipText += '<br /><strong>' +
                   (100.0 * (parseFloat(data[1]) / parseFloat(plot.data[2][pointIndex]))).toFixed(2) + '%' +
                   '</strong>';
               }
-              jQuery('#forecast_cost_tooltip').html(tooltipText);
-              jQuery('#forecast_cost_tooltip').css({ 'z-index': '99999', 'left': tooltipLeft + 'px', 'top': tooltipTop + 'px' }).fadeIn();
+              tooltip.html(tooltipText);
+              tooltipLeft -= tooltip.width();
+              tooltipTop += tooltip.height();
+              tooltip.css({ 'z-index': '99999', 'left': tooltipLeft + 'px', 'top': tooltipTop + 'px', 'position': 'fixed' }).show();
             }
           ).unbind('jqplotDataUnhighlight').bind('jqplotDataUnhighlight',
             function (ev) {
-              jQuery('#forecast_cost_tooltip').fadeOut();
+              jQuery('#forecast_cost_tooltip').hide();
             }
           );
           if(id !== 'zoom_chart') {
