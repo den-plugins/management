@@ -310,11 +310,8 @@ class ResourceManagementsController < ApplicationController
     if @projects.empty?
       @resources = []
     else
-      # @resources_no_limit = User.active.engineers.find(:all, :conditions => query, :order => order, :include => [:projects, :members]).select do |resource|
-      # added active.engineers condition to forecast_conditions
-      @resources_no_limit = User.find(:all, :conditions => query, :order => order, :include => [:projects, :members]).select do |resource|
-        resource unless resource.members.select {|m| @projects.include?(m.project_id) }.empty?
-      end
+      query << " and projects.id IN (#{@projects.join(', ')})"
+      @resources_no_limit = User.find(:all, :conditions => query, :order => order, :include => [:projects, :members])
       @resource_count = @resources_no_limit.count
       @resource_pages = Paginator.new self, @resource_count, limit, params['page']
       offset = @resource_pages.current.offset
