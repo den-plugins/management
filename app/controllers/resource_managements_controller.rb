@@ -115,7 +115,7 @@ class ResourceManagementsController < ApplicationController
       conditions = (["custom_fields.name = E'Employment End'"] + c.conditions).compact.join(' AND ') if params[:caption] == "Resignation Date" && !filters[:is_employed].to_i.eql?(1)
       @location, @skill = filters[:location], filters[:skill_or_role]
       limit = per_page_option
-      @users_count = User.count(:all, :conditions => c.conditions)
+      @users_count = User.count(:all, :include => [:custom_values => :custom_field], :conditions => conditions)
       @user_pages = Paginator.new self, @users_count, limit, params['page']
       @users = User.find :all, :include => [:custom_values => :custom_field], :limit => limit, :offset => @user_pages.current.offset, :order => sort_clause,
                                            :conditions => conditions
@@ -310,11 +310,8 @@ class ResourceManagementsController < ApplicationController
     if @projects.empty?
       @resources = []
     else
-      # @resources_no_limit = User.active.engineers.find(:all, :conditions => query, :order => order, :include => [:projects, :members]).select do |resource|
-      # added active.engineers condition to forecast_conditions
-      @resources_no_limit = User.find(:all, :conditions => query, :order => order, :include => [:projects, :members]).select do |resource|
-        resource unless resource.members.select {|m| @projects.include?(m.project_id) }.empty?
-      end
+      query << " and projects.id IN (#{@projects.join(', ')})"
+      @resources_no_limit = User.find(:all, :conditions => query, :order => order, :include => [:projects, :members])
       @resource_count = @resources_no_limit.count
       @resource_pages = Paginator.new self, @resource_count, limit, params['page']
       offset = @resource_pages.current.offset

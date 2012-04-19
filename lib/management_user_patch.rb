@@ -76,17 +76,17 @@ module Management
       end
 
       def resignation_date
-        r = custom_values.detect {|v| v.mgt_custom "Employment End"}
+        r = User.find(id).custom_values.detect {|v| v.mgt_custom "Employment End"}
         r ? r.value : nil
       end
       
       def hired_date
-        c = custom_values.detect {|v| v.mgt_custom "Employment Start"}
+        c = User.find(id).custom_values.detect {|v| v.mgt_custom "Employment Start"}
         c ? c.value : nil
       end
       
       def organization
-        c = custom_values.detect {|v| v.mgt_custom "Organization"}
+        c = User.find(id).custom_values.detect {|v| v.mgt_custom "Organization"}
         c ? c.value : nil
       end
       
