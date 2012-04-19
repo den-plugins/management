@@ -115,7 +115,7 @@ class ResourceManagementsController < ApplicationController
       conditions = (["custom_fields.name = E'Employment End'"] + c.conditions).compact.join(' AND ') if params[:caption] == "Resignation Date" && !filters[:is_employed].to_i.eql?(1)
       @location, @skill = filters[:location], filters[:skill_or_role]
       limit = per_page_option
-      @users_count = User.count(:all, :conditions => c.conditions)
+      @users_count = User.count(:all, :include => [:custom_values => :custom_field], :conditions => conditions)
       @user_pages = Paginator.new self, @users_count, limit, params['page']
       @users = User.find :all, :include => [:custom_values => :custom_field], :limit => limit, :offset => @user_pages.current.offset, :order => sort_clause,
                                            :conditions => conditions
