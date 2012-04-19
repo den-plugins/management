@@ -34,7 +34,7 @@ xhr = jQuery.ajax({
     <% s = @summary.detect {|x| x[:id] == u.id} %>
     str += "<tr class='<%= cycle('odd','even') %> <%= color_code_log_time s %>'>";
     str += "<td><%= s[:location] %></td>";
-    str += '<td class="left"><a onclick="jQuery.facebox(function(){ new Ajax.Request(\'/ticker/user_timelogs?from=<%= from %>&to=<%= to %>&user_id=<%= s[:id] %>&type=<%= @columns %>\', {asynchronous:true, evalScripts:true}) }); return false;" href="#"><%= s[:name] %></a>';
+    str += '<td class="left"><a onclick="jQuery.facebox(function(){ new Ajax.Request(\'/ticker/user_timelogs?from=<%= from %>&to=<%= to %>&user_id=<%= s[:id] %>&type=<%= @columns %>&env=popup\', {asynchronous:true, evalScripts:true}) }); return false;" href="#"><%= s[:name] %></a>';
     str += "<td class='left'><%= s[:skill] %></td>";
     str += '<td><%= html_hours("%.2f" % s[:total_hours].to_f) %></td>';
     str += '<td><%= html_hours("%.2f" % s[:total_hours_on_selected].to_f) %></td>';
