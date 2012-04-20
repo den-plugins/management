@@ -27,9 +27,9 @@
 	      <td class="firstname"><%= h(user.firstname) %></td>
 	      <td class="location center"><%= h(user.location) %></td>
 	      <td class="skill center"><%= h(user.skill) %></td>
-	      <td class="hired_date center"><%= user.hired_date %></td>
-	      <td class="resignation_date center"><%= user.resignation_date %></td>
-	      <td class="organization center"><%= h(user.organization) %></td>
+	      <td class="hired_date center"><%= user.get_hired_date %></td>
+	      <td class="resignation_date center"><%= user.get_resignation_date %></td>
+	      <td class="organization center"><%= h(user.get_organization) %></td>
 	      <td class="center"><%= image_tag('true.png') if user.is_engineering? %></td>
 	      <td><small><%= update_status_link(user) %></small></td>
       </tr>
