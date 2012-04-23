@@ -110,6 +110,32 @@ module Management
         rate ? [days, cost] : days
       end
 
+      # modified allocations method to consider 100% of total allocations.
+      def allocations_modified(week, filtered_projects, rate=nil)
+        days, cost = 0, 0
+        project_allocations = members.collect(&:resource_allocations).flatten.select do |alloc|
+          filtered_projects.include? alloc.member.project_id
+        end
+        
+        week.each do |day|
+          unless day.wday.eql?(0) || day.wday.eql?(6)
+            if allocations = project_allocations.select {|a| a.start_date <= day && a.end_date >= day}.uniq
+              ra = 0
+              allocations.each do |alloc|
+                holiday = alloc.nil? ? 0 : detect_holidays_in_week(alloc.location, day)
+                if holiday.eql?(0)
+                  ra += alloc.resource_allocation
+                end
+              end unless allocations.empty?
+              div = (ra > 100 ? round_up(ra) : 100)
+              days += (1 * (ra.to_f / div).to_f)
+            end
+          end
+        end unless project_allocations.empty?
+        cost = days * (rate.to_f)
+        rate ? [days, cost] : days
+      end
+
       def total_expected(from, to, project_ids)
         h_date, r_date = to_date_safe(hired_date), to_date_safe(resignation_date)
         f = (((from..to).include_with_range?(h_date))? h_date : from)
@@ -117,7 +143,7 @@ module Management
         weeks = get_weeks_range(f, t)
         texpected = 0
         weeks.each do |week|
-          texpected += allocations(week, project_ids) * 8 # 40 hours is the expected hours per week, 8 hours per day
+          texpected += allocations_modified(week, project_ids) * 8 # 40 hours is the expected hours per week, 8 hours per day
         end
         texpected
       end

@@ -198,9 +198,9 @@ module ResourceManagementsHelper
       tmp_availables, tmp_forecasts, tmp_billables = [], [], []
       ticks << m.first.strftime("%b %Y")
       users.each do |u|
-        tmp_availables << u.total_expected(m.first, m.last, u.memberships.map(&:project_id))
-        tmp_forecasts << cost_compute_forecasted_hours(m, u.memberships.all, "billable")
-        tmp_billables << u.memberships.all.collect { |mem| mem.spent_time(m.first, m.last, "Billable", true).to_f }.sum
+        tmp_availables << u.total_expected(m.first, m.last, u.members.map(&:project_id))
+        tmp_forecasts << cost_compute_forecasted_hours(m, u.members.all, "billable")
+        tmp_billables << u.members.all.collect { |mem| mem.spent_time(m.first, m.last, "Billable", true).to_f }.sum
       end
       available << tmp_availables.sum
       forecast << tmp_forecasts.sum
@@ -327,6 +327,17 @@ module ResourceManagementsHelper
       Date.parse date
     rescue
       nil
+    end
+  end
+
+  def round_up(number)
+    divisor = 10**Math.log10(number).floor
+    i = number / divisor
+    remainder = number % divisor
+    if remainder == 0
+      i * divisor
+    else
+      (i + 1) * divisor
     end
   end
 
