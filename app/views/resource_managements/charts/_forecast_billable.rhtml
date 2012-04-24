@@ -73,7 +73,7 @@ function initialize(){
             function (ev, seriesIndex, pointIndex, data ) {
               var tooltipLeft = parseInt(ev.pageX) - jQuery(window).scrollLeft(),
                 tooltipTop = parseInt(ev.pageY) - jQuery(window).scrollTop(),
-                tooltipText = 'PHP ' + numberWithCommas(data[1]),
+                tooltipText = numberWithCommas(data[1]),
                 tooltip = jQuery('#forecast_cost_tooltip');
               if(seriesIndex === 0 || seriesIndex === 1) { // for forecast and billable only
                 tooltipText += '<br /><strong>' +
