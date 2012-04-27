@@ -153,4 +153,16 @@ module ProgrammeHelper
   def sub_name(name)
     name.sub(/development/i, "").strip
   end
+
+  def pre_sales_custom_field_names
+    ['PreSales State', 'Presales Lead Qualification', 'PreSales resourcing', 'Project Resourcing State', 'Projected Start date', 'Project Resourcing']
+  end
+
+  def pre_sales_custom_field(issue, field_name)
+    if pre_sales_custom_field_names.include?(field_name)
+      if custom_value = issue.custom_values.detect{ |v| v.custom_field.name == field_name }
+        custom_value.value
+      end
+    end
+  end
 end

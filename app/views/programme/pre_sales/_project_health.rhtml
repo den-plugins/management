@@ -2,13 +2,16 @@
 <table class="list" id="project_health_table">
   <thead>
   <tr style="height: 65px; background-color: #bfbfbf; border-bottom: 2px solid white;">
-    <%= sort_header_tag_without_update('subject', :caption => "Features", :style => "width: 24%") %>
-    <%= sort_header_tag_without_update('category', :caption => "Category", :style => "width: 23%") %>
+    <%= sort_header_tag_without_update('subject', :caption => "Features", :style => "width: 20%") %>
+    <%= sort_header_tag_without_update('category', :caption => "Category", :style => "width: 15%") %>
     <th style="text-align:center">Schedule</th>
     <th style="text-align:center">Risk</th>
     <th style="text-align:center">Issue</th>
     <th style="text-align:center">Contract</th>
     <%= sort_header_tag_without_update('proj_manager', :caption => 'PM', :style => "text-align:center") %>
+    <% pre_sales_custom_field_names.each do |field_name| %>
+      <th style="text-align:center"><%=h field_name %></th>
+    <% end %>
   </tr>
   </thead>
   <tbody>
@@ -23,6 +26,9 @@
     <td class=""></td>
     <td class=""></td>
     <td class="center"><span><%= (m=feature.assigned_to) ? initials(m.firstname, m.lastname) : "?" %></span></td>
+    <% pre_sales_custom_field_names.each do |field_name| %>
+      <td><%= pre_sales_custom_field(feature, field_name) %></td>
+    <% end %>
   </tr>
   <% end %>
   </tbody>
