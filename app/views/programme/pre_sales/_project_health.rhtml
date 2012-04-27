@@ -26,9 +26,12 @@
     <td class=""></td>
     <td class=""></td>
     <td class="center"><span><%= (m=feature.assigned_to) ? initials(m.firstname, m.lastname) : "?" %></span></td>
-    <% pre_sales_custom_field_names.each do |field_name| %>
-      <td><%= pre_sales_custom_field(feature, field_name) %></td>
-    <% end %>
+    <td><%= pre_sales_custom_field(feature, 'PreSales State') %></td>
+    <td><%= pre_sales_custom_field(feature, 'Presales Lead Qualification') %></td>
+    <td><%= pre_sales_custom_field(feature, 'PreSales Resourcing') %></td>
+    <td><span class="circle <%= color_code_for_project_resourcing_state(feature) %>"></span></td>
+    <td><%= pre_sales_custom_field(feature, 'Projected Start date') %></td>
+    <td><%= pre_sales_custom_field(feature, 'Project Resourcing') %></td>
   </tr>
   <% end %>
   </tbody>

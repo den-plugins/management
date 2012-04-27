@@ -91,6 +91,11 @@ module ProgrammeHelper
     project.in_warranty? ? "warrantied" : ""
   end
 
+  def color_code_for_project_resourcing_state(issue)
+    value = pre_sales_custom_field(issue, 'Project Resourcing State')
+    value.blank? ? 'nocolor' : value.downcase
+  end
+
   def daily_rate(rate)
     rate.to_f * 8
   end
