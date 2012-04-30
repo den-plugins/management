@@ -63,13 +63,12 @@ class ProgrammeController < ApplicationController
 
   def pre_sales
     sort_init 'subject', 'asc'
-    sort_update({"subject" =>  "subject", "proj_manager" => "#{User.table_name}.firstname", "category" => "#{IssueCategory.table_name}.name"})
+    sort_update({"subject" =>  "subject", "proj_manager" => "#{User.table_name}.firstname", "category" => "#{IssueCategory.table_name}.name", "custom-issue-projected_start_date" => "custom-issue-projected_start_date"})
 
     @header = "Pre-Sales Programme Dashboard"
     @pre_sales = Project.find(:first, :conditions => "name = 'Exist Pre-Sales'")
-    @features = @pre_sales.issues.open.find(:all, :include => [:assigned_to, :tracker, :category],
-                                             :conditions => "trackers.name = 'Feature'",
-                                             :order => sort_clause) if @pre_sales
+    @features = @pre_sales.issues.open.find(:all, full_sort_clause(:include => [:assigned_to, :tracker, :category],
+                                             :conditions => "trackers.name = 'Feature'")) if @pre_sales
 
     if request.xhr?
       render :update do |page|

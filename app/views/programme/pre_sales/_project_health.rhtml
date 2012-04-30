@@ -9,9 +9,11 @@
     <th style="text-align:center">Issue</th>
     <th style="text-align:center">Contract</th>
     <%= sort_header_tag_without_update('proj_manager', :caption => 'PM', :style => "text-align:center") %>
-    <% pre_sales_custom_field_names.each do |field_name| %>
+    <% pre_sales_custom_field_names.first(4).each do |field_name| %>
       <th style="text-align:center"><%=h field_name %></th>
     <% end %>
+    <%= sort_header_tag_without_update('custom-issue-projected_start_date', :caption => 'Projected Start Date', :style => "text-align:center") %>
+    <th style="text-align:center">Project Resourcing</th>
   </tr>
   </thead>
   <tbody>

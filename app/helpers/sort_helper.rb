@@ -31,6 +31,50 @@ module SortHelper
       #sql.blank? ? nil : sql
       [(sql.blank? ? nil : sql), (custom_select.blank? ? nil : custom_select.compact.join(', '))]
     end
+
+    def to_full_sql_with_custom(options={})
+      # TODO Refactor/DRY up
+
+      custom_select= []
+      custom_fields = []
+      condition_clauses = []
+      order_clauses = []
+      default_conditions = options.delete(:conditions)
+      default_order = options.delete(:order)
+      sql = {}
+
+      @criteria.each do |k, o|
+        if s = @available_criteria[k]
+          if k.to_s =~ /^\w+\-\w+\-\w+$/
+            customized_model_name, custom_field = k.to_s.split('-')[1..2]
+            customized_model_table_name = customized_model_name.classify.constantize.table_name
+            custom_field_model = "#{customized_model_name}_custom_field".classify.constantize
+            custom_fields = custom_field_model.all.collect {|u| u.name.strip.downcase.gsub(/ /, '_') } if custom_fields.empty?
+
+            if custom_fields.include?(custom_field)
+              sql.merge!(:joins => %{LEFT OUTER JOIN (SELECT customized_id, value FROM custom_values 
+                  LEFT OUTER JOIN custom_fields ON custom_fields.id = custom_values.custom_field_id
+                  WHERE custom_values.customized_type = '#{customized_model_name.classify}' AND LOWER(custom_fields.name) = '#{custom_field.downcase.gsub('_', ' ')}'
+                  ) #{custom_field} ON #{custom_field}.customized_id = #{customized_model_table_name}.id
+                }) unless sql[:join]
+              if o
+                order_clauses << "#{custom_field}.value"
+              else
+                order_clauses << "#{custom_field}.value DESC"
+              end
+            end
+          else
+            order_clauses.concat(o ? s.to_a : s.to_a.collect {|c| "#{c} DESC"})
+          end
+        end
+      end
+
+      conditions = []
+      conditions << default_conditions if default_conditions
+      conditions << "(#{condition_clauses.join(' OR ')})" unless condition_clauses.empty?
+
+      sql.merge(:order => order_clauses.push(default_order).compact.join(', '), :conditions => conditions.join(' AND ')).merge(options)
+    end
     
     def eq_custom(custom_field)
       case custom_field
@@ -44,6 +88,10 @@ module SortHelper
   
   def mgt_sort_clause
     @sort_criteria.to_sql_with_custom.collect
+  end
+
+  def full_sort_clause(options={})
+    @sort_criteria.to_full_sql_with_custom(options)
   end
   
   def sort_header_tag_without_update(column, options = {})
