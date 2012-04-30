@@ -33,47 +33,41 @@ module SortHelper
     end
 
     def to_full_sql_with_custom(options={})
-      # TODO Refactor/DRY up
-
-      custom_select= []
-      custom_fields = []
-      condition_clauses = []
+      customized_model_name = nil
+      custom_field = nil
+      customized_table = nil
+      custom_field_model = nil
+      custom_fields = {}
       order_clauses = []
-      default_conditions = options.delete(:conditions)
       default_order = options.delete(:order)
-      sql = {}
 
-      @criteria.each do |k, o|
-        if s = @available_criteria[k]
-          if k.to_s =~ /^\w+\-\w+\-\w+$/
-            customized_model_name, custom_field = k.to_s.split('-')[1..2]
-            customized_model_table_name = customized_model_name.classify.constantize.table_name
-            custom_field_model = "#{customized_model_name}_custom_field".classify.constantize
-            custom_fields = custom_field_model.all.collect {|u| u.name.strip.downcase.gsub(/ /, '_') } if custom_fields.empty?
+      @criteria.each do |key, asc|
+        if s = @available_criteria[key]
+          if key.to_s =~ /^\w+\-\w+\-\w+$/
+            if custom_fields.empty?
+              customized_model_name = key.to_s.split('-')[1]
+              custom_field = key.to_s.split('-')[2]
+              customized_table = customized_model_name.classify.constantize.table_name
+              custom_field_model = "#{customized_model_name}_custom_field".classify.constantize
+              custom_fields = Hash[*custom_field_model.all.collect{ |field| [field.name.strip.downcase.gsub(/ /, '_'), field.name] }.flatten]
+            end
 
-            if custom_fields.include?(custom_field)
-              sql.merge!(:joins => %{LEFT OUTER JOIN (SELECT customized_id, value FROM custom_values 
+            if custom_fields.keys.include?(custom_field)
+              options.merge!(:joins => %{LEFT OUTER JOIN (SELECT customized_id, value FROM custom_values 
                   LEFT OUTER JOIN custom_fields ON custom_fields.id = custom_values.custom_field_id
-                  WHERE custom_values.customized_type = '#{customized_model_name.classify}' AND LOWER(custom_fields.name) = '#{custom_field.downcase.gsub('_', ' ')}'
-                  ) #{custom_field} ON #{custom_field}.customized_id = #{customized_model_table_name}.id
-                }) unless sql[:join]
-              if o
-                order_clauses << "#{custom_field}.value"
-              else
-                order_clauses << "#{custom_field}.value DESC"
-              end
+                  WHERE custom_values.customized_type = '#{customized_model_name.classify}' AND custom_fields.name = '#{custom_fields[custom_field]}'
+                  ) #{custom_field} ON #{custom_field}.customized_id = #{customized_table}.id
+                })
+
+              order_clauses << (asc ? "#{custom_field}.value" : "#{custom_field}.value DESC")
             end
           else
-            order_clauses.concat(o ? s.to_a : s.to_a.collect {|c| "#{c} DESC"})
+            order_clauses.concat(asc ? s.to_a : s.to_a.collect {|c| "#{c} DESC"})
           end
         end
       end
 
-      conditions = []
-      conditions << default_conditions if default_conditions
-      conditions << "(#{condition_clauses.join(' OR ')})" unless condition_clauses.empty?
-
-      sql.merge(:order => order_clauses.push(default_order).compact.join(', '), :conditions => conditions.join(' AND ')).merge(options)
+      options.merge(:order => order_clauses.push(default_order).compact.join(', '))
     end
     
     def eq_custom(custom_field)
