@@ -160,7 +160,9 @@ module ProgrammeHelper
   end
 
   def pre_sales_custom_field_names
-    ['PreSales State', 'Presales Lead Qualification', 'PreSales resourcing', 'Project Resourcing State', 'Projected Start date', 'Project Resourcing']
+    project = Project.find_by_name 'Exist Pre-Sales'
+    fields = IssueCustomField.all.select { |f| f.project_ids.include?(project.id) }
+    fields.map(&:name)
   end
 
   def pre_sales_custom_field(issue, field_name)

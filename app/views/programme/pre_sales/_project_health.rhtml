@@ -9,11 +9,13 @@
     <th style="text-align:center">Issue</th>
     <th style="text-align:center">Contract</th>
     <%= sort_header_tag_without_update('proj_manager', :caption => 'PM', :style => "text-align:center") %>
-    <% pre_sales_custom_field_names.first(4).each do |field_name| %>
-      <th style="text-align:center"><%=h field_name %></th>
+    <% pre_sales_custom_field_names.each do |field_name| %>
+      <% if field_name.downcase == 'projected start date' %>
+        <%= sort_header_tag_without_update('custom-issue-projected_start_date', :caption => 'Projected Start Date', :style => "text-align:center") %>
+      <% else %>
+        <th style="text-align:center"><%= h field_name %></th>
+      <% end %>
     <% end %>
-    <%= sort_header_tag_without_update('custom-issue-projected_start_date', :caption => 'Projected Start Date', :style => "text-align:center") %>
-    <th style="text-align:center">Project Resourcing</th>
   </tr>
   </thead>
   <tbody>
@@ -28,12 +30,15 @@
     <td class=""></td>
     <td class=""></td>
     <td class="center"><span><%= (m=feature.assigned_to) ? initials(m.firstname, m.lastname) : "?" %></span></td>
-    <td><%= pre_sales_custom_field(feature, 'PreSales State') %></td>
-    <td><%= pre_sales_custom_field(feature, 'Presales Lead Qualification') %></td>
-    <td><%= pre_sales_custom_field(feature, 'PreSales Resourcing') %></td>
-    <td><span class="circle <%= color_code_for_project_resourcing_state(feature) %>"></span></td>
-    <td><%= pre_sales_custom_field(feature, 'Projected Start date') %></td>
-    <td><%= pre_sales_custom_field(feature, 'Project Resourcing') %></td>
+    <% pre_sales_custom_field_names.each do |field_name| %>
+    <td>
+      <% if field_name.downcase == 'project resourcing state' %>
+        <span class="circle <%= color_code_for_project_resourcing_state(feature) %>"></span>
+      <% else %>
+        <%= pre_sales_custom_field(feature, field_name) %>
+      <% end %>
+    </td>
+    <% end %>
   </tr>
   <% end %>
   </tbody>
