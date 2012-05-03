@@ -3,6 +3,7 @@ class ForecastBillableJob < Struct.new(:from, :to, :selection, :key, :user_ids)
   include ResourceManagementsHelper
   include CostMonitoringHelper
   include ResourceCostsHelper
+  require 'json'
 
   run_every(Time.parse("12am") + 1.day)
 
@@ -10,7 +11,7 @@ class ForecastBillableJob < Struct.new(:from, :to, :selection, :key, :user_ids)
     users = User.find(:all, :conditions => "id in (#{user_ids.join(',')})")
     now = Time.now.strftime('%b %d, %Y %I:%M %p')
     if FileTest.exists?("#{RAILS_ROOT}/config/rm_forecasts.yml")
-      data = (file=YAML.load(File.open("#{RAILS_ROOT}/config/forecast_billable.json"))) ? file : {}
+      data = (file=JSON.parse(File.read("#{RAILS_ROOT}/config/forecast_billable.json"))) ? file : {}
     else
       data = {}
     end
