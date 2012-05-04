@@ -8,6 +8,22 @@
     <div class="box">
       <h3>Resource Inventory</h3>
       <div id="chart1"></div>
+      <p style="margin: 0; text-align: center">
+        Total Resources
+        <strong style="margin-left: 1em"><%= @users.count{ |u| !u.is_resigned && !u.skill.nil? } %></strong>
+      </p>
+      <table id="chart1_legend" style="margin: 0 auto">
+      <% legend = count_user_skill(@users).map { |c| c[1..2] } %>
+      <% legend.each_slice(3) do |group| %>
+        <tr>
+        <% group.each do |count, skill| -%>
+          <td><i class="swatch"></i></td>
+          <td><%= skill %></td>
+          <td style="text-align: right; font-weight: bold"><%= count %></td>
+        <% end -%>
+        </tr>
+      <% end -%>
+      </table>
       <%= link_to_zoomed_chart 'resource_inventory' %>
     </div>
     <div class="box">
@@ -125,23 +141,35 @@
     jQuery(document).ready(function($) {
       charts.resource_inventory = {
         render: function(id) {
-          var plot = jQuery.jqplot(id, [<%= count_user_skill(@users) %>],
+          var plot = jQuery.jqplot(id, [<%= count_user_skill(@users).to_json %>],
             {
               seriesDefaults: {
+                seriesColors: [ "#7ea5e2", "#e57e7c", "#bdde85", "#9b81bd", "#79cdea", "#fba665", "#a0bcec", "#f3a8a6", "#fd7f2a", "#c7b6e2"],
                 renderer: jQuery.jqplot.PieRenderer,
-                seriesColors: [ "#7ea5e2", "#e57e7c", "#bdde85", "#9b81bd", "#79cdea", "#fba665", "#a0bcec", "#f3a8a6", "#fd7f2ac", "#c7b6e2"],
-                rendererOptions: { showDataLabels: true }
+                rendererOptions: { showDataLabels: true, dataLabels: 'label', dataLabelPositionFactor: 1, dataLabelNudge: 20, padding: 40 }
               },
-              legend: { show:true, location: 'e' },
+              legend: { show: false }
             }
-          );
+          ),
+            plotLabels = jQuery(plot.target).find('.jqplot-data-label');
           if(id !== 'zoom_chart') {
             this.plot = plot;
           }
+
+          for(i = 0; i < plotLabels.length; i++) {
+            jQuery(plotLabels[i]).css({ 'line-height': '1em', 'text-align': 'center' });
+          }
+
           return plot;
         }
       };
-      charts.resource_inventory.render('chart1');
+
+      var resourceCount = charts.resource_inventory.render('chart1'),
+        resourceCountColors = resourceCount.series[0].seriesColors,
+        swatches = jQuery('#chart1_legend').find('.swatch');
+      for(var i = 0; i < resourceCountColors.length; i++) {
+        jQuery(swatches[i]).css({ 'background-color': resourceCountColors[i], 'display': 'block', 'width': '12px', 'height': '10px' });
+      }
     });
   </script>
 <% end %>

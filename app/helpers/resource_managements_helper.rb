@@ -83,24 +83,15 @@ module ResourceManagementsHelper
 
   def count_user_skill(user)
     skill_set = []
-    skill_name = []
-    counter = 0
-    user.each do |u|
-      unless u.is_resigned
-        unless u.skill.nil?
-          skill_name[counter] = u.skill
-          counter += 1
-        end
-      end
+    counted_users = user.select { |u| !u.is_resigned && !u.skill.nil? }
+    user_skills = counted_users.group_by(&:skill)
+    user_skills.each do |skill, users|
+      percentage = (users.count.to_f/counted_users.count * 100.0).round
+      label = "#{skill}<br>#{percentage}% &bull; #{users.count}"
+      skill_set << [label, users.count, skill]
     end
-    ary = skill_name.uniq{|sname| s}
-    ctr = 0
-    ary.each do |q|
-     num = skill_name.count q.to_s
-     skill_set[ctr] = [q,num]
-     ctr += 1
-    end
-    return skill_set.to_json
+
+    skill_set
   end
 
   def count_billabilty_skill(set, users, projects)
