@@ -9,21 +9,21 @@ module Management
       base.class_eval do
         unloadable
 
-        const_set("SKILLS", ["Java", "RoR", "Architect", "PM/BA", "Interactive", "QA", "Sys Ad", 
+        const_set("SKILLS", ["Java", "RoR", "Architect", "PM/BA", "Interactive", "QA", "Sys Ad",
                   "Mobile", "Tech Support", "Tech Writer", "Others", "N/A"])
         const_set("LOCATIONS", ["Manila", "Cebu", "US", "N/A"])
-        
+
         has_many :assumptions, :foreign_key => :owner
         has_many :risks, :foreign_key => :owner
         has_many :pm_dashboard_issues, :foreign_key => :owner
-        
+
         named_scope :engineers, :conditions => ["is_engineering = true"], :order => 'firstname'
 
         before_save :set_non_engr_on
         cattr_accessor :tmp_resources, :tmp_resources_no_limit, :tmp_skillset
       end
     end
-    
+
     module ClassMethods
       def resource_skills
         res_skills = find(:all, :select => "distinct(skill)", :conditions => "skill is not NULL")
@@ -48,9 +48,9 @@ module Management
         c
       end
     end
-    
+
     module InstanceMethods
-    
+
       def set_non_engr_on
         if !self.is_engineering
           self.non_engr_on = Date.today
@@ -58,12 +58,12 @@ module Management
           self.non_engr_on = nil
         end
       end
-    
+
       # Return user's full name for display
       def display_name
         name :lastname_coma_firstname
       end
-      
+
       def is_resigned
         r = custom_values.detect {|v| v.mgt_custom "Employment End"}
         date = r.nil? ? nil : r.value
@@ -79,12 +79,12 @@ module Management
         r = custom_values.detect {|v| v.mgt_custom "Employment End"}
         r ? r.value : nil
       end
-      
+
       def hired_date
         c = custom_values.detect {|v| v.mgt_custom "Employment Start"}
         c ? c.value : nil
       end
-      
+
       def organization
         c = custom_values.detect {|v| v.mgt_custom "Organization"}
         c ? c.value : nil
@@ -104,13 +104,13 @@ module Management
         c = User.find(id).custom_values.detect {|v| v.mgt_custom "Organization"}
         c ? c.value : nil
       end
-      
+
       def allocations(week, filtered_projects, rate=nil)
         days, cost = 0, 0
         project_allocations = members.collect(&:resource_allocations).flatten.select do |alloc|
           filtered_projects.include? alloc.member.project_id
         end
-        
+
         week.each do |day|
           unless day.wday.eql?(0) || day.wday.eql?(6)
             if allocations = project_allocations.select {|a| a.start_date <= day && a.end_date >= day}.uniq
@@ -131,7 +131,7 @@ module Management
         project_allocations = members.collect(&:resource_allocations).flatten.select do |alloc|
           filtered_projects.include? alloc.member.project_id
         end
-        
+
         week.each do |day|
           unless day.wday.eql?(0) || day.wday.eql?(6)
             if allocations = project_allocations.select {|a| a.start_date <= day && a.end_date >= day}.uniq
@@ -162,12 +162,38 @@ module Management
         end
         texpected
       end
-      
+
+      # for counting available hours in forecast billable data
+      def available_hours(from, to, project_ids)
+        h_date, r_date = to_date_safe(hired_date), to_date_safe(resignation_date)
+        f = ((from..to).include_with_range?(h_date) ? h_date : from)
+        t = ((from..to).include_with_range?(h_date) ? r_date : to)
+        total = 0
+
+        allocations = ResourceAllocation.all(:conditions => ['member_id IN (?) AND ((start_date BETWEEN ? AND ?) OR (end_date BETWEEN ? AND ?))',
+          members.find_by_project_id(project_ids).to_a.map(&:id), f, t, f, t])
+
+        allocations.each do |allocation|
+          s = [f, allocation.start_date].max
+          e = [t, allocation.end_date].min
+          total += ((e - s).to_i - holidays_between?(s, e, allocation.location)) * 8
+        end
+
+        return total
+      end
+
       def detect_holidays_in_week(location, day)
         locations = [6]
         locations << location if location
         locations << 3 if location.eql?(1) || location.eql?(2)
         Holiday.count(:all, :conditions => ["event_date=? and location in (#{locations.join(', ')})", day])
+      end
+
+      def holidays_between?(from, to, location)
+        locations = [6]
+        locations << location if location
+        locations << 3 if location.eql?(1) || location.eql?(2)
+        Holiday.count(:conditions => ["(event_date BETWEEN ? AND ?) AND location IN (?)", from, to, locations])
       end
     end
   end
