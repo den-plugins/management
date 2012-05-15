@@ -310,6 +310,7 @@ class ResourceManagementsController < ApplicationController
     if @projects.empty?
       @resources = []
     else
+      @available_resources = User.find(:all, :conditions => query, :order => order, :include => [:projects, :members])
       query << " and projects.id IN (#{@projects.join(', ')})"
       @resources_no_limit = User.find(:all, :conditions => query, :order => order, :include => [:projects, :members])
       @resource_count = @resources_no_limit.count
