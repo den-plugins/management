@@ -171,7 +171,7 @@ module Management
         total = 0
 
         allocations = ResourceAllocation.all(:conditions => ['member_id IN (?) AND ((start_date BETWEEN ? AND ?) OR (end_date BETWEEN ? AND ?))',
-          members.find_by_project_id(project_ids).to_a.map(&:id), f, t, f, t])
+          members.all(:conditions => ["project_id IN (?)", project_ids]).to_a.map(&:id), f, t, f, t])
 
         allocations.each do |allocation|
           s = [f, allocation.start_date].max
