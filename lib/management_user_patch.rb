@@ -164,22 +164,12 @@ module Management
       end
 
       # for counting available hours in forecast billable data
-      def available_hours(from, to, project_ids)
+      def available_hours(from, to, location)
         h_date, r_date = to_date_safe(hired_date), to_date_safe(resignation_date)
         f = ((from..to).include_with_range?(h_date) ? h_date : from)
-        t = ((from..to).include_with_range?(h_date) ? r_date : to)
-        total = 0
+        t = ((from..to).include_with_range?(r_date) ? r_date : to)
 
-        allocations = ResourceAllocation.all(:conditions => ['member_id IN (?) AND ((start_date BETWEEN ? AND ?) OR (end_date BETWEEN ? AND ?))',
-          members.all(:conditions => ["project_id IN (?)", project_ids]).to_a.map(&:id), f, t, f, t])
-
-        allocations.each do |allocation|
-          s = [f, allocation.start_date].max
-          e = [t, allocation.end_date].min
-          total += ((e - s).to_i - holidays_between?(s, e, allocation.location)) * 8
-        end
-
-        return total
+        total = ((t - f).to_i - holidays?(f, t, location)) * 8
       end
 
       def detect_holidays_in_week(location, day)
@@ -187,6 +177,25 @@ module Management
         locations << location if location
         locations << 3 if location.eql?(1) || location.eql?(2)
         Holiday.count(:all, :conditions => ["event_date=? and location in (#{locations.join(', ')})", day])
+      end
+
+      def holidays?(from, to, location)
+        count = 0
+        (from..to).each do |r|
+          count += 1 if r.wday == 6 || r.wday == 7
+        end
+
+        locations = [6]
+        locations << Holiday::LOCATIONS.select{|p,x| x == "#{location}"}.flatten[0] if location
+        locations << 3 if location.eql?('Cebu') || location.eql?('Manila')
+
+        holidays = Holiday.find(:all, :conditions => ["(event_date BETWEEN ? AND ?) AND location IN (?)", from, to, locations])
+
+        holidays.each do |h|
+          count += 1 if h.event_date.wday != 6 && h.event_date.wday != 7
+        end
+
+        return count
       end
 
       def holidays_between?(from, to, location)
