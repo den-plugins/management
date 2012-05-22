@@ -182,7 +182,7 @@ module Management
       def holidays?(from, to, location)
         count = 0
         (from..to).each do |r|
-          count += 1 if r.wday == 6 || r.wday == 7
+          count += 1 if r.wday == 0 && r.wday == 6
         end
 
         locations = [6]
@@ -192,7 +192,7 @@ module Management
         holidays = Holiday.find(:all, :conditions => ["(event_date BETWEEN ? AND ?) AND location IN (?)", from, to, locations])
 
         holidays.each do |h|
-          count += 1 if h.event_date.wday != 6 && h.event_date.wday != 7
+          count += 1 if h.event_date.wday != 0 && h.event_date.wday != 6
         end
 
         return count
