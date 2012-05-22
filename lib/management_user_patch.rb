@@ -182,7 +182,11 @@ module Management
       def holidays?(from, to, location)
         count = 0
         (from..to).each do |r|
+<<<<<<< HEAD
           count += 1 if r.wday == 0 || r.wday == 6
+=======
+          count += 1 if r.wday == 0 && r.wday == 6
+>>>>>>> 7222376c271221dc9cbd48093d1f16e42eb56f15
         end
 
         locations = [6]
