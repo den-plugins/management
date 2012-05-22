@@ -6,7 +6,6 @@ class ForecastBillableJob < Struct.new(:from, :to, :selection, :key, :user_ids)
   require 'json'
 
   run_every(Time.parse("12am") + 1.day)
- cge
  
   def perform
     users = User.find(:all, :conditions => "id in (#{user_ids.join(',')})")
