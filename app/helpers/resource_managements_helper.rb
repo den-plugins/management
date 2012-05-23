@@ -186,9 +186,13 @@ module ResourceManagementsHelper
       tmp_availables, tmp_forecasts, tmp_billables = [], [], []
       ticks << m.first.strftime("%b %Y")
       users.each do |u|
-        tmp_availables << u.available_hours(m.first, m.last, u.location)
-        tmp_forecasts << cost_compute_forecasted_hours_with_capped_allocation(m, u.members.all, "billable")
-        tmp_billables << u.members.all.collect { |mem| mem.spent_time(m.first, m.last, "Billable", true).to_f }.sum
+        r = u.custom_values.detect {|v| v.mgt_custom "Employment End"}
+        d = (r.nil? or r.value == "") ? nil : Date.parse(r.value)
+        unless d and ((m.first..m.last) === d || m.last > d)
+          tmp_availables << u.available_hours(m.first, m.last, u.location)
+          tmp_forecasts << cost_compute_forecasted_hours_with_capped_allocation(m, u.members.all, "billable")
+          tmp_billables << u.members.all.collect { |mem| mem.spent_time(m.first, m.last, "Billable", true).to_f }.sum
+        end
       end
       available << tmp_availables.sum
       forecast << tmp_forecasts.sum
