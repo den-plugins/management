@@ -8,7 +8,8 @@ class ForecastBillableJob < Struct.new(:from, :to, :selection, :key, :user_ids)
   run_every(Time.parse("12am") + 1.day)
  
   def perform
-    users = User.find(:all, :conditions => "id in (#{user_ids.join(',')})")
+    users = User.find(:all, :conditions => "id in (#{user_ids.join(',')}) AND status != 3")
+    users = users.select{|u| u.employee_status!="Resigned"} if !users.empty?
     now = Time.now.strftime('%b %d, %Y %I:%M %p')
     if FileTest.exists?("#{RAILS_ROOT}/config/forecast_billable.json")
       data = (file=JSON.parse(File.read("#{RAILS_ROOT}/config/forecast_billable.json"))) ? file : {}
