@@ -179,27 +179,30 @@ module ResourceManagementsHelper
   end
 
   def forecast_billable_data(users, range)
-    data, ticks = [], []
+    data, ticks, number_of_users = [], [], []
     available, forecast, billable = [], [], []
     months = get_months_range(range.first, range.last)
     months.each do |m|
       tmp_availables, tmp_forecasts, tmp_billables = [], [], []
+      user_count = 0
       ticks << m.first.strftime("%b %Y")
       users.each do |u|
         r = u.custom_values.detect {|v| v.mgt_custom "Employment End"}
         d = (r.nil? or r.value == "") ? nil : Date.parse(r.value)
         unless d and ((m.first..m.last) === d || m.last > d)
+          user_count += 1
           tmp_availables << u.available_hours(m.first, m.last, u.location)
           tmp_forecasts << cost_compute_forecasted_hours_with_capped_allocation(m, u.members.all, "billable")
           tmp_billables << u.members.all.collect { |mem| mem.spent_time(m.first, m.last, "Billable", true).to_f }.sum
         end
       end
+      number_of_users << user_count
       available << tmp_availables.sum
       forecast << tmp_forecasts.sum
       billable << tmp_billables.sum
     end
     data = [forecast, billable, available]
-    return [ticks, data]
+    return [ticks, data, number_of_users]
   end
 
   def allocation_to_class(allocation, is_shadowed=false)
