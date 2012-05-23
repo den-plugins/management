@@ -179,7 +179,7 @@ module ResourceManagementsHelper
   end
 
   def forecast_billable_data(users, range)
-    data, ticks, number_of_users = [], [], []
+    data, ticks, number_of_users, number_of_working_days = [], [], [], []
     available, forecast, billable = [], [], []
     months = get_months_range(range.first, range.last)
     months.each do |m|
@@ -197,12 +197,13 @@ module ResourceManagementsHelper
         end
       end
       number_of_users << user_count
+      number_of_working_days << (tmp_availables.sum / user_count ) / 8
       available << tmp_availables.sum
       forecast << tmp_forecasts.sum
       billable << tmp_billables.sum
     end
     data = [forecast, billable, available]
-    return [ticks, data, number_of_users]
+    return [ticks, data, number_of_users, number_of_working_days]
   end
 
   def allocation_to_class(allocation, is_shadowed=false)
