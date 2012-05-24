@@ -186,9 +186,8 @@ module ResourceManagementsHelper
       tmp_availables, tmp_forecasts, tmp_billables = [], [], []
       user_count = 0
       users.each do |u|
-        r = u.custom_values.detect {|v| v.mgt_custom "Employment End"}
-        d = (r.nil? or r.value == "") ? nil : Date.parse(r.value)
-        unless d and ((m.first..m.last) === d || m.last > d)
+        h_date, r_date = to_date_safe(u.hired_date), to_date_safe(u.resignation_date)
+        unless (h_date && h_date > m.last) || (r_date && r_date < m.first)
           user_count += 1
           tmp_availables << u.available_hours(m.first, m.last, u.location)
           tmp_forecasts << cost_compute_forecasted_hours_with_capped_allocation(m, u.members.all, "billable")
