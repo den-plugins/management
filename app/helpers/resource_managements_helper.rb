@@ -179,13 +179,12 @@ module ResourceManagementsHelper
   end
 
   def forecast_billable_data(users, range)
-    data, ticks, number_of_users, number_of_working_days = [], [], [], []
+    data, ticks, number_of_users = [], [], []
     available, forecast, billable = [], [], []
     months = get_months_range(range.first, range.last)
     months.each do |m|
       tmp_availables, tmp_forecasts, tmp_billables = [], [], []
       user_count = 0
-      ticks << m.first.strftime("%b %Y")
       users.each do |u|
         r = u.custom_values.detect {|v| v.mgt_custom "Employment End"}
         d = (r.nil? or r.value == "") ? nil : Date.parse(r.value)
@@ -197,13 +196,13 @@ module ResourceManagementsHelper
         end
       end
       number_of_users << user_count
-      number_of_working_days << (tmp_availables.sum / user_count ) / 8
+      ticks << m.first.strftime("%b %Y #{number_of_users}")
       available << tmp_availables.sum
       forecast << tmp_forecasts.sum
       billable << tmp_billables.sum
     end
     data = [forecast, billable, available]
-    return [ticks, data, number_of_users, number_of_working_days]
+    return [ticks, data]
   end
 
   def allocation_to_class(allocation, is_shadowed=false)
