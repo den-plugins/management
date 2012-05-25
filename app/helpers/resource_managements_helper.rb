@@ -203,7 +203,7 @@ module ResourceManagementsHelper
       user_count = 0
       users.each do |u|
         h_date, r_date = to_date_safe(u.hired_date), to_date_safe(u.resignation_date)
-        unless (h_date && h_date > m.last) || (r_date && r_date < m.first)
+        unless (u.firstname.empty? || u.firstname == "-") || (h_date && h_date > m.last) || (r_date && r_date < m.first)
           user_count += 1
           tmp_availables << u.available_hours(m.first, m.last, u.location)
           tmp_forecasts << cost_compute_forecasted_hours_with_capped_allocation(m, u.members.all, "billable")
