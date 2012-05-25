@@ -177,6 +177,22 @@ module ResourceManagementsHelper
     end
     return res_billability_forecast.to_json
   end
+  
+  def list_resource_names(users, range)
+    list = {}
+    months = get_months_range(range.first, range.last)
+    months.each do |m|
+      name = m.first.strftime("%b-%Y")
+      list[:"#{name}"] = []
+      users.each do |u|
+        h_date, r_date = to_date_safe(u.hired_date), to_date_safe(u.resignation_date)
+        unless (h_date && h_date > m.last) || (r_date && r_date < m.first)
+          list[:"#{name}"] << u.to_s
+        end
+      end
+    end
+    return list
+  end
 
   def forecast_billable_data(users, range)
     data, ticks, number_of_users = [], [], []

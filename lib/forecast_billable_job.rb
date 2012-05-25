@@ -10,6 +10,12 @@ class ForecastBillableJob < Struct.new(:from, :to, :selection, :key, :user_ids)
   def perform
     users = User.find(:all, :conditions => "id in (#{user_ids.join(',')})")
     now = Time.now.strftime('%b %d, %Y %I:%M %p')
+    #for testng purposes
+    fb = list_resource_names(users, (from..to)).to_json
+    File.open("#{RAILS_ROOT}/config/resources.json","w") do |f|
+      f.write(fb)
+    end
+
     if FileTest.exists?("#{RAILS_ROOT}/config/forecast_billable.json")
       data = (file=JSON.parse(File.read("#{RAILS_ROOT}/config/forecast_billable.json"))) ? file : {}
     else
@@ -21,5 +27,4 @@ class ForecastBillableJob < Struct.new(:from, :to, :selection, :key, :user_ids)
       f.write(fb)
     end
   end
-
 end
