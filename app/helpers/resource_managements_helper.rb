@@ -187,7 +187,7 @@ module ResourceManagementsHelper
       users.each do |u|
         h_date, r_date = to_date_safe(u.hired_date), to_date_safe(u.resignation_date)
         unless (h_date && h_date > m.last) || (r_date && r_date < m.first)
-          list[:"#{name}"] << u.to_s
+          list[:"#{name}"] << u.id
         end
       end
     end
