@@ -195,10 +195,11 @@ module ResourceManagementsHelper
   end
 
   def forecast_billable_data(users, range)
-    data, ticks, number_of_users = [], [], []
+    data, ticks = [], []
     available, forecast, billable = [], [], []
     months = get_months_range(range.first, range.last)
     months.each do |m|
+      number_of_users = []
       tmp_availables, tmp_forecasts, tmp_billables = [], [], []
       user_count = 0
       users.each do |u|
