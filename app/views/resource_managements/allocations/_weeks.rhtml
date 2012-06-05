@@ -1,6 +1,9 @@
 <% start_date, end_date = Date.today - 1.month, Date.today + 6.months %>
 <% weeks = get_weeks_range(start_date, end_date) %>
 <div id='floating_tables_holder' style="width: <%= weeks.count * 85 %>px">
+  <script type="text/javascript">
+    jQuery('#fixed_header #weeks_header_holder').empty();
+  </script>
   <% weeks.each do |week| %>
     <% categories_count = set_categories_count(@categories) %>
     <% total_allocated = 0 %>
