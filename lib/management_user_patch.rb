@@ -20,6 +20,7 @@ module Management
         named_scope :engineers, :conditions => ["is_engineering = true"], :order => 'firstname'
 
         before_save :set_non_engr_on
+        after_save :resign_checker
         cattr_accessor :tmp_resources, :tmp_resources_no_limit, :tmp_skillset
       end
     end
@@ -50,8 +51,16 @@ module Management
     end
 
     module InstanceMethods
+      
+      def resign_checker
+        if is_resigned && status != 4
+          self.status = 4
+          self.save!
+        end
+      end
 
       def set_non_engr_on
+
         if !self.is_engineering
           self.non_engr_on = Date.today
         else
