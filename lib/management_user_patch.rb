@@ -53,7 +53,7 @@ module Management
     module InstanceMethods
       
       def resign_checker
-        if is_resigned && status != 4
+        if is_resigned and status != 4 and resignation_date.to_date < Date.current
           self.status = 4
           self.save!
         end
