@@ -199,20 +199,16 @@ module ResourceManagementsHelper
     available, forecast, billable = [], [], []
     months = get_months_range(range.first, range.last)
     months.each do |m|
-      number_of_users = []
       tmp_availables, tmp_forecasts, tmp_billables = [], [], []
-      user_count = 0
       users.each do |u|
         h_date, r_date = to_date_safe(u.hired_date), to_date_safe(u.resignation_date)
         unless (h_date && h_date > m.last) || (r_date && r_date < m.first)
-          user_count += 1
           tmp_availables << u.available_hours(m.first, m.last, u.location)
           tmp_forecasts << cost_compute_forecasted_hours_with_capped_allocation(m, u.members.all, "billable")
           tmp_billables << u.members.all.collect { |mem| mem.spent_time(m.first, m.last, "Billable", true).to_f }.sum
         end
       end
-      number_of_users << user_count
-      ticks << m.first.strftime("%b %Y #{number_of_users}")
+      ticks << m.first.strftime("%b %Y")
       available << tmp_availables.sum
       forecast << tmp_forecasts.sum
       billable << tmp_billables.sum
