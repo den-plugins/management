@@ -1,5 +1,9 @@
-<div class="auto_scroll_y">
+<div class="auto_scroll_y" style="overflow-x:auto;">
 <table class="list" id="project_health_table">
+  <script>
+    var table_width = jQuery('.auto_scroll_y').width() - 17;
+    jQuery('#project_health_table').width(table_width);
+  </script>
   <thead>
   <tr style="height: 65px; background-color: #bfbfbf; border-bottom: 2px solid white;">
     <%= sort_header_tag_without_update('subject', :caption => "Features", :style => "width: 20%") %>
