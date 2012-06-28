@@ -16,52 +16,70 @@
   <% if @fixed_cost_projects.count > 7 %>
   jQuery("#fixed_cost_projects_chart").width('<%= @fixed_cost_projects.count * 55 %>px');
   <% end %>
-  var plot = jQuery.jqplot('fixed_cost_projects_chart', <%= jdata %>, {
-        seriesDefaults:{
-            renderer:jQuery.jqplot.BarRenderer,
-            rendererOptions: {fillToZero: true, barPadding: 1, barWidth: 9}
-        },
-        seriesColors: ["#5296d9", "#dc594e", "#940f00"],
-        series:[
-            {label:'Baseline'},
-            {label:'Actuals'},
-            {label:'Forecast'}
-        ],
-        legend: { show: false },
-        axes: {
-            xaxis: {
-                renderer: jQuery.jqplot.CategoryAxisRenderer,
-                ticks: <%= jticks %>,
-                tickRenderer: jQuery.jqplot.CanvasAxisTickRenderer,
-                tickOptions: {angle: -45, fontSize: '7pt', showGridline: false}
+  jQuery(document).ready(function($) {
+    charts.fixed_cost_projects = {
+      render: function(id) {
+        var plot = jQuery.jqplot('fixed_cost_projects_chart', <%= jdata %>, {
+            seriesDefaults:{
+                renderer:jQuery.jqplot.BarRenderer,
+                rendererOptions: {fillToZero: true, barPadding: 1, barWidth: 9}
             },
-            yaxis: {
-                tickOptions: {formatString: 'PHP %.2f%d'}
-            }
-        },
-        grid: {gridLineColor: '#c7c7c7'}
+            seriesColors: ["#5296d9", "#dc594e", "#940f00"],
+            series:[
+                {label:'Baseline'},
+                {label:'Actuals'},
+                {label:'Forecast'}
+            ],
+            legend: { show: false },
+            axes: {
+                xaxis: {
+                    renderer: jQuery.jqplot.CategoryAxisRenderer,
+                    ticks: <%= jticks %>,
+                    tickRenderer: jQuery.jqplot.CanvasAxisTickRenderer,
+                    tickOptions: {angle: -45, fontSize: '7pt', showGridline: false}
+                },
+                yaxis: {
+                    tickOptions: {formatString: 'PHP %.2f%d'}
+                }
+            },
+            grid: {gridLineColor: '#c7c7c7'}
+        });
+        // custom highlighter for chart since jqplot has a bug on highlighter when using BarRenderer
+        jQuery("#fixed_cost_projects_chart").bind('jqplotDataHighlight', 
+          function (ev, seriesIndex, pointIndex, data ) {
+            mouseX = ev.pageX;
+            mouseY = ev.pageY;
+            jQuery('#cost_tooltip').html('PHP '+numberWithCommas(data[1]));
+            var cssObj = {
+                'left' : mouseX + 'px',
+                'top' : (mouseY-20) + 'px'
+              };
+            jQuery('#cost_tooltip').css(cssObj).fadeIn();
+          }
+        ).bind('jqplotDataUnhighlight', 
+          function (ev) {
+            jQuery('#cost_tooltip').fadeOut();
+          }
+        );   
+        function numberWithCommas(x) {
+          x = parseFloat(x.toFixed(2));
+          return x.toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",");
+        }
+    
+        if(id !== 'zoom_chart') {
+          this.plot = plot;
+        }
+        return plot;
+      }
+    };
+    charts.fixed_cost_projects.render('fixed_cost_projects_chart');
+
+    jQuery(window).resize(function() {
+      jQuery('#fixed_cost_projects_chart').empty();
+      charts.fixed_cost_projects.render('fixed_cost_projects_chart');
     });
-    // custom highlighter for chart since jqplot has a bug on highlighter when using BarRenderer
-    jQuery("#fixed_cost_projects_chart").bind('jqplotDataHighlight', 
-      function (ev, seriesIndex, pointIndex, data ) {
-        mouseX = ev.pageX;
-        mouseY = ev.pageY;
-        jQuery('#cost_tooltip').html('PHP '+numberWithCommas(data[1]));
-        var cssObj = {
-            'left' : mouseX + 'px',
-            'top' : (mouseY-20) + 'px'
-          };
-        jQuery('#cost_tooltip').css(cssObj).fadeIn();
-      }
-    ).bind('jqplotDataUnhighlight', 
-      function (ev) {
-        jQuery('#cost_tooltip').fadeOut();
-      }
-    );   
-    function numberWithCommas(x) {
-      x = parseFloat(x.toFixed(2));
-      return x.toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",");
-    }
+  });
+
 </script>
 <% else %>
   <p class="nodata">No projects found with fixed cost billing model.</p>
