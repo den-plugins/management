@@ -268,6 +268,8 @@ module ResourceManagementsHelper
 
     if user.locked?
       link_to l(:button_unlock), url.merge(:user => {:status => User::STATUS_ACTIVE}), :method => :post, :class => 'icon icon-unlock'
+    elsif user.archived?
+      link_to l(:button_unarchive), url.merge(:user => {:status => User::STATUS_ACTIVE}), :method => :post, :class => 'icon icon-unlock small'
     elsif user.registered?
       link_to l(:button_activate), url.merge(:user => {:status => User::STATUS_ACTIVE}), :method => :post, :class => 'icon icon-unlock'
     elsif user != User.current
