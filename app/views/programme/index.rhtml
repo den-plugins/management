@@ -60,3 +60,17 @@
   <%= javascript_include_tag 'plugins/jqplot.pieRenderer.min.js', :plugin => 'redmine_burndown' %>
   <%= javascript_include_tag 'plugins/jqplot.pointLabels.min.js', :plugin => 'redmine_burndown' %>
 <% end %>
+<script>
+jQuery(document).ready(function($) {
+  jQuery(window).resize(function() {
+    var win_width = window.innerWidth;
+    if( win_width < 1000 ) {
+      jQuery('table#project_health_table tr th.ff').css("text-indent","-18px");
+    } else if(win_width < 1300 && win_width > 1000 ) {
+      jQuery('table#project_health_table tr th.ff').css("text-indent","-12px");
+    } else {
+      jQuery('table#project_health_table tr th.ff').css("text-indent","-8px");
+    }
+  });
+});
+</script>

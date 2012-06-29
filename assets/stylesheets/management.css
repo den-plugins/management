@@ -45,7 +45,12 @@ div.box2 { padding: 2px; margin-bottom: 10px; background-color: transparent; col
 
 table.list tbody tr.highlight { background-color: #ffffb0; color: #000; }
 table.list tbody tr.highlight.resigned { background-color: #ffffb0; color: #DDD; }
-th.rotated {position: relative; text-align: left; font-size: 10px; left: -10px; background-color: transparent; -moz-transform: rotate(300deg); -webkit-transform: rotate(300deg); -o-transform: rotate(300deg); }
+table#project_health_table tr th.rotated {position: relative; text-align: left; font-size: 10px; left: -10px; background-color: transparent; -moz-transform: rotate(300deg); -webkit-transform: rotate(300deg); -o-transform: rotate(300deg); }
+
+@-moz-document url-prefix() {
+    table#project_health_table tr th.ff {text-indent:-8px;}
+}
+
 
 tr.lgreen, td.lgreen, th.lgreen { background-color: #9FC35B; color: #000; }
 tr.lblue, td.lblue, th.lblue { background-color: #99CCFF; color: #000; }
