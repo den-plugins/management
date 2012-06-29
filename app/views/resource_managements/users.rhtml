@@ -30,13 +30,14 @@
         <fieldset id="date_filter" style="display:none;">
           <% options = ["this month", "last month", "last 3 months", "last 6 months", "this year", "last year"] %>
 
-             <%= radio_button_tag 'period_type', '1', true %>
+             <%= radio_button_tag 'period_type', '1', params[:period_type].eql?('2') ? false : true %>
              <%=  select_tag "selection", options_for_select(options, options[0]) %>
              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-             <%= radio_button_tag 'period_type', '2' %>
+             <%= radio_button_tag 'period_type', '2', params[:period_type].eql?('2') ? true : false %>
              <span onclick="$('period_type_2').checked = true;">
              <%= l(:label_date_from) %>
              <%= text_field_tag 'from', @from, :size => 10 %> <%= calendar_for('from') %>
+             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
              <%= l(:label_date_to) %>
              <%= text_field_tag 'to', @to, :size => 10 %> <%= calendar_for('to') %>
              </span>
@@ -68,8 +69,21 @@
            jQuery("#date_filter").show();
       } else {
             jQuery("#date_filter").hide();
-        }
+      }
+
+      if (jQuery("#period_type_1").is(':checked')) {
+          jQuery("#from").attr('disabled', 'disabled');
+          jQuery("#to").attr('disabled', 'disabled');
+          jQuery("#selection").attr('disabled', false);
+      }
+
+      if (jQuery("#period_type_2").is(':checked')) {
+          jQuery("#selection").attr('disabled', 'disabled');
+          jQuery("#from").attr('disabled', false);
+          jQuery("#to").attr('disabled', false);
+      }
   });
+
   jQuery("#filters_is_employed").click(function(){
       if (jQuery(this).is(':checked')) {
           jQuery("#date_filter").show();
@@ -77,4 +91,20 @@
           jQuery("#date_filter").hide();
       }
   });
+
+  jQuery("#period_type_1").click(function(){
+        if (jQuery(this).is(':checked')) {
+            jQuery("#from").attr('disabled', 'disabled');
+            jQuery("#to").attr('disabled', 'disabled');
+            jQuery("#selection").attr('disabled', false);
+        }
+   });
+
+  jQuery("#period_type_2").click(function(){
+        if (jQuery(this).is(':checked')) {
+            jQuery("#selection").attr('disabled', 'disabled');
+            jQuery("#from").attr('disabled', false);
+            jQuery("#to").attr('disabled', false);
+        }
+   });
 </script>

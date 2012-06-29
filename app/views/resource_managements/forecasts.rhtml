@@ -25,6 +25,51 @@
 
 <script>
   j = jQuery.noConflict();
+
+  jQuery(document).ready(function () {
+      if (jQuery('#is_employed').is(':checked')) {
+           jQuery("#date_filter").show();
+      } else {
+            jQuery("#date_filter").hide();
+      }
+
+      if (jQuery("#period_type_1").is(':checked')) {
+          jQuery("#from").attr('disabled', 'disabled');
+          jQuery("#to").attr('disabled', 'disabled');
+          jQuery("#selection").attr('disabled', false);
+      }
+
+      if (jQuery("#period_type_2").is(':checked')) {
+          jQuery("#selection").attr('disabled', 'disabled');
+          jQuery("#from").attr('disabled', false);
+          jQuery("#to").attr('disabled', false);
+      }
+  });
+
+  jQuery("#is_employed").click(function(){
+      if (jQuery(this).is(':checked')) {
+          jQuery("#date_filter").show();
+      } else {
+          jQuery("#date_filter").hide();
+      }
+  });
+
+  jQuery("#period_type_1").click(function(){
+        if (jQuery(this).is(':checked')) {
+            jQuery("#from").attr('disabled', 'disabled');
+            jQuery("#to").attr('disabled', 'disabled');
+            jQuery("#selection").attr('disabled', false);
+        }
+   });
+
+  jQuery("#period_type_2").click(function(){
+        if (jQuery(this).is(':checked')) {
+            jQuery("#selection").attr('disabled', 'disabled');
+            jQuery("#from").attr('disabled', false);
+            jQuery("#to").attr('disabled', false);
+        }
+   });
+
   synchRowHighlights("");
   toggle_fixed_header();
   synch_scroll_on_bar();
@@ -33,4 +78,5 @@
   jQuery(window).resize(function(){
     resizeHeader();
   });
+
 </script>

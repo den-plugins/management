@@ -107,9 +107,31 @@ class ResourceManagementsController < ApplicationController
                 'hired_date' => "#{CustomValue.table_name}.value",
                 'resignation_date' => "#{CustomValue.table_name}.value"
 
+    unless params[:from].nil? || params[:to].nil? || params[:from].empty? || params[:to].empty?
+      @from, @to = params[:from], params[:to]
+    else
+      @selection = (params[:selection].blank? ? "this month" : params[:selection])
+        today = Date.today
+         case @selection
+           when "this month"
+             @from, @to = today.beginning_of_month, today.end_of_month
+           when "last month"
+             @from, @to = (today - 1.month).beginning_of_month, (today - 1.month).end_of_month
+           when "last 3 months"
+             @from, @to = (today - 3.months).beginning_of_month, (today - 1.month).end_of_month
+           when "last 6 months"
+             @from, @to = (today - 6.months).beginning_of_month, (today - 1.month).end_of_month
+           when "this year"
+             @from, @to = today.beginning_of_year, (today - 1.month).end_of_month
+           when "last year"
+             @from, @to = (today - 1.year).beginning_of_year, (today - 1.year).end_of_year
+         end
+    end
+
+
     if filters = params[:filters]
       # temporarily put in the controller
-      c = User.generate_user_mgt_condition(filters)
+      c = User.generate_user_mgt_condition(filters, @from, @to)
       conditions = c.conditions
       conditions = (["custom_fields.name = E'Employment Start'"] + c.conditions).compact.join(' AND ') if params[:caption] == "Hired Date"
       conditions = (["custom_fields.name = E'Employment End'"] + c.conditions).compact.join(' AND ') if params[:caption] == "Resignation Date" && !filters[:is_employed].to_i.eql?(1)
@@ -599,14 +621,35 @@ class ResourceManagementsController < ApplicationController
     location = ((params[:location].eql?('N/A') or params[:location].blank?)? nil : params[:location])
     skill = ((params[:skill].eql?('N/A') or params[:skill].blank?)? nil : params[:skill])
     lastname = (params[:lastname].blank? ? nil : params[:lastname].capitalize)
-    
+
+    unless params[:from].nil? || params[:to].nil? || params[:from].empty? || params[:to].empty?
+      @from, @to = params[:from], params[:to]
+    else
+      @selection = (params[:selection].blank? ? "this month" : params[:selection])
+        today = Date.today
+         case @selection
+           when "this month"
+             @from, @to = today.beginning_of_month, today.end_of_month
+           when "last month"
+             @from, @to = (today - 1.month).beginning_of_month, (today - 1.month).end_of_month
+           when "last 3 months"
+             @from, @to = (today - 3.months).beginning_of_month, (today - 1.month).end_of_month
+           when "last 6 months"
+             @from, @to = (today - 6.months).beginning_of_month, (today - 1.month).end_of_month
+           when "this year"
+             @from, @to = today.beginning_of_year, (today - 1.month).end_of_month
+           when "last year"
+             @from, @to = (today - 1.year).beginning_of_year, (today - 1.year).end_of_year
+         end
+    end
+
     custom_filters = Hash.new
     # in resource cost forecast summary, resources must be 'active.engineers'
     custom_filters[:is_engineering] = '1'
     custom_filters[:is_employed] = params[:is_employed] unless params[:is_employed].blank?
 
     conditions = Array.new
-    conditions << User.generate_user_mgt_condition(custom_filters).conditions
+    conditions << User.generate_user_mgt_condition(custom_filters, @from, @to).conditions
     conditions << "location = '#{location}'" if location
     conditions << "skill = '#{skill}'" if skill
     conditions << "lastname = '#{lastname}'" if lastname
