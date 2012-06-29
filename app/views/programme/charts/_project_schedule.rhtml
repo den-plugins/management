@@ -16,30 +16,47 @@
   <% if @devt_projects.count > 10 %>
   jQuery("#project_sched_chart").height(jQuery("#project_health_table").height());
   <% end %>
-  var plot = jQuery.jqplot('project_sched_chart', <%= jdata %>, {
-    seriesDefaults: {
-      renderer:jQuery.jqplot.BarRenderer,
-      pointLabels: { show: true, location: 'w'},
-      rendererOptions: {barDirection: 'horizontal', shadowOffset: 1, shadowAlpha: 0.05, barPadding: 0, barWidth: 9}
-    },
-    seriesColors: ["#dc594e", "#5296d9"],
-    series: [
-      {label: "Scheduled End Date"},
-      {label: "Planned End Date"}
-    ],
-    axes: {
-      xaxis: {renderer: jQuery.jqplot.DateAxisRenderer,
-              min: <%= min_date.to_json %>,
-              tickRenderer: jQuery.jqplot.CanvasAxisTickRenderer,
-              tickOptions: {angle: -45, formatString:'%b %e', fontSize: '7pt'}},
-      yaxis: {renderer: jQuery.jqplot.CategoryAxisRenderer,
-             tickRenderer: jQuery.jqplot.CanvasAxisTickRenderer,
-             tickOptions: {fontSize: '7pt', showGridline: false}}
-    },
-    legend: {show: false},
-    grid: {gridLineColor: '#c7c7c7'}
+  jQuery(document).ready(function($) {
+    charts.project_sched = {
+      render: function(id) {
+        var plot = jQuery.jqplot('project_sched_chart', <%= jdata %>, {
+          seriesDefaults: {
+            renderer:jQuery.jqplot.BarRenderer,
+            pointLabels: { show: true, location: 'w'},
+            rendererOptions: {barDirection: 'horizontal', shadowOffset: 1, shadowAlpha: 0.05, barPadding: 0, barWidth: 9}
+          },
+          seriesColors: ["#dc594e", "#5296d9"],
+          series: [
+            {label: "Scheduled End Date"},
+            {label: "Planned End Date"}
+          ],
+          axes: {
+            xaxis: {renderer: jQuery.jqplot.DateAxisRenderer,
+                    min: <%= min_date.to_json %>,
+                    tickRenderer: jQuery.jqplot.CanvasAxisTickRenderer,
+                    tickOptions: {angle: -45, formatString:'%b %e', fontSize: '7pt'}},
+            yaxis: {renderer: jQuery.jqplot.CategoryAxisRenderer,
+                   tickRenderer: jQuery.jqplot.CanvasAxisTickRenderer,
+                   tickOptions: {fontSize: '7pt', showGridline: false}}
+          },
+          legend: {show: false},
+          grid: {gridLineColor: '#c7c7c7'}
+        });
+    
+        if(id !== 'zoom_chart') {
+          this.plot = plot;
+        }
+        return plot;
+      }
+    };
+    charts.project_sched.render('project_sched_chart');
+
+    jQuery(window).resize(function() {
+      jQuery('#project_sched_chart').empty();
+      charts.project_sched.render('project_sched_chart');
+    });
   });
-  jQuery("#project_sched_chart .jqplot-point-label").css({"color":"#333", "font-size":"7.5pt"});
+
 </script>
 <% else %>
   <p class="nodata">No Development Projects Found.</p>

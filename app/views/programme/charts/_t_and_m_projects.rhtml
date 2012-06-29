@@ -12,22 +12,40 @@
     <% if @t_and_m_projects.count > 10 %>
     jQuery("#t_and_m_projects_chart").width('<%= @t_and_m_projects.count * 55 %>px');
     <% end %>
-    var ticks = <%= jticks %>;
-    var tplot = jQuery.jqplot('t_and_m_projects_chart', [<%= jdata %>], {
-      seriesDefaults:{
-        renderer:jQuery.jqplot.BarRenderer,
-        rendererOptions: {fillToZero: true, barPadding: 1},
-        pointLabels: { show: true, location: 'e', edgeTolerance: -15 },
-      },
-      seriesColors: ["#5296d9"],
-      legend: { show: false },
-      axes: {
-        xaxis: { renderer: jQuery.jqplot.CategoryAxisRenderer, ticks: ticks,
-                       tickRenderer: jQuery.jqplot.CanvasAxisTickRenderer, tickOptions: {angle: -45, fontSize: '7pt', showGridline: false}},
-        yaxis: { tickOptions: {formatString: '%.2f%d %'}}
-      },
-      grid: {gridLineColor: '#c7c7c7'}
+    jQuery(document).ready(function($) {
+    charts.t_and_m_projects = {
+      render: function(id) {
+        var ticks = <%= jticks %>;
+        var tplot = jQuery.jqplot('t_and_m_projects_chart', [<%= jdata %>], {
+          seriesDefaults:{
+            renderer:jQuery.jqplot.BarRenderer,
+            rendererOptions: {fillToZero: true, barPadding: 1},
+            pointLabels: { show: true, location: 'e', edgeTolerance: -15 },
+          },
+          seriesColors: ["#5296d9"],
+          legend: { show: false },
+          axes: {
+            xaxis: { renderer: jQuery.jqplot.CategoryAxisRenderer, ticks: ticks,
+                           tickRenderer: jQuery.jqplot.CanvasAxisTickRenderer, tickOptions: {angle: -45, fontSize: '7pt', showGridline: false}},
+            yaxis: { tickOptions: {formatString: '%.2f%d %'}}
+          },
+          grid: {gridLineColor: '#c7c7c7'}
+        });
+    
+        if(id !== 'zoom_chart') {
+          this.tplot = tplot;
+        }
+        return tplot;
+      }
+    };
+    charts.t_and_m_projects.render('t_and_m_projects_chart');
+
+    jQuery(window).resize(function() {
+      jQuery('#t_and_m_projects_chart').empty();
+      charts.t_and_m_projects.render('t_and_m_projects_chart');
     });
+  });
+
   </script>
 <% else %>
   <p class="nodata">No projects found with 'T and M' billing model.</p>
