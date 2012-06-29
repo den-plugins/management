@@ -3,7 +3,7 @@
   <% available_resource_count = {} %>
   <% @available_resources.each do |resource| %>
     <% available_resource_count[resource.skill] = 0 if available_resource_count[resource.skill].nil? %>
-    <% available_resource_count[resource.skill] += 1 unless resource.is_resigned %>
+    <% available_resource_count[resource.skill] += 1 unless resource.is_resigned or resource.status == User::STATUS_ARCHIVED %>
   <% end %>
 
   <div class='tables_container' id="forecasts_tables_container">
@@ -23,7 +23,7 @@
             <td style="text-align: left"><%= resource.display_name %></td>
             <td><%= resource.skill %></td>
             <% resource_count[resource.skill] = 0 if resource_count[resource.skill].nil? %>
-            <% resource_count[resource.skill] += 1 unless resource.is_resigned %>
+            <% resource_count[resource.skill] += 1 unless resource.is_resigned or resource.status == User::STATUS_ARCHIVED%>
           </tr>
         <% end %>
         <% reset_cycle('resources') %>
