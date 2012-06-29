@@ -6,8 +6,8 @@
   <h4>Resource Management</h4>
   <fieldset>  
     <legend>
-      <%= l(:label_filter_plural) %> 
-      <%=link_to "(hide/show)", "", :onclick => "$('filter_content').toggle(); return false;" %> 
+      <%= l(:label_filter_plural) %>
+      <%=link_to "(hide/show)", "", :onclick => "$('filter_content').toggle(); return false;" %>
     </legend>
     <div id="filter_content" style="padding: 5px;">
     <% form_tag({:controller => "resource_managements", :action => "users"},
@@ -21,9 +21,30 @@
         <%= select_tag "filters[skill_or_role]", options_for_select([""] + User::SKILLS, @skill) %>
         <%= mgt_custom_field_tag "Organization", params %>
         <%= mgt_field_tag "Lastname", "lastname", params, {:format => "text"} %>
+
         <%= link_to_remote l(:button_apply), "#", :class => "icon icon-checked",
-                                              :onclick => "$('filter_for_forecasts_form').submit();",
-                                              :style => "margin-left: 15px;" %>
+                                                  :onclick => "$('filter_for_forecasts_form').submit();",
+                                                  :style => "margin-left: 15px;" %>
+
+        <div style="margin:20px;">
+        <fieldset id="date_filter" style="display:none;">
+          <% options = ["this month", "last month", "last 3 months", "last 6 months", "this year", "last year"] %>
+
+             <%= radio_button_tag 'period_type', '1', true %>
+             <%=  select_tag "selection", options_for_select(options, options[0]) %>
+             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+             <%= radio_button_tag 'period_type', '2' %>
+             <span onclick="$('period_type_2').checked = true;">
+             <%= l(:label_date_from) %>
+             <%= text_field_tag 'from', @from, :size => 10 %> <%= calendar_for('from') %>
+             <%= l(:label_date_to) %>
+             <%= text_field_tag 'to', @to, :size => 10 %> <%= calendar_for('to') %>
+             </span>
+
+             <div style="clear:both"></div>
+          </fieldset>
+        </div>
+
     <% end %>
       </div>
     </div>
@@ -35,5 +56,25 @@
 </div>
 
 <% content_for :header_tags do %>
+  <%= javascript_include_tag 'jquery_tools', :plugin => 'management' %>
   <%= stylesheet_link_tag 'management', :plugin => 'management' %>
+  <%= javascript_include_tag 'jquery-ui-1.8.17.custom.min.js', :plugin => 'management' %>
 <% end %>
+
+<script>
+  j = jQuery.noConflict();
+  jQuery(document).ready(function () {
+      if (jQuery('#filters_is_employed').is(':checked')) {
+           jQuery("#date_filter").show();
+      } else {
+            jQuery("#date_filter").hide();
+        }
+  });
+  jQuery("#filters_is_employed").click(function(){
+      if (jQuery(this).is(':checked')) {
+          jQuery("#date_filter").show();
+      } else {
+          jQuery("#date_filter").hide();
+      }
+  });
+</script>
