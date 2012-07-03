@@ -92,7 +92,7 @@ class ResourceManagementsController < ApplicationController
     sort_update %w(lastname location skill)
     
     conditions = forecast_conditions(params)
-    get_forecast_list(sort_clause, conditions)
+    get_forecast_list(sort_clause, conditions, params)
 
     render :template => 'resource_managements/forecasts.rhtml', :layout => !request.xhr?
   end
@@ -131,16 +131,26 @@ class ResourceManagementsController < ApplicationController
 
     if filters = params[:filters]
       # temporarily put in the controller
-      c = User.generate_user_mgt_condition(filters, @from, @to)
+      c = User.generate_user_mgt_condition(filters)
       conditions = c.conditions
       conditions = (["custom_fields.name = E'Employment Start'"] + c.conditions).compact.join(' AND ') if params[:caption] == "Hired Date"
       conditions = (["custom_fields.name = E'Employment End'"] + c.conditions).compact.join(' AND ') if params[:caption] == "Resignation Date" && !filters[:is_employed].to_i.eql?(1)
       @location, @skill = filters[:location], filters[:skill_or_role]
       limit = per_page_option
-      @users_count = User.count(:all, :include => [:custom_values => :custom_field], :conditions => conditions)
-      @user_pages = Paginator.new self, @users_count, limit, params['page']
-      @users = User.find :all, :include => [:custom_values => :custom_field], :limit => limit, :offset => @user_pages.current.offset, :order => sort_clause,
-                                           :conditions => conditions
+
+      if filters[:is_employed] and !filters[:is_employed].blank? and filters[:is_employed].to_i.eql?(1)
+        @users_count = User.find(:all, :include => [:custom_values => :custom_field], :conditions => conditions).reject {|v| to_date_safe(v.resignation_date) &&
+                                                     to_date_safe(v.resignation_date) < @from || to_date_safe(v.hired_date) && to_date_safe(v.hired_date) > @to}.count
+        @user_pages = Paginator.new self, @users_count, limit, params['page']
+        @users = User.find(:all, :include => [:custom_values => :custom_field], :limit => limit, :offset => @user_pages.current.offset, :order => sort_clause,
+                                                 :conditions => conditions).reject {|v| to_date_safe(v.resignation_date) && to_date_safe(v.resignation_date) < @from ||
+                                                 to_date_safe(v.hired_date) && to_date_safe(v.hired_date) > @to}
+      else
+        @users_count = User.count(:all, :include => [:custom_values => :custom_field], :conditions => conditions)
+        @user_pages = Paginator.new self, @users_count, limit, params['page']
+        @users = User.find(:all, :include => [:custom_values => :custom_field], :limit => limit, :offset => @user_pages.current.offset, :order => sort_clause,
+                                           :conditions => conditions)
+      end
     end
     render :template => 'resource_managements/users.rhtml', :layout => !request.xhr?
   end
@@ -252,7 +262,7 @@ class ResourceManagementsController < ApplicationController
     clause = session['resource_managements_forecasts_sort'].gsub(/:/, " ")
 
     conditions = forecast_conditions(params)
-    get_forecast_list(clause, conditions)
+    get_forecast_list(clause, conditions, params)
 
     @forecasts = {}
     @summary = {}
@@ -319,7 +329,7 @@ class ResourceManagementsController < ApplicationController
                            :order => sort_clause).select {|m| !m.user.is_resigned}
   end
 
-  def get_forecast_list(order, query)
+  def get_forecast_list(order, query, filters)
     limit = per_page_option
     dev_projects = Project.development.find(:all, :include => [:accounting])
     acctg = params[:acctg].to_s.blank? ? "Billable" : params[:acctg]
@@ -332,16 +342,34 @@ class ResourceManagementsController < ApplicationController
     if @projects.empty?
       @resources = []
     else
-      @available_resources = User.find(:all, :conditions => query, :order => order, :include => [:projects, :members])
-      query << " and projects.id IN (#{@projects.join(', ')})"
-      @resources_no_limit = User.find(:all, :conditions => query, :order => order, :include => [:projects, :members])
-      @resource_count = @resources_no_limit.count
-      @resource_pages = Paginator.new self, @resource_count, limit, params['page']
-      offset = @resource_pages.current.offset
-      @resources = []
-      (offset ... (offset + limit)).each do |i|
-        break if @resources_no_limit[i].nil?
-        @resources << @resources_no_limit[i]
+      if filters[:is_employed] and !filters[:is_employed].blank? and filters[:is_employed].to_i.eql?(1)
+        @available_resources = User.find(:all, :conditions => query, :order => order, :include => [:projects, :members]).reject {|v| to_date_safe(v.resignation_date) && to_date_safe(v.resignation_date) < @from ||
+                                                         to_date_safe(v.hired_date) && to_date_safe(v.hired_date) > @to}
+        query << " and projects.id IN (#{@projects.join(', ')})"
+        @resources_no_limit = User.find(:all, :conditions => query, :order => order, :include => [:projects, :members]).reject {|v| to_date_safe(v.resignation_date) && to_date_safe(v.resignation_date) < @from ||
+                                                         to_date_safe(v.hired_date) && to_date_safe(v.hired_date) > @to}
+        @resource_count = @resources_no_limit.count
+        @resource_pages = Paginator.new self, @resource_count, limit, params['page']
+        offset = @resource_pages.current.offset
+        @resources = []
+        (offset ... (offset + limit)).each do |i|
+          break if @resources_no_limit[i].nil?
+          @resources << @resources_no_limit[i]
+          end
+
+
+      else
+        @available_resources = User.find(:all, :conditions => query, :order => order, :include => [:projects, :members])
+        query << " and projects.id IN (#{@projects.join(', ')})"
+        @resources_no_limit = User.find(:all, :conditions => query, :order => order, :include => [:projects, :members])
+        @resource_count = @resources_no_limit.count
+        @resource_pages = Paginator.new self, @resource_count, limit, params['page']
+        offset = @resource_pages.current.offset
+        @resources = []
+        (offset ... (offset + limit)).each do |i|
+          break if @resources_no_limit[i].nil?
+          @resources << @resources_no_limit[i]
+          end
       end
     end
     @skill_set = User::SKILLS
@@ -649,7 +677,7 @@ class ResourceManagementsController < ApplicationController
     custom_filters[:is_employed] = params[:is_employed] unless params[:is_employed].blank?
 
     conditions = Array.new
-    conditions << User.generate_user_mgt_condition(custom_filters, @from, @to).conditions
+    conditions << User.generate_user_mgt_condition(custom_filters).conditions
     conditions << "location = '#{location}'" if location
     conditions << "skill = '#{skill}'" if skill
     conditions << "lastname = '#{lastname}'" if lastname

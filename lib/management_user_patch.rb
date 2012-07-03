@@ -31,7 +31,7 @@ module Management
         res_skills.empty? ? [] : res_skills.map {|u| u.skill}
       end
 
-      def generate_user_mgt_condition(filters, from, to)
+      def generate_user_mgt_condition(filters)
         custom_values_join = "left outer join custom_values on users.id=custom_values.customized_id and custom_values.customized_type='User' "
         custom_fields_join = "left outer join custom_fields on custom_fields.id=custom_values.custom_field_id"
 
@@ -43,8 +43,6 @@ module Management
           c << "users.location = '#{filters[:location]}'" if filters[:location] and !filters[:location].blank?
           c << "users.id in (select users.id from users #{custom_values_join} #{custom_fields_join} \
                       where custom_fields.name='Organization' and custom_values.value='#{filters[:organization]}')" if filters[:organization] and !filters[:organization].blank?
-          c << "users.id in (select users.id from users #{custom_values_join} #{custom_fields_join} \
-                              where custom_fields.name='Employment End' and custom_values.value < '#{from}')" if filters[:is_employed] and !filters[:is_employed].blank? and filters[:is_employed].to_i.eql?(1)
         end
         c
       end
