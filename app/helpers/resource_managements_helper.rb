@@ -95,7 +95,7 @@ module ResourceManagementsHelper
   end
 
   def count_billabilty_skill(set, users, projects)
-    projects = projects.collect {|p| p.id if (p.accounting_type.eql?('Billable') || p.accounting_type.eql?('Non-billable'))}
+    projects = projects.collect {|p| p.id if (p.accounting_type.eql?('Billable'))}
 
     reports, totals = [], []
     report_date =  (Date.today - 1.week).monday
