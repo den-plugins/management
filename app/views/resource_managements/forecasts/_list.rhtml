@@ -76,6 +76,7 @@
     </div>
     <div class="clear"></div>
     <% remote_form_for :forecasts, :url => {:controller => 'resource_managements', :action => 'load_weekly_forecasts',
+                             :selection => params[:selection], :from => params[:from], :to => params[:to],
                              :total_res_available => total_res_available, :page => params[:page], :acctg => params[:acctg],
                              :location => params[:location], :lastname => params[:lastname], :skill => params[:skill], :is_employed => params[:is_employed]},
                              :html => {:id => "load_forecasts_form"} do |f| %>

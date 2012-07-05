@@ -351,4 +351,21 @@ module ResourceManagementsHelper
     end
   end
 
+  def date_filter_index(selection)
+    case selection
+               when "this month"
+                 0
+               when "last month"
+                 1
+               when "last 3 months"
+                 2
+               when "last 6 months"
+                 3
+               when "this year"
+                 4
+               when "last year"
+                 5
+             end
+  end
+
 end

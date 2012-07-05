@@ -1,4 +1,4 @@
-<% weeks = get_weeks_range(@from-1.month, Date.today+6.months) %>
+<% weeks = get_weeks_range(@from, Date.today+6.months) %>
 <div id='floating_tables_holder' style="width: <%= weeks.count * 85 %>px">
 <% weeks.each do |week| %>
     <% lweek = to_yml(week.last) %>
@@ -76,7 +76,10 @@
     jQuery("#updated_at_text").show().text("as of <%= @updated_at.strftime('%b %d, %Y %I:%M %p') %>");
     jQuery("#icon_reload_forecasts").show().click(function() {
       new Ajax.Request('/resource_managements/load_weekly_forecasts', {
-        parameters: { 'total_res_available': '<%= params[:total_res_available] %>',
+        parameters: { 'selection': '<%= params[:selection] %>',
+                                   'from': '<%= params[:from] %>',
+                                   'to': '<%= params[:to] %>',
+                                   'total_res_available': '<%= params[:total_res_available] %>',
                                    'acctg': '<%= params[:acctg] %>',
                                    'location': '<%= params[:location] %>',
                                    'skill': '<%= params[:skill] %>',

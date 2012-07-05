@@ -22,7 +22,7 @@
             <% options = ["this month", "last month", "last 3 months", "last 6 months", "this year", "last year"] %>
 
               <%= radio_button_tag 'period_type', '1', params[:period_type].eql?('2') ? false : true %>
-              <%=  select_tag "selection", options_for_select(options, options[0]) %>
+              <%=  select_tag "selection", options_for_select(options, params[:selection].nil? ? options[0] : options[date_filter_index(params[:selection])]) %>
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               <%= radio_button_tag 'period_type', '2', params[:period_type].eql?('2') ? true : false %>
               <span onclick="$('period_type_2').checked = true;">
