@@ -371,10 +371,9 @@ module ResourceManagementsHelper
   def get_date_range(param_selection, param_from, param_to)
 
     unless param_from.nil? || param_to.nil? || param_from.empty? || param_to.empty?
-          from, to = param_from, params_to
+          from, to = param_from, param_to
     else
-      if param_selection
-        selection = (param_selection.blank? ? "this month" : param_selection)
+        selection = (param_selection.blank? ? "" : param_selection)
           today = Date.today
            case selection
              when "this month"
@@ -389,10 +388,9 @@ module ResourceManagementsHelper
                from, to = today.beginning_of_year, (today - 1.month).end_of_month
              when "last year"
                from, to = (today - 1.year).beginning_of_year, (today - 1.year).end_of_year
+             else
+               from, to = Date.today-1.months, Date.today+6.months
            end
-      else
-        from, to = Date.today-1.months, Date.today+6.months
-      end
     end
     return from, to
   end

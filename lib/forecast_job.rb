@@ -20,7 +20,7 @@ class ForecastJob < Struct.new(:from, :to, :accounting, :resources_no_limit, :sk
     resource_count = {}                   # total no. of resources per skill
     skill_allocations = {}                  # total allocation per skill (res_allocations_skill)
     
-    weeks = get_weeks_range(from, to)
+    weeks = get_weeks_range(from.to_date, to.to_date)
     weeks.each do |week|
       weekly_resources_count = 0
       forecasts_this_week = forecasts[to_yml(week.last)] || {}

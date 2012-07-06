@@ -1,4 +1,4 @@
-<% weeks = get_weeks_range(@from, @to) %>
+<% weeks = get_weeks_range(@from.to_date, @to.to_date) %>
 <div id='floating_tables_holder' style="width: <%= weeks.count * 85 %>px">
 <% weeks.each do |week| %>
     <% lweek = to_yml(week.last) %>
