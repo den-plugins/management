@@ -368,12 +368,12 @@ module ResourceManagementsHelper
     end
   end
 
-  def get_date_range(param_selection, param_from, param_to)
+  def get_date_range(param_selection, param_from, param_to, param_is_employed)
 
     unless param_from.nil? || param_to.nil? || param_from.empty? || param_to.empty?
           from, to = param_from, param_to
     else
-        selection = (param_selection.blank? ? "" : param_selection)
+        selection = (param_selection.blank? || param_is_employed.nil? ? "" : param_selection)
           today = Date.today
            case selection
              when "this month"

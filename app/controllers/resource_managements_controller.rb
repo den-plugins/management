@@ -107,7 +107,7 @@ class ResourceManagementsController < ApplicationController
                 'hired_date' => "#{CustomValue.table_name}.value",
                 'resignation_date' => "#{CustomValue.table_name}.value"
 
-    @from, @to = get_date_range(params[:selection], params[:from], params[:to])
+    @from, @to = get_date_range(params[:selection], params[:from], params[:to], params[:is_employed])
 
 
     if filters = params[:filters]
@@ -357,7 +357,7 @@ class ResourceManagementsController < ApplicationController
   end
 
   def delay_job
-    @from, @to = get_date_range(params[:selection], params[:from], params[:to])
+    @from, @to = get_date_range(params[:selection], params[:from], params[:to], params[:is_employed])
 
     acctg = params[:acctg].to_s.blank? ? "Billable" : params[:acctg]
     resources_no_limit = @resources_no_limit.collect {|r| r.id }
@@ -633,7 +633,7 @@ class ResourceManagementsController < ApplicationController
     skill = ((params[:skill].eql?('N/A') or params[:skill].blank?)? nil : params[:skill])
     lastname = (params[:lastname].blank? ? nil : params[:lastname].capitalize)
 
-    @from, @to = get_date_range(params[:selection], params[:from], params[:to])
+    @from, @to = get_date_range(params[:selection], params[:from], params[:to], params[:is_employed])
 
     custom_filters = Hash.new
     # in resource cost forecast summary, resources must be 'active.engineers'
