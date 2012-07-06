@@ -1,4 +1,4 @@
-class ForecastJob < Struct.new(:accounting, :resources_no_limit, :skill_set, :projects, :total_available_resources)
+class ForecastJob < Struct.new(:from, :to, :accounting, :resources_no_limit, :skill_set, :projects, :total_available_resources)
   include Delayed::ScheduledJob
   include ResourceManagementsHelper
 
@@ -20,7 +20,7 @@ class ForecastJob < Struct.new(:accounting, :resources_no_limit, :skill_set, :pr
     resource_count = {}                   # total no. of resources per skill
     skill_allocations = {}                  # total allocation per skill (res_allocations_skill)
     
-    weeks = get_weeks_range(Date.today-1.month, Date.today+6.months)
+    weeks = get_weeks_range(from, to)
     weeks.each do |week|
       weekly_resources_count = 0
       forecasts_this_week = forecasts[to_yml(week.last)] || {}
