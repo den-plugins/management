@@ -107,10 +107,8 @@ class ResourceManagementsController < ApplicationController
                 'hired_date' => "#{CustomValue.table_name}.value",
                 'resignation_date' => "#{CustomValue.table_name}.value"
 
-    @from, @to = get_date_range(params[:selection], params[:from], params[:to], params[:filters][:is_employed])
-
-
     if filters = params[:filters]
+      @from, @to = get_date_range(params[:selection], params[:from], params[:to], params[:filters][:is_employed])
       # temporarily put in the controller
       c = User.generate_user_mgt_condition(filters)
       conditions = c.conditions
