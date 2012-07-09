@@ -107,7 +107,7 @@ class ResourceManagementsController < ApplicationController
                 'hired_date' => "#{CustomValue.table_name}.value",
                 'resignation_date' => "#{CustomValue.table_name}.value"
 
-    @from, @to = get_date_range(params[:selection], params[:from], params[:to], params[:is_employed])
+    @from, @to = get_date_range(params[:selection], params[:from], params[:to], params[:filters][:is_employed])
 
 
     if filters = params[:filters]

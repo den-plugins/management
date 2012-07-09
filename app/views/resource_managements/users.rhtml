@@ -28,10 +28,10 @@
 
         <div style="margin:20px;">
         <fieldset id="date_filter" style="display:none;">
-          <% options = ["this month", "last month", "last 3 months", "last 6 months", "this year", "last year"] %>
+          <% options = ["last week", "all time", "today", "yesterday", "this week", "this month", "last 7 days", "last month", "last 30 days", "this year"] %>
 
              <%= radio_button_tag 'period_type', '1', params[:period_type].eql?('2') ? false : true %>
-             <%=  select_tag "selection", options_for_select(options, options[0]) %>
+             <%=  select_tag "selection", options_for_select(options, params[:selection].nil? ? options[5] : options[date_filter_index(params[:selection])]) %>
              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
              <%= radio_button_tag 'period_type', '2', params[:period_type].eql?('2') ? true : false %>
              <span onclick="$('period_type_2').checked = true;">

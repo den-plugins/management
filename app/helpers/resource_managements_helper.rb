@@ -353,18 +353,26 @@ module ResourceManagementsHelper
 
   def date_filter_index(selection)
     case selection
-      when "this month"
+      when "last week"
         0
-      when "last month"
+      when "all time"
         1
-      when "last 3 months"
+      when "today"
         2
-      when "last 6 months"
+      when "yesterday"
         3
-      when "this year"
+      when "this week"
         4
-      when "last year"
+      when "this month"
         5
+      when "last 7 days"
+        6
+      when "last month"
+        7
+      when "last 30 days"
+        8
+      when "this year"
+        9
     end
   end
 
@@ -373,23 +381,36 @@ module ResourceManagementsHelper
     unless param_from.nil? || param_to.nil? || param_from.empty? || param_to.empty?
           from, to = param_from, param_to
     else
-        selection = (param_selection.blank? || param_is_employed.nil? ? "" : param_selection)
+        selection = (param_selection.blank? || param_is_employed.nil?) ? "" : param_selection
           today = Date.today
            case selection
+             when "last week"
+                from = today - 7 - (today.cwday - 1)%7
+                to = from + 6
+             when "all time"
+                from ||= (TimeEntry.minimum(:spent_on, :include => :project, :conditions => Project.allowed_to_condition(User.current, :view_time_entries)) || today) - 1
+                to   ||= (TimeEntry.maximum(:spent_on, :include => :project, :conditions => Project.allowed_to_condition(User.current, :view_time_entries)) || today)
+             when "today"
+                from = to = today
+             when "yesterday"
+                from = to = today - 1
+             when "this week"
+                from = today - (today.cwday - 1)%7
+                to = from + 6
              when "this month"
-               from, to = today.beginning_of_month, today.end_of_month
+                from, to = today.beginning_of_month, today.end_of_month
+             when "last 7 days"
+                from = today - 7
+                to = today
              when "last month"
-               from, to = (today - 1.month).beginning_of_month, (today - 1.month).end_of_month
-             when "last 3 months"
-               from, to = (today - 3.months).beginning_of_month, (today - 1.month).end_of_month
-             when "last 6 months"
-               from, to = (today - 6.months).beginning_of_month, (today - 1.month).end_of_month
+                from, to = (today - 1.month).beginning_of_month, (today - 1.month).end_of_month
+             when "last 30 days"
+                from = today - 30
+                to = today
              when "this year"
-               from, to = today.beginning_of_year, (today - 1.month).end_of_month
-             when "last year"
-               from, to = (today - 1.year).beginning_of_year, (today - 1.year).end_of_year
+                from, to = today.beginning_of_year, (today - 1.month).end_of_month
              else
-               from, to = Date.today-1.months, Date.today+6.months
+               from, to = today-1.months, today+6.months
            end
     end
     return from, to
