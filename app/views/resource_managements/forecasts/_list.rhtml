@@ -74,11 +74,6 @@
     <div id='weekly_forecasts_panel' class='movable_table_container' style="width: 74%">
       <%# render :partial => 'resource_managements/forecasts/weeks', :locals => {:total_res_available => total_res_available} %>
     </div>
-
-<p id="scroll_nav" style="text-align:center;width:700px;display:none;">
-  <button class="custom prev">&laquo; Previous</button>
-  <button class="custom next">Next &raquo;</button>
-</p>
     <div class="clear"></div>
     <% remote_form_for :forecasts, :url => {:controller => 'resource_managements', :action => 'load_weekly_forecasts',
                              :selection => params[:selection], :from => params[:from], :to => params[:to],
