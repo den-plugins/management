@@ -71,6 +71,8 @@
 </div>
 <script type="text/javascript">
     jQuery(".movable_table_container:last").scrollable({circular: false, mousewheel: true, wheelSpeed: 400});
+    jQuery("#scroll_nav").css("display","block");
+    jQuery(".movable_table_container").css("overflow","hidden");
     forecastsFixedHeader();
     
     jQuery("#updated_at_text").show().text("as of <%= @updated_at.strftime('%b %d, %Y %I:%M %p') %>");
