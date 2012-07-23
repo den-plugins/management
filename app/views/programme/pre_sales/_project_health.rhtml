@@ -4,6 +4,7 @@
     jQuery(document).ready(function($) {
       jQuery(window).resize(function() {
         var scroll_y = jQuery('.auto_scroll_y').width() - 20;
+        if(scroll_y < 1400){scroll_y = 1400;}
         jQuery('#project_health_table').width(scroll_y);
       });
     });
