@@ -16,6 +16,10 @@
     </fieldset>
     <br/>
 
+    <% if User.current.login == ("gcordero") %>
+      <fieldset><%= link_to "Add time logs", contractor_logs_path %></fieldset><br />
+    <% end %>
+
     <% unless @selected_users.empty? %>
       <div id="mgt_resources_list">
         <%= render :partial => "resource_managements/utilization/list" %>
