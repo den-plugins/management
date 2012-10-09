@@ -42,7 +42,7 @@ class ProgrammeController < ApplicationController
     @header = "Interactive Programme Dashboard"
     @projects = Project.find(:all, :include => [:manager],
                              :conditions => ["projects.status = ?", Project::STATUS_ACTIVE],
-                             :order => sort_clause)
+                             :order => sort_clause).reject{|x| x.closed?}
     @devt_projects_sorted = @projects.select(&:dev_interactive?)
     @devt_projects = @devt_projects_sorted.sort_by {|s| s.name.downcase }
 
