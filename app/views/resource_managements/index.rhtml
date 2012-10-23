@@ -17,9 +17,11 @@
       <% legend.each_slice(3) do |group| %>
         <tr>
         <% group.each do |count, skill| -%>
-          <td><i class="swatch"></i></td>
-          <td><%= skill %></td>
-          <td style="text-align: right; font-weight: bold"><%= count %></td>
+          <% if !skill.nil? && !skill.blank? %>
+            <td><i class="swatch"></i></td>
+              <td><%= skill %></td>
+              <td style="text-align: right; font-weight: bold"><%= count %></td>
+          <% end %>
         <% end -%>
         </tr>
       <% end -%>
