@@ -1,23 +1,38 @@
 <%= render :partial => "header" %>
 
+<% if @header == "Programme Dashboard" %>
+    <% form_for :programme, @programme, :url => {:controller => "programme", :action => "index", :project_id => @project} do |f| %>
+        <%= check_box_tag "all_projects", "", @all_projects, :onchange => "this.form.submit();" %>
+        Display all projects
+    <% end %>
+<% end %>
+
+<% if @header == "Interactive Programme Dashboard" %>
+    <% form_for :programme, @programme, :url => {:controller => "programme", :action => "interactive", :project_id => @project} do |f| %>
+        <%= check_box_tag "all_projects", "", @all_projects, :onchange => "this.form.submit();" %>
+        Display all projects
+    <% end %>
+<% end %>
+
 <div id="programme_dashboard">
   <div class="singleCol-wide" style="height:544px">
     <div class="box">
       <div class="box2" style="float: left">
-      <h3>Project Health</h3>
+        <h3>Project Health</h3>
+
         <div id="programme_project_health">
           <%= render :partial => "project_health" %>
         </div>
       </div>
-      
+
       <div class="box2" style="float: right">
         <h3>Project Schedule - End Date</h3>
         <%= render :partial => "programme/charts/project_schedule" %>
       </div>
     </div>
-  
+
     <div style="clear: both"></div>
-    
+
     <div class="singleCol" style="float: left">
       <div class="box">
         <h3>Proposal Health (Proposals currently being handled by PMs)</h3>
@@ -44,33 +59,33 @@
 </div>
 
 <% content_for :header_tags do %>
-  <%= stylesheet_link_tag 'management', :plugin => 'management' %>
-  <%= stylesheet_link_tag 'jquery.jqplot.css', :plugin => 'redmine_burndown' %>
-  <%= javascript_include_tag 'dashboard.js', :plugin => 'management' %>
-  <%= javascript_include_tag 'jquery.min.js', :plugin => 'redmine_burndown' %>
-  <%= javascript_include_tag 'jquery.jqplot.js', :plugin => 'redmine_burndown' %>
-  <%= javascript_include_tag 'plugins/jqplot.barRenderer.min.js', :plugin => 'redmine_burndown' %>
-  <%= javascript_include_tag 'plugins/jqplot.canvasAxisLabelRenderer.min.js', :plugin => 'redmine_burndown' %>
-  <%= javascript_include_tag 'plugins/jqplot.canvasTextRenderer.min.js', :plugin => 'redmine_burndown' %>
-  <%= javascript_include_tag 'plugins/jqplot.categoryAxisRenderer.min.js', :plugin => 'redmine_burndown' %>
-  <%= javascript_include_tag 'plugins/jqplot.canvasAxisTickRenderer.min.js', :plugin => 'redmine_burndown' %>
-  <%= javascript_include_tag 'plugins/jqplot.cursor.min.js', :plugin => 'redmine_burndown' %>
-  <%= javascript_include_tag 'plugins/jqplot.dateAxisRenderer.min.js', :plugin => 'redmine_burndown' %>
-  <%= javascript_include_tag 'plugins/jqplot.highlighter.min.js', :plugin => 'redmine_burndown' %>
-  <%= javascript_include_tag 'plugins/jqplot.pieRenderer.min.js', :plugin => 'redmine_burndown' %>
-  <%= javascript_include_tag 'plugins/jqplot.pointLabels.min.js', :plugin => 'redmine_burndown' %>
+    <%= stylesheet_link_tag 'management', :plugin => 'management' %>
+    <%= stylesheet_link_tag 'jquery.jqplot.css', :plugin => 'redmine_burndown' %>
+    <%= javascript_include_tag 'dashboard.js', :plugin => 'management' %>
+    <%= javascript_include_tag 'jquery.min.js', :plugin => 'redmine_burndown' %>
+    <%= javascript_include_tag 'jquery.jqplot.js', :plugin => 'redmine_burndown' %>
+    <%= javascript_include_tag 'plugins/jqplot.barRenderer.min.js', :plugin => 'redmine_burndown' %>
+    <%= javascript_include_tag 'plugins/jqplot.canvasAxisLabelRenderer.min.js', :plugin => 'redmine_burndown' %>
+    <%= javascript_include_tag 'plugins/jqplot.canvasTextRenderer.min.js', :plugin => 'redmine_burndown' %>
+    <%= javascript_include_tag 'plugins/jqplot.categoryAxisRenderer.min.js', :plugin => 'redmine_burndown' %>
+    <%= javascript_include_tag 'plugins/jqplot.canvasAxisTickRenderer.min.js', :plugin => 'redmine_burndown' %>
+    <%= javascript_include_tag 'plugins/jqplot.cursor.min.js', :plugin => 'redmine_burndown' %>
+    <%= javascript_include_tag 'plugins/jqplot.dateAxisRenderer.min.js', :plugin => 'redmine_burndown' %>
+    <%= javascript_include_tag 'plugins/jqplot.highlighter.min.js', :plugin => 'redmine_burndown' %>
+    <%= javascript_include_tag 'plugins/jqplot.pieRenderer.min.js', :plugin => 'redmine_burndown' %>
+    <%= javascript_include_tag 'plugins/jqplot.pointLabels.min.js', :plugin => 'redmine_burndown' %>
 <% end %>
 <script>
-jQuery(document).ready(function($) {
-  jQuery(window).resize(function() {
-    var win_width = window.innerWidth;
-    if( win_width < 1000 ) {
-      jQuery('table#project_health_table tr th.ff').css("text-indent","-18px");
-    } else if(win_width < 1300 && win_width > 1000 ) {
-      jQuery('table#project_health_table tr th.ff').css("text-indent","-12px");
-    } else {
-      jQuery('table#project_health_table tr th.ff').css("text-indent","-8px");
-    }
-  });
-});
+    jQuery(document).ready(function ($) {
+        jQuery(window).resize(function () {
+            var win_width = window.innerWidth;
+            if (win_width < 1000) {
+                jQuery('table#project_health_table tr th.ff').css("text-indent", "-18px");
+            } else if (win_width < 1300 && win_width > 1000) {
+                jQuery('table#project_health_table tr th.ff').css("text-indent", "-12px");
+            } else {
+                jQuery('table#project_health_table tr th.ff').css("text-indent", "-8px");
+            }
+        });
+    });
 </script>
