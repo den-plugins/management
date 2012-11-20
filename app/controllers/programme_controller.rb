@@ -23,6 +23,10 @@ class ProgrammeController < ApplicationController
                      :order => sort_clause).reject { |x| x.closed? }
     @devt_projects_sorted = @projects.select(&:in_programme?)
     @devt_projects = @devt_projects_sorted.sort_by { |s| s.name.downcase }
+    @issues = Hash.new
+    @devt_projects_sorted.each do |project|
+      @issues[["#{project}", project.identifier]] = project.pm_dashboard_issues.find(:all, :conditions => ["impact > ?", 2])
+    end
 
     @fixed_cost_projects = @devt_projects.select(&:fixed_cost?).sort_by { |s| s.name.downcase }
     @t_and_m_projects = @devt_projects.select(&:t_and_m?).sort_by { |s| s.name.downcase }
@@ -53,6 +57,10 @@ class ProgrammeController < ApplicationController
                      :order => sort_clause).reject { |x| x.closed? }
     @devt_projects_sorted = @projects.select(&:dev_interactive?)
     @devt_projects = @devt_projects_sorted.sort_by { |s| s.name.downcase }
+    @issues = Hash.new
+    @devt_projects_sorted.each do |project|
+      @issues[["#{project}", project.identifier]] = project.pm_dashboard_issues.find(:all, :conditions => ["impact > ?", 2])
+    end
 
     @fixed_cost_projects = @devt_projects.select(&:fixed_cost?).sort_by { |s| s.name.downcase }
     @t_and_m_projects = @devt_projects.select(&:t_and_m?).sort_by { |s| s.name.downcase }

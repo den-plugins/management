@@ -1,0 +1,34 @@
+<% if @devt_projects_sorted.present? %>
+    <div class="auto_scroll_y">
+      <table class="list" id="project_risk_issues">
+        <thead>
+        <tr style="height: 65px; background-color: #bfbfbf; border-bottom: 2px solid white;">
+          <th><%= l(:field_project) %></th>
+          <th>Issues</th>
+        </tr>
+        </thead>
+        <tbody>
+        <% @issues.each do |project, issues| %>
+        <% unless issues.empty? %>
+            <tr class="<%= cycle 'podd', 'peven' %>">
+              <td>
+                <%= link_to project[0], {:controller => 'pm_dashboards', :action => 'index', :project_id => project[1] }, {:target => '_blank'} %>
+              </td>
+              <td class="<%= cycle 'podd', 'peven' %>">
+                <% issues.each do |issue| %>
+
+                    <%#= link_to "#{issue.ref_number} - #{issue.risk_description}", {:controller => 'risks', :action => 'show', :id => issue.id, :project_id => issue.project.identifier}%><br>
+                    <%= link_to issue.ref_number, {:controller => 'pm_dashboard_issues', :action => 'show', :id => issue.id, :project_id => issue.project.identifier}%></strong> - <%= issue.issue_description %>
+
+                <% end  %>
+              </td>
+
+            </tr>
+        <% end  %>
+        <% end %>
+        </tbody>
+      </table>
+    </div>
+<% else %>
+    <p class="nodata"><%= l(:label_no_data) %></p>
+<% end %>
