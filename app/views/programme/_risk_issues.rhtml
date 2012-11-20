@@ -14,12 +14,9 @@
               <td>
                 <%= link_to project[0], {:controller => 'pm_dashboards', :action => 'index', :project_id => project[1] }, {:target => '_blank'} %>
               </td>
-              <td class="<%= cycle 'podd', 'peven' %>">
+              <td>
                 <% issues.each do |issue| %>
-
-                    <%#= link_to "#{issue.ref_number} - #{issue.risk_description}", {:controller => 'risks', :action => 'show', :id => issue.id, :project_id => issue.project.identifier}%><br>
-                    <%= link_to issue.ref_number, {:controller => 'pm_dashboard_issues', :action => 'show', :id => issue.id, :project_id => issue.project.identifier}%></strong> - <%= issue.issue_description %>
-
+                    <li><%= link_to "#{issue.ref_number} - #{issue.issue_description}", {:controller => 'pm_dashboard_issues', :action => 'show', :id => issue.id, :project_id => issue.project.identifier}%></strong> - <%=  %></li>
                 <% end  %>
               </td>
 
