@@ -56,6 +56,7 @@ Redmine::Plugin.register :management do
     menu.push :interactive, {:controller => 'programme', :action => 'interactive'}, :caption => 'Interactive'
     menu.push :pre_sales, {:controller => 'programme', :action => 'pre_sales'}, :caption => 'Pre-Sales'
     menu.push :maintenance, {:controller => 'programme', :action => 'maintenance'}, :caption => 'Projects in Warranty Period'
+    menu.push :outstanding_issues, {:controller => 'programme', :action => 'outstanding_issues'}, :caption => 'Outstanding Issues'
   end
 
 end
