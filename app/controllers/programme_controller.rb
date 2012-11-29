@@ -6,6 +6,7 @@ class ProgrammeController < ApplicationController
   menu_item :interactive, :only => :interactive
   menu_item :pre_sales, :only => :pre_sales
   menu_item :maintenance, :only => :maintenance
+  menu_item :outstanding_issues, :only => :outstanding_issues
 
   before_filter :require_pmanagement
 
@@ -125,6 +126,26 @@ class ProgrammeController < ApplicationController
     end
   end
 
+  def outstanding_issues
+    @header = "Outstanding Issues"
+    @projects = Project.find(:all, :include => [:manager],
+                            :conditions => ["projects.status = ?", Project::STATUS_ACTIVE])
+    @high_impact_issues = Hash.new
+    @devt_projects = @projects.sort_by { |s| s.name.downcase }
+
+    @devt_projects.each do |project|
+      @high_impact_issues["#{project}"] = project.pm_dashboard_issues.find(:all, :conditions => ["impact > ?", 2]).reject {|x| !x.date_close.nil?}
+    end
+
+    if request.xhr?
+      render :update do |page|
+        page.replace_html :programme_project_health, :partial => "programme/project_health"
+      end
+    else
+      render :template => 'programme/outstanding_issues'
+    end
+  end
+
   private
   def require_pmanagement
     return unless require_login
@@ -150,4 +171,5 @@ class ProgrammeController < ApplicationController
                      {}
                    end
   end
+
 end

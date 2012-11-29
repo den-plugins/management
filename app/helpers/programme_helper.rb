@@ -172,4 +172,9 @@ module ProgrammeHelper
       end
     end
   end
+
+  def user_name(user_id)
+    user = User.find(user_id)
+    "#{user.firstname} #{user.lastname}"
+  end
 end
