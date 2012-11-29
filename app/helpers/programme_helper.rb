@@ -23,6 +23,7 @@ module ProgrammeHelper
   def color_code_for_category(project)
     pcode = project.for_time_logging_only? ? "vlgray" : ""
     pcode = "lgray" if project.category.eql?("Internal Project")
+    pcode = "closed" if project.closed?
     pcode
   end
 

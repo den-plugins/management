@@ -56,6 +56,7 @@ tr.lgreen, td.lgreen, th.lgreen { background-color: #9FC35B; color: #000; }
 tr.lblue, td.lblue, th.lblue { background-color: #99CCFF; color: #000; }
 tr.lred, td.lred, th.lred { background-color: #E57E7C; color: #000; }
 tr.lgray, td.lgray, th.lgray, div.lgray { background-color: #9a9a9a; color: #FFF; }
+tr.closed, td.closed, th.closed, div.closed { background-color: #8fbc8f; color: #FFF; }
 tr.vlgray, td.vlgray, th.vlgray, div.vlgray { background-color: #d9d9d9; color: #000;}
 tr.green, td.green, th.green, span.green {background-color: #9FC35B; border: 1px solid #97b846; }
 tr.red, td.red, th.red, span.red {background-color: #940F00; border: 1px solid #840d00; }
