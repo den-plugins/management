@@ -26,9 +26,9 @@
             <td><%= issue.issue_description %></td>
             <td><%= issue.action %></td>
             <td><%= user_name(issue.owner) %></td>
-            <td  class="center <%= "high-impact" if issue.date_due && issue.date_due == Date.today %>"><%= issue.date_due %></td>
             <% days_overdue = issue.date_due ? Date.today - issue.date_due.to_datetime : 0 %>
-            <td class="center <%= "high-impact" if days_overdue > 0 %>"><%= days_overdue < 0 ? 0 : days_overdue %></td>
+            <td  class="center <%= "high-impact" if issue.date_due && issue.date_due == Date.today || days_overdue > 0 %>"><%= issue.date_due %></td>
+            <td class="center <%= "overdue" if days_overdue > 0 %>"><%= days_overdue < 0 ? 0 : days_overdue %></td>
             <td align="center">
             <%= link_to image_tag('edit.png'), {:controller => 'pm_dashboard_issues', :action => 'edit', :id => issue, :project_id => Project.find_by_name(project)},
                         :title => l(:button_edit) %>
