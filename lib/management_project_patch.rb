@@ -74,6 +74,11 @@ module Management
       def in_programme?
         development? and !dev_interactive? and !dev_pre_sales? and !in_warranty?
       end
+
+      def closed?
+        temp = custom_values.detect{|x| x.custom_field.name.downcase["closure"]}
+        (temp and !temp.value.blank? and temp.value.to_date < Date.current) ? true : false
+      end
     end
   end
 end
