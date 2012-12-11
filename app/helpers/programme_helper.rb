@@ -126,7 +126,11 @@ module ProgrammeHelper
     projects.each do |project|
       id = "billability_#{project.id}"
       percent = bill[id] ? bill[id]["total_percent_billability_week"] : nil
-      ticks << sub_name(project.name)
+      if project.closed?
+        ticks << sub_name("***" + project.name)
+      else
+        ticks << sub_name(project.name)
+      end
       data << percent
     end
     [ticks.to_json, data.to_json]
@@ -135,7 +139,7 @@ module ProgrammeHelper
   def sched_chart_data(projects, min_date)
     scheduled, planned = [], []
     projects.each do |project|
-      pname = sub_name(project.name.to_s)
+      pname = project.closed? ? sub_name("*** " + project.name.to_s) : sub_name(project.name.to_s)
       scheduled << (project.actual_end_date ? [project.actual_end_date.to_s, pname] : [min_date, pname])
       planned << (project.planned_end_date ? [project.planned_end_date.to_s, pname] : [min_date, pname])
     end
@@ -146,7 +150,11 @@ module ProgrammeHelper
     data, ticks = [], []
     baselines, actuals, forecasts = [], [], []
     projects.each do |project|
-      ticks << sub_name(project.name)
+      if project.closed?
+        ticks << sub_name("***" + project.name)
+      else
+        ticks << sub_name(project.name)
+      end
       fixed_cost = fixed_costs["fixed_cost_#{project.id}"] ? fixed_costs["fixed_cost_#{project.id}"] : {}
       baselines << fixed_cost["cost_budget"]
       actuals << fixed_cost["cost_actual"]
