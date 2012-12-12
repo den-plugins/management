@@ -1,5 +1,5 @@
 <% from, to = ((params[:from] && params[:to])? [@from, @to] : [(Date.today - 4.weeks), Date.today]) %>
-<% dates = (@columns == "week")? get_weeks_range(from, to) : get_months_range(from, to) %>
+<% dates = (@columns == "week")? get_weeks_range_with_weekend(from, to) : get_months_range(from, to) %>
 <% acctg = params[:show_only] %>
 <% if @selected_users.any? %>
 allocationFixedHeader();
