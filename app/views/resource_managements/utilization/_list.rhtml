@@ -35,7 +35,7 @@
       </tbody>
       </table>
     </div>
-    <% dates = (@columns == "week")? get_weeks_range(from, to) : get_months_range(from, to) %>
+    <% dates = (@columns == "week")? get_weeks_range_with_weekend(from, to) : get_months_range(from, to) %>
     <%= render :partial => "resource_managements/utilization/utilization_per_date", 
                :locals => {:dates => dates, :acctg => params[:show_only]} %>
   </div>
