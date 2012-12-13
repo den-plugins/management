@@ -65,7 +65,8 @@ tr.gray, td.gray, th.gray, span.gray {background-color: #808080; border: 1px sol
 tr.summary_total {height: 27px; ha:;}
 tr.summary_total td { color: black; font-weight: bold; text-align: center; background-color: #eee; vertical-align: middle;}
 tr.resigned {color: #ccc;}
-td.high-impact {background-color: #ff0000; }
+td.high-impact {background-color: #d53533; color: #ffffff; }
+td.overdue {color: #ff0000; }
 
 td.left { text-align: left!important; }
 
