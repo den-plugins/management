@@ -27,7 +27,9 @@
 
       <div class="box2" style="float: right">
         <h3>Project Schedule - End Date</h3>
-        <%= render :partial => "programme/charts/project_schedule" %>
+        <div id="programme_project_schedule" >
+          <%= render :partial => "programme/charts/project_schedule" %>
+        </div>
       </div>
     </div>
 
@@ -49,11 +51,15 @@
   <div class="singleCol">
     <div class="box">
       <h3>Fixed Cost Projects - Financial Status</h3>
-      <%= render :partial => "programme/charts/fixed_cost_projects" %>
+      <div id="programme_fixed_cost_projects">
+        <%= render :partial => "programme/charts/fixed_cost_projects" %>
+      </div>
     </div>
     <div class="box">
       <h3>T and M Projects - Project Billability</h3>
-      <%= render :partial => "programme/charts/t_and_m_projects" %>
+      <div id="programme_t_and_m_projects">
+        <%= render :partial => "programme/charts/t_and_m_projects" %>
+      </div>
     </div>
   </div>
 

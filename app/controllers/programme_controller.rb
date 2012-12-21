@@ -23,14 +23,10 @@ class ProgrammeController < ApplicationController
                      :conditions => ["projects.status = ?", Project::STATUS_ACTIVE],
                      :order => sort_clause).reject { |x| x.closed? }
     @devt_projects_sorted = @projects.select(&:in_programme?)
-    @devt_projects = @devt_projects_sorted.sort_by { |s| s.name.downcase }
-    @issues = Hash.new
-    @devt_projects_sorted.each do |project|
-      @issues[["#{project}", project.identifier]] = project.pm_dashboard_issues.find(:all, :conditions => ["impact > ?", 2])
-    end
+    @devt_projects = @devt_projects_sorted
 
-    @fixed_cost_projects = @devt_projects.select(&:fixed_cost?).sort_by { |s| s.name.downcase }
-    @t_and_m_projects = @devt_projects.select(&:t_and_m?).sort_by { |s| s.name.downcase }
+    @fixed_cost_projects = @devt_projects.select(&:fixed_cost?)
+    @t_and_m_projects = @devt_projects.select(&:t_and_m?)
 
     load_billability_file
     load_fixed_cost_file
@@ -38,6 +34,9 @@ class ProgrammeController < ApplicationController
     if request.xhr?
       render :update do |page|
         page.replace_html :programme_project_health, :partial => "programme/project_health"
+        page.replace_html :programme_project_schedule, :partial => "programme/charts/project_schedule"
+        page.replace_html :programme_fixed_cost_projects, :partial => "programme/charts/fixed_cost_projects"
+        page.replace_html :programme_t_and_m_projects, :partial => "programme/charts/t_and_m_projects"
       end
     else
       render :template => 'programme/index'
@@ -57,14 +56,10 @@ class ProgrammeController < ApplicationController
                      :conditions => ["projects.status = ?", Project::STATUS_ACTIVE],
                      :order => sort_clause).reject { |x| x.closed? }
     @devt_projects_sorted = @projects.select(&:dev_interactive?)
-    @devt_projects = @devt_projects_sorted.sort_by { |s| s.name.downcase }
-    @issues = Hash.new
-    @devt_projects_sorted.each do |project|
-      @issues[["#{project}", project.identifier]] = project.pm_dashboard_issues.find(:all, :conditions => ["impact > ?", 2])
-    end
+    @devt_projects = @devt_projects_sorted
 
-    @fixed_cost_projects = @devt_projects.select(&:fixed_cost?).sort_by { |s| s.name.downcase }
-    @t_and_m_projects = @devt_projects.select(&:t_and_m?).sort_by { |s| s.name.downcase }
+    @fixed_cost_projects = @devt_projects.select(&:fixed_cost?)
+    @t_and_m_projects = @devt_projects.select(&:t_and_m?)
 
     load_billability_file
     load_fixed_cost_file
@@ -72,6 +67,9 @@ class ProgrammeController < ApplicationController
     if request.xhr?
       render :update do |page|
         page.replace_html :programme_project_health, :partial => "programme/project_health"
+        page.replace_html :programme_project_schedule, :partial => "programme/charts/project_schedule"
+        page.replace_html :programme_fixed_cost_projects, :partial => "programme/charts/fixed_cost_projects"
+        page.replace_html :programme_t_and_m_projects, :partial => "programme/charts/t_and_m_projects"
       end
     else
       render :template => 'programme/index'
