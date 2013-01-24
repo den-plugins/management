@@ -36,7 +36,13 @@ class ForecastJob < Struct.new(:from, :to, :accounting, :resources_no_limit, :sk
         skill_allocations[skill] += alloc unless resource.is_resigned
         resource_count[skill] ||= 0
         resource_count[skill] += 1 if !alloc.zero? and !resource.is_resigned
-        weekly_resources_count += 1
+        resignation_date = to_date_safe(resource.resignation_date)
+        hired_date = to_date_safe(resource.hired_date)
+        if resignation_date && resignation_date > week.first && hired_date && hired_date < week.last
+          weekly_resources_count += 1
+        elsif !resignation_date && hired_date && hired_date < week.last
+          weekly_resources_count += 1
+        end
         
         forecasts_this_week[resource.id] = alloc
       end
