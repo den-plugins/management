@@ -42,7 +42,7 @@ class ResourceManagementsController < ApplicationController
         when "last 6 months"
           @from, @to = (today - 6.months).beginning_of_month, (today - 1.month).end_of_month
         when "this year"
-          @from, @to = today.beginning_of_year, (today - 1.month).end_of_month
+          @from, @to = today.beginning_of_year, (today + 3.month).end_of_month
         when "last year"
           @from, @to = (today - 1.year).beginning_of_year, (today - 1.year).end_of_year
       end
