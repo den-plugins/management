@@ -137,13 +137,14 @@ module ProgrammeHelper
   end
 
   def sched_chart_data(projects, min_date)
-    scheduled, planned = [], []
+    scheduled, planned, maintenance = [], [], []
     projects.each do |project|
       pname = project.closed? ? sub_name("*** " + project.name.to_s) : sub_name(project.name.to_s)
       scheduled << (project.actual_end_date ? [project.actual_end_date.to_s, pname] : [min_date, pname])
       planned << (project.planned_end_date ? [project.planned_end_date.to_s, pname] : [min_date, pname])
+      maintenance << (project.maintenance_end && project.actual_end_date && project.actual_end_date < project.maintenance_end ? [project.maintenance_end.to_s, pname] : [min_date, pname])
     end
-    [scheduled.reverse, planned.reverse].to_json
+    [maintenance.reverse, scheduled.reverse, planned.reverse].to_json
   end
 
   def fixed_cost_projects_chart_data(projects, fixed_costs)
