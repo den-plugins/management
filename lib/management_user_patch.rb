@@ -173,10 +173,12 @@ module Management
       # for counting available hours in forecast billable data
       def available_hours(from, to, location)
         h_date, r_date = to_date_safe(hired_date), to_date_safe(resignation_date)
-        f = ((from..to).include_with_range?(h_date) ? h_date : from)
+        from_date = ((from..to).include_with_range?(h_date) ? h_date - 1.day : from - 1.day)
+        f = ((from..to).include_with_range?(h_date) ? h_date : from )
         t = ((from..to).include_with_range?(r_date) ? r_date : to)
 
-        total = ((t - f).to_i - holidays?(f, t, location)) * 8
+        total = ((t - from_date).to_i - holidays?(f, t, location)) * 8
+        total
       end
 
       def detect_holidays_in_week(location, day)
