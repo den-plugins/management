@@ -13,7 +13,7 @@
 </div>
 
 <% min_date = get_min_date(@devt_projects) %>
-<% jdata = sched_chart_data(@devt_projects, min_date) %>
+<% jdata = sched_chart_data_with_maintenance(@devt_projects, min_date) %>
 
 <script>
   <% if @devt_projects.count > 10 %>
