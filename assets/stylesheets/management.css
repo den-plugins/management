@@ -100,7 +100,7 @@ div.filter_group input, div.filter_group select {margin-right: 15px;}
 
 div.utilization_pie_chart_wrapper {width: 75%; margin: 10px auto;}
 .jqplot-pie-series.jqplot-data-label {color: black; }
-div#project_sched_chart { height: 700px!important; }
+div#project_sched_chart { height: 800px!important; }
 
 #dashboard .box { position: relative; }
 #dashboard .box .zoom { text-indent: -9999px; width: 16px; height: 16px; display: block; background: white url('/images/zoom_in.png') center center no-repeat; float: right; padding: 2px; border: 1px solid #CCC; opacity: 0.5; }
