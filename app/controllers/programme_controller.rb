@@ -7,6 +7,7 @@ class ProgrammeController < ApplicationController
   menu_item :pre_sales, :only => :pre_sales
   menu_item :maintenance, :only => :maintenance
   menu_item :outstanding_issues, :only => :outstanding_issues
+  menu_item :risk_management, :only => :risk_management
 
   before_filter :require_pmanagement
 
@@ -141,6 +142,26 @@ class ProgrammeController < ApplicationController
       end
     else
       render :template => 'programme/outstanding_issues'
+    end
+  end
+
+  def risk_management
+    @header = "Risk Management"
+    @projects = Project.find(:all, :include => [:manager],
+                             :conditions => ["projects.status = ?", Project::STATUS_ACTIVE])
+    @risk_issues = Hash.new
+    @devt_projects = @projects.sort_by { |s| s.name.downcase }
+
+    @devt_projects.each do |project|
+      @risk_issues["#{project}"] = project.risks.find(:all, :conditions => ["status <> ? AND final_risk_rating > ? ", 'C', 15])
+    end
+
+    if request.xhr?
+      render :update do |page|
+        page.replace_html :programme_project_health, :partial => "programme/project_health"
+      end
+    else
+      render :template => 'programme/risk_management'
     end
   end
 

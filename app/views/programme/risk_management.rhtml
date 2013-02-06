@@ -1,0 +1,63 @@
+<%= render :partial => "header" %>
+
+<table class="list">
+  <thead>
+  <tr style="height: 65px; background-color: #bfbfbf; border-bottom: 2px solid white;">
+    <th>Date Raised</th>
+    <th>Risk Description</th>
+    <th>Potential Effects</th>
+    <th>Mitigation/ Contingency Strategy</th>
+    <th>Owner</th>
+    <th>Due Date</th>
+    <th>Days Overdue</th>
+    <th>Status</th>
+    <th></th>
+  </tr>
+  </thead>
+  <tbody>
+
+  <% @risk_issues.each do |project, issues| %>
+      <tr style="background-color: #a9a9a9;">
+        <% unless issues.empty? %>
+            <td colspan="9"><%= project %></td>
+            <% issues.each do |issue| %>
+                <tr class="<%= cycle 'podd', 'peven' %>">
+                  <td><%= issue.created_on %></td>
+                  <td><%= issue.risk_description %></td>
+                  <td><%= issue.potential_effect %></td>
+                  <td><%= issue.mitigating_action %></td>
+                  <td><%= user_name(issue.owner) %></td>
+                  <% days_overdue = issue.target_resolution_date ? Date.today - issue.target_resolution_date.to_datetime : 0 %>
+                  <td  class="center <%= "high-impact" if issue.target_resolution_date && issue.target_resolution_date == Date.today || days_overdue > 0 %>"><%= issue.target_resolution_date %></td>
+                  <td class="center <%= "overdue" if days_overdue > 0 %>"><%= days_overdue < 0 ? 0 : days_overdue %></td>
+                  <td><%= issue.status %></td>
+                  <td align="center">
+                    <%= link_to image_tag('edit.png'), {:controller => 'risks', :action => 'update', :id => issue, :project_id => Project.find_by_name(project)},
+                                :title => l(:button_edit) %>
+                  </td>
+                </tr>
+            <% end %>
+        <% end %>
+        </tr>
+  <% end %>
+
+  </tbody>
+</table>
+
+<% content_for :header_tags do %>
+    <%= stylesheet_link_tag 'management', :plugin => 'management' %>
+    <%= stylesheet_link_tag 'jquery.jqplot.css', :plugin => 'redmine_burndown' %>
+    <%= javascript_include_tag 'dashboard.js', :plugin => 'management' %>
+    <%= javascript_include_tag 'jquery.min.js', :plugin => 'redmine_burndown' %>
+    <%= javascript_include_tag 'jquery.jqplot.js', :plugin => 'redmine_burndown' %>
+    <%= javascript_include_tag 'plugins/jqplot.barRenderer.min.js', :plugin => 'redmine_burndown' %>
+    <%= javascript_include_tag 'plugins/jqplot.canvasAxisLabelRenderer.min.js', :plugin => 'redmine_burndown' %>
+    <%= javascript_include_tag 'plugins/jqplot.canvasTextRenderer.min.js', :plugin => 'redmine_burndown' %>
+    <%= javascript_include_tag 'plugins/jqplot.categoryAxisRenderer.min.js', :plugin => 'redmine_burndown' %>
+    <%= javascript_include_tag 'plugins/jqplot.canvasAxisTickRenderer.min.js', :plugin => 'redmine_burndown' %>
+    <%= javascript_include_tag 'plugins/jqplot.cursor.min.js', :plugin => 'redmine_burndown' %>
+    <%= javascript_include_tag 'plugins/jqplot.dateAxisRenderer.min.js', :plugin => 'redmine_burndown' %>
+    <%= javascript_include_tag 'plugins/jqplot.highlighter.min.js', :plugin => 'redmine_burndown' %>
+    <%= javascript_include_tag 'plugins/jqplot.pieRenderer.min.js', :plugin => 'redmine_burndown' %>
+    <%= javascript_include_tag 'plugins/jqplot.pointLabels.min.js', :plugin => 'redmine_burndown' %>
+<% end %>
