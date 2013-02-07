@@ -13,7 +13,11 @@
 </div>
 
 <% min_date = get_min_date(@devt_projects) %>
-<% jdata = sched_chart_data_with_maintenance(@devt_projects, min_date) %>
+<% if  @header == "Projects in Warranty Period Programme Dashboard" %>
+  <% jdata = sched_chart_data_with_maintenance(@devt_projects, min_date) %>
+<% else %>
+  <% jdata = sched_chart_data(@devt_projects, min_date) %>
+<% end %>
 
 <script>
   <% if @devt_projects.count > 10 %>
@@ -28,12 +32,19 @@
             pointLabels: { show: true, location: 'w'},
             rendererOptions: {barDirection: 'horizontal', shadowOffset: 1, shadowAlpha: 0.05, barPadding: 0, barWidth: 9}
           },
-          seriesColors: ["#FF8C00", "#dc594e", "#5296d9"],
-          series: [
-            {label: "Maintenance Date"},
-            {label: "Scheduled End Date"},
-            {label: "Planned End Date"}
-          ],
+          <% if  @header == "Projects in Warranty Period Programme Dashboard" %>
+            seriesColors: ["#FF8C00", "#dc594e", "#5296d9"],
+            series: [
+              {label: "Maintenance Date"},
+              {label: "Scheduled End Date"},
+              {label: "Planned End Date"}   ],
+          <% else %>
+            seriesColors: ["#dc594e", "#5296d9"],
+            series: [
+              {label: "Scheduled End Date"},
+              {label: "Planned End Date"}   ],
+          <% end %>
+
           axes: {
             xaxis: {renderer: jQuery.jqplot.DateAxisRenderer,
                     min: <%= min_date.to_json %>,
