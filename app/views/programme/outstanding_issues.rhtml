@@ -23,8 +23,8 @@
           <tr class="<%= cycle 'podd', 'peven' %>">
             <td><%= issue.created_on %></td>
             <td><%= user_name(issue.raised_by) %></td>
-            <td><%= issue.issue_description %></td>
-            <td><%= issue.action %></td>
+            <td><p><%= textilizable issue.issue_description, :pm_dashboard_issues => issue %></p></td>
+            <td><%= textilizable issue.action, :pm_dashboard_issues => issue %></td>
             <td><%= user_name(issue.owner) %></td>
             <% days_overdue = issue.date_due ? Date.today - issue.date_due.to_datetime : 0 %>
             <td  class="center <%= "high-impact" if issue.date_due && issue.date_due == Date.today || days_overdue > 0 %>"><%= issue.date_due %></td>
