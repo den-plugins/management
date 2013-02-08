@@ -7,7 +7,7 @@ class ProgrammeController < ApplicationController
   menu_item :pre_sales, :only => :pre_sales
   menu_item :maintenance, :only => :maintenance
   menu_item :outstanding_issues, :only => :outstanding_issues
-  menu_item :risk_management, :only => :risk_management
+  menu_item :outstanding_risks, :only => :outstanding_risks
 
   before_filter :require_pmanagement
 
@@ -145,8 +145,8 @@ class ProgrammeController < ApplicationController
     end
   end
 
-  def risk_management
-    @header = "Risk Management"
+  def outstanding_risks
+    @header = "Outstanding Risks"
     @projects = Project.find(:all, :include => [:manager],
                              :conditions => ["projects.status = ?", Project::STATUS_ACTIVE])
     @risk_issues = Hash.new
@@ -161,7 +161,7 @@ class ProgrammeController < ApplicationController
         page.replace_html :programme_project_health, :partial => "programme/project_health"
       end
     else
-      render :template => 'programme/risk_management'
+      render :template => 'programme/outstanding_risks'
     end
   end
 

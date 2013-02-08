@@ -57,7 +57,7 @@ Redmine::Plugin.register :management do
     menu.push :pre_sales, {:controller => 'programme', :action => 'pre_sales'}, :caption => 'Pre-Sales'
     menu.push :maintenance, {:controller => 'programme', :action => 'maintenance'}, :caption => 'Projects in Warranty Period'
     menu.push :outstanding_issues, {:controller => 'programme', :action => 'outstanding_issues'}, :caption => 'Outstanding Issues'
-    menu.push :risk_management, {:controller => 'programme', :action => 'risk_management'}, :caption => 'Risk Management'
+    menu.push :outstanding_risks, {:controller => 'programme', :action => 'outstanding_risks'}, :caption => 'Outstanding Risks'
   end
 
 end
