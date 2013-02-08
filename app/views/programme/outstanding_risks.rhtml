@@ -22,7 +22,7 @@
             <td colspan="9"><%= project %></td>
             <% risks.each do |risk| %>
                 <tr class="<%= cycle 'podd', 'peven' %>">
-                  <td><%= risk.created_on %></td>
+                  <td><%= risk.created_on.strftime("%Y-%m-%d") %></td>
                   <td><%= textilizable risk.risk_description, :risks => risk %></td>
                   <td><%= textilizable risk.potential_effect, :risks => risk %></td>
                   <td><%= textilizable risk.mitigating_action, :risks => risk %></td>
