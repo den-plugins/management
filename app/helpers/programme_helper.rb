@@ -88,6 +88,24 @@ module ProgrammeHelper
     return color
   end
 
+  def color_code_for_billability(project)
+    return "not-applicable" if project.category.eql?("Internal Project") || display_by_billing_model(project).eql?("fixed")
+    if project.planned_start_date
+        project_id = "billability_#{project.id}"
+        billability = (@billabilities[project_id] ? @billabilities[project_id]["total_percent_billability_week"] : 0)
+        if billability < 85
+          code = "red"
+        elsif billability >= 85 && billability < 88
+          code = "yellow"
+        else
+          code = "green"
+        end
+    else
+      code = "nocolor"
+    end
+    code
+  end
+
   def color_code_for_warranty(project)
     project.in_warranty? ? "warrantied" : ""
   end
