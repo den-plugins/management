@@ -320,7 +320,7 @@ module ResourceManagementsHelper
   end
 
   def color_code_log_time(user)
-    "lred" if user[:total_hours].to_f < user[:forecasted_hours_on_selected].to_f
+    "lred" if user[:total_hours].to_f.round(2) < user[:forecasted_hours_on_selected].to_f
   end
   
   def class_of_resignation(user)
