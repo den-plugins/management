@@ -1,0 +1,1 @@
+map.connect 'resource_managements/forecast_billable_detail', :controller => 'resource_managements', :action => 'forecasts_billable_detail'

@@ -181,6 +181,16 @@ module Management
         total
       end
 
+      def available_hours_with_holidays(from, to, location)
+        h_date, r_date = to_date_safe(hired_date), to_date_safe(resignation_date)
+        from_date = ((from..to).include_with_range?(h_date) ? h_date - 1.day : from - 1.day)
+        f = ((from..to).include_with_range?(h_date) ? h_date : from )
+        t = ((from..to).include_with_range?(r_date) ? r_date : to)
+
+        total = ((t - from_date).to_i - weekend?(f, t, location)) * 8
+        total
+      end
+
       def detect_holidays_in_week(location, day)
         locations = [6]
         locations << location if location
@@ -202,6 +212,15 @@ module Management
 
         holidays.each do |h|
           count += 1 if h.event_date.wday != 0 && h.event_date.wday != 6
+        end
+
+        return count
+      end
+
+      def weekend?(from, to, location)
+        count = 0
+        (from..to).each do |r|
+          count += 1 if r.wday == 0 || r.wday == 6
         end
 
         return count

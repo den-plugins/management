@@ -90,6 +90,15 @@ function initialize(){
               jQuery('#forecast_cost_tooltip').hide();
             }
           );
+
+            jQuery('#forecast_billable_chart').bind('jqplotDataClick',
+                    function (ev, seriesIndex, pointIndex, data) {
+                      var month_data = jdata[0][data[0]-1];
+                        window.open("resource_managements/forecast_billable_detail?tick=" + month_data, '_blank'
+                        );
+                    }
+            );
+
           if(id !== 'zoom_chart') {
             this.plot = plot;
           }
