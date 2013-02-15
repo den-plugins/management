@@ -1,188 +1,187 @@
 <% form_remote_tag(:url => {:action => 'load_chart', :chart => 'forecast_billable', :total_users => @total_users}) do %>
-  <%= hidden_field_tag "selection", "", :id => "selection_hidden" %>
+    <%= hidden_field_tag "selection", "", :id => "selection_hidden" %>
 <% end %>
 
 <% if @total_users > 0 %>
-<div id="forecast_cost_tooltip" class="chart_pseudo_tooltip"></div>
-<script type="text/javascript">
-jQuery(function(){
-  initialize();
-});
-function initialize(){
-  jQuery("#forecast_billable_header h3").css({'margin': '0px', 'padding': '0px'});
-  jQuery("#selection").removeAttr("onchange").unbind('change').change(function(){
-    jQuery('#notif').remove();
-    jQuery('#selection_hidden').val(jQuery('#selection').val()).closest('form').submit();
-    loadingIndicator();
-    jQuery("#forecast_billable_header span.as_of").html("");
-    jQuery("#forecast_billable_header a.refresh").html("");
-  });
-  jQuery('#notif').remove();
-  <% if params[:refresh] %>
-    <% if @job.nil? %>
-      notif(-1);
-    <% else %>
-      notif(1);
-    <% end %>
-  <% end %>
-  var jdata = new Array(),
-      jcount = 0;
+    <div id="forecast_cost_tooltip" class="chart_pseudo_tooltip"></div>
+    <script type="text/javascript">
+        jQuery(function () {
+            initialize();
+        });
+        function initialize() {
+            jQuery("#forecast_billable_header h3").css({'margin': '0px', 'padding': '0px'});
+            jQuery("#selection").removeAttr("onchange").unbind('change').change(function () {
+                jQuery('#notif').remove();
+                jQuery('#selection_hidden').val(jQuery('#selection').val()).closest('form').submit();
+                loadingIndicator();
+                jQuery("#forecast_billable_header span.as_of").html("");
+                jQuery("#forecast_billable_header a.refresh").html("");
+            });
+            jQuery('#notif').remove();
+            <% if params[:refresh] %>
+            <% if @job.nil? %>
+            notif(-1);
+            <% else %>
+            notif(1);
+            <% end %>
+            <% end %>
+            var jdata = new Array(),
+                    jcount = 0;
 
-  loadingIndicator();
-  jQuery.getJSON('resource_managements/load_json?selection=<%= @selection %>&chart=forecast_billable', function(json_data) {
-    jdata = json_data.<%= @selection.downcase.gsub(' ', '_') %>;
-    jcount = Object.keys(json_data).length;
+            loadingIndicator();
+            jQuery.getJSON('resource_managements/load_json?selection=<%= @selection %>&chart=forecast_billable',function (json_data) {
+                jdata = json_data.<%= @selection.downcase.gsub(' ', '_') %>;
+                jcount = Object.keys(json_data).length;
 
-    if(jdata && jdata.length > 0){
-      if(jdata[0].length > 7) jQuery("#forecast_billable_chart").width((jdata[0].length * 55) + 'px');
-      var asOf = jQuery("#forecast_billable_header span.as_of");
-      (jdata[2])? asOf.html('as of ' + jdata[2]) : asOf.html("");
-      jQuery("#forecast_billable_chart").empty();
+                if (jdata && jdata.length > 0) {
+                    if (jdata[0].length > 7) jQuery("#forecast_billable_chart").width((jdata[0].length * 55) + 'px');
+                    var asOf = jQuery("#forecast_billable_header span.as_of");
+                    (jdata[2]) ? asOf.html('as of ' + jdata[2]) : asOf.html("");
+                    jQuery("#forecast_billable_chart").empty();
 
-      charts.forecast_billable = {
-        render: function(id) {
-          var plot = jQuery.jqplot(id, jdata[1], {
-              seriesDefaults:{
-                  renderer:jQuery.jqplot.BarRenderer,
-                  rendererOptions: {fillToZero: true, barPadding: 1, barWidth: 9}
-              },
-              seriesColors: ["#dc594e", "#5296d9", "#6fec6f"],
-              series:[
-                  {label:'Forecast'},
-                  {label:'Billable'},
-                  {label:'Available'}
-              ],
-              legend: { show: true, location: 'nw' },
-              axes: {
-                  xaxis: {
-                      renderer: jQuery.jqplot.CategoryAxisRenderer,
-                      ticks: jdata[0],
-                      tickRenderer: jQuery.jqplot.CanvasAxisTickRenderer,
-                      tickOptions: {angle: -45, fontSize: '7pt', showGridline: false}
-                  },
-                  yaxis: {
-                      label: "Hours",
-                      labelRenderer: jQuery.jqplot.CanvasAxisLabelRenderer,
-                      tickOptions: {formatString: '%.2f%d'}
-                  }
-              },
-              grid: {gridLineColor: '#c7c7c7'}
-          });
-          // custom highlighter for chart since jqplot has a bug on highlighter when using BarRenderer
-          jQuery("#" + id).unbind('jqplotDataHighlight').bind('jqplotDataHighlight',
-            function (ev, seriesIndex, pointIndex, data ) {
-              var tooltipLeft = parseInt(ev.pageX) - jQuery(window).scrollLeft(),
-                tooltipTop = parseInt(ev.pageY) - jQuery(window).scrollTop(),
-                tooltipText = numberWithCommas(data[1]),
-                tooltip = jQuery('#forecast_cost_tooltip');
-              if(seriesIndex === 0 || seriesIndex === 1) { // for forecast and billable only
-                tooltipText += '<br /><strong>' +
-                  (100.0 * (parseFloat(data[1]) / parseFloat(plot.data[2][pointIndex]))).toFixed(2) + '%' +
-                  '</strong>';
-              }
-              tooltip.html(tooltipText);
-              tooltipLeft -= tooltip.width();
-              tooltipTop += tooltip.height();
-              tooltip.css({ 'z-index': '99999', 'left': tooltipLeft + 'px', 'top': tooltipTop + 'px', 'position': 'fixed' }).show();
-            }
-          ).unbind('jqplotDataUnhighlight').bind('jqplotDataUnhighlight',
-            function (ev) {
-              jQuery('#forecast_cost_tooltip').hide();
-            }
-          );
+                    charts.forecast_billable = {
+                        render: function (id) {
+                            var plot = jQuery.jqplot(id, jdata[1], {
+                                seriesDefaults: {
+                                    renderer: jQuery.jqplot.BarRenderer,
+                                    rendererOptions: {fillToZero: true, barPadding: 1, barWidth: 9}
+                                },
+                                seriesColors: ["#dc594e", "#5296d9", "#6fec6f"],
+                                series: [
+                                    {label: 'Forecast'},
+                                    {label: 'Billable'},
+                                    {label: 'Available'}
+                                ],
+                                legend: { show: true, location: 'nw' },
+                                axes: {
+                                    xaxis: {
+                                        renderer: jQuery.jqplot.CategoryAxisRenderer,
+                                        ticks: jdata[0],
+                                        tickRenderer: jQuery.jqplot.CanvasAxisTickRenderer,
+                                        tickOptions: {angle: -45, fontSize: '7pt', showGridline: false}
+                                    },
+                                    yaxis: {
+                                        label: "Hours",
+                                        labelRenderer: jQuery.jqplot.CanvasAxisLabelRenderer,
+                                        tickOptions: {formatString: '%.2f%d'}
+                                    }
+                                },
+                                grid: {gridLineColor: '#c7c7c7'}
+                            });
+                            // custom highlighter for chart since jqplot has a bug on highlighter when using BarRenderer
+                            jQuery("#" + id).unbind('jqplotDataHighlight').bind('jqplotDataHighlight',
+                                    function (ev, seriesIndex, pointIndex, data) {
+                                        var tooltipLeft = parseInt(ev.pageX) - jQuery(window).scrollLeft(),
+                                                tooltipTop = parseInt(ev.pageY) - jQuery(window).scrollTop(),
+                                                tooltipText = numberWithCommas(data[1]),
+                                                tooltip = jQuery('#forecast_cost_tooltip');
+                                        if (seriesIndex === 0 || seriesIndex === 1) { // for forecast and billable only
+                                            tooltipText += '<br /><strong>' +
+                                                    (100.0 * (parseFloat(data[1]) / parseFloat(plot.data[2][pointIndex]))).toFixed(2) + '%' +
+                                                    '</strong>';
+                                        }
+                                        tooltip.html(tooltipText);
+                                        tooltipLeft -= tooltip.width();
+                                        tooltipTop += tooltip.height();
+                                        tooltip.css({ 'z-index': '99999', 'left': tooltipLeft + 'px', 'top': tooltipTop + 'px', 'position': 'fixed' }).show();
+                                    }
+                            ).unbind('jqplotDataUnhighlight').bind('jqplotDataUnhighlight',
+                                    function (ev) {
+                                        jQuery('#forecast_cost_tooltip').hide();
+                                    }
+                            );
 
-            jQuery('#forecast_billable_chart').bind('jqplotDataClick',
-                    function (ev, seriesIndex, pointIndex, data) {
-                      var month_data = jdata[0][data[0]-1];
-                        window.open("resource_managements/forecast_billable_detail?tick=" + month_data, '_blank'
-                        );
+                            if (id !== 'zoom_chart') {
+                                this.plot = plot;
+                            }
+                            jQuery('#forecast_billable_chart').bind('jqplotDataClick',
+                                    function (ev, seriesIndex, pointIndex, data) {
+                                        var month_data = jdata[0][data[0] - 1];
+                                        window.open("resource_managements/forecast_billable_detail?tick=" + month_data, '_blank'
+                                        );
+                                    }
+                            );
+                            return plot;
+                        }
+                    };
+                    charts.forecast_billable.render('forecast_billable_chart');
+
+                    var refresh = jQuery("#forecast_billable_header a.refresh");
+                    refresh.html('<%= image_tag('reload.png') %>');
+                    refresh.unbind('click').click(function () {
+                        jQuery('#notif').remove();
+                        jQuery("#forecast_billable_chart").empty();
+                        jQuery.ajax({
+                            type: "POST",
+                            url: jQuery('#selection_hidden').val(jQuery('#selection').val()).closest('form').attr('action'),
+                            data: "{'selection': '<%= @selection %>', 'refresh':'true', 'data':" + JSON.stringify(json_data) + "}",
+                            contentType: "application/json; charset=utf-8",
+                            beforeSend: function (xhr) {
+                                refresh.unbind('click');
+                                refresh.html('<%= image_tag('preload.gif', :width => '16', :plugin => 'management') %>');
+                                jQuery("#forecast_billable_chart").css({'height': '0px'});
+                            },
+                            success: function () {
+                                refresh.html('<%= image_tag('reload.png') %>');
+                            },
+                            error: function () {
+                                notif(0);
+                            }
+                        });
+                        return false;
+                    });
+                } else {
+                    if (jcount > 0) {
+                        notif(jcount);
+                        jQuery.ajax({
+                            type: "POST",
+                            url: jQuery('#selection_hidden').val(jQuery('#selection').val()).closest('form').attr('action'),
+                            data: "{'selection': '<%= @selection %>', 'data':" + JSON.stringify(json_data) + "}",
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json"
+                        });
+                        jQuery("#forecast_billable_chart").empty();
+                    } else {
+                        notif(1);
+                        setTimeout(function () {
+                            jQuery('#selection_hidden').val(jQuery('#selection').val()).closest('form').submit();
+                        }, 20000);
                     }
-            );
+                }
+            }).error(function () {
+                        notif(0);
+                    });
 
-          if(id !== 'zoom_chart') {
-            this.plot = plot;
-          }
-          return plot;
         }
-      };
-      charts.forecast_billable.render('forecast_billable_chart');
 
-      var refresh = jQuery("#forecast_billable_header a.refresh");
-      refresh.html('<%= image_tag('reload.png') %>');
-      refresh.unbind('click').click(function(){
-        jQuery('#notif').remove();
-        jQuery("#forecast_billable_chart").empty();
-        jQuery.ajax({
-          type: "POST",
-          url: jQuery('#selection_hidden').val(jQuery('#selection').val()).closest('form').attr('action'),
-          data: "{'selection': '<%= @selection %>', 'refresh':'true', 'data':"+ JSON.stringify(json_data) +"}",
-          contentType: "application/json; charset=utf-8",
-          beforeSend: function( xhr ) {
-            refresh.unbind('click');
-            refresh.html('<%= image_tag('preload.gif', :width => '16', :plugin => 'management') %>');
-            jQuery("#forecast_billable_chart").css({'height':'0px'});
-          },
-          success: function() {
-            refresh.html('<%= image_tag('reload.png') %>');
-          },
-          error: function() {
-            notif(0);
-          }
-        });
-        return false;
-      });
-    }else{
-      if(jcount > 0){
-        notif(jcount);
-        jQuery.ajax({
-          type: "POST",
-          url: jQuery('#selection_hidden').val(jQuery('#selection').val()).closest('form').attr('action'),
-          data: "{'selection': '<%= @selection %>', 'data':"+ JSON.stringify(json_data) +"}",
-          contentType: "application/json; charset=utf-8",
-          dataType: "json"
-        });
-        jQuery("#forecast_billable_chart").empty();
-      }else{
-        notif(1);
-        setTimeout(function(){
-         jQuery('#selection_hidden').val(jQuery('#selection').val()).closest('form').submit();
-        }, 20000);
-      }
-    }
-  }).error(function(){
-    notif(0);
-  });
+        function numberWithCommas(x) {
+            x = parseFloat(x.toFixed(2));
+            return x.toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",");
+        }
 
-}
+        function notif(flag) {
+            jQuery('#notif').remove();
+            if (flag > 0) {
+                jQuery("#forecast_billable_chart").css({'height': '0px'});
+                jQuery('<div id="notif" class="flash notice">Process enqueued...</div>').insertBefore("#forecast_billable_chart");
+            } else if (flag == 0) {
+                jQuery("#forecast_billable_chart").css({'height': '0px'});
+                jQuery('<div id="notif" class="flash error">Something went wrong. Please reload page.</div>').insertBefore("#forecast_billable_chart");
+            } else {
+                jQuery("#forecast_billable_chart").css({'height': '0px'});
+                jQuery('<div id="notif" class="flash notice">Process already in queue.</div>').insertBefore("#forecast_billable_chart");
+            }
+        }
 
-function numberWithCommas(x) {
-  x = parseFloat(x.toFixed(2));
-  return x.toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",");
-}
-
-function notif(flag){
-  jQuery('#notif').remove();
-  if( flag > 0 ){
-    jQuery("#forecast_billable_chart").css({'height':'0px'});
-    jQuery('<div id="notif" class="flash notice">Process enqueued...</div>').insertBefore("#forecast_billable_chart");
-  }else if( flag == 0 ){
-    jQuery("#forecast_billable_chart").css({'height':'0px'});
-    jQuery('<div id="notif" class="flash error">Something went wrong. Please reload page.</div>').insertBefore("#forecast_billable_chart");
-  }else{
-    jQuery("#forecast_billable_chart").css({'height':'0px'});
-    jQuery('<div id="notif" class="flash notice">Process already in queue.</div>').insertBefore("#forecast_billable_chart");
-  }
-}
-
-function loadingIndicator(){
-  var chartCont = jQuery("#forecast_billable_chart");
-  chartCont.empty().width(chartCont.parent().width()).height('300px');
-  var top = (parseFloat(chartCont.height()) - 10) / 2,
-      left = (parseFloat(chartCont.width()) - 25) / 2;
-  chartCont.append('<span style="position:relative;top:'+ top +'px;left:'+ left +'px"><%= image_tag('ajax-loader.gif', :width => '25px', :plugin => 'management') %><span>');
-}
-</script>
+        function loadingIndicator() {
+            var chartCont = jQuery("#forecast_billable_chart");
+            chartCont.empty().width(chartCont.parent().width()).height('300px');
+            var top = (parseFloat(chartCont.height()) - 10) / 2,
+                    left = (parseFloat(chartCont.width()) - 25) / 2;
+            chartCont.append('<span style="position:relative;top:' + top + 'px;left:' + left + 'px"><%= image_tag('ajax-loader.gif', :width => '25px', :plugin => 'management') %><span>');
+        }
+    </script>
 
 <% else %>
-  <p class='nodata'><%= l(:label_no_data) %></p>
+    <p class='nodata'><%= l(:label_no_data) %></p>
 <% end %>
