@@ -13,9 +13,9 @@ module ProgrammeHelper
   def code_by_billability_rate(percent)
     if percent
       case
-        when percent > 85; "green"
-        when (80 ... 85) === percent; "yellow"
-        when (0 ... 80) === percent; "red"
+        when percent > 88; "green"
+        when (85 ... 88) === percent; "yellow"
+        when (0 ... 85) === percent; "red"
       end
     end
   end

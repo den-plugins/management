@@ -6,7 +6,6 @@
     <%= sort_header_tag_without_update('name', :caption => l(:field_project), :style => "width: 47%") %>
     <th class="rotated ff">Cost</th>
     <th class="rotated ff">Schedule</th>
-    <th class="rotated ff">Billability</th>
     <th class="rotated ff">Efficiency</th>
     <th class="rotated ff">Risk</th>
     <th class="rotated ff">Issue</th>
@@ -22,7 +21,6 @@
     </td>
     <td><span class="circle <%= color_code_for_cost_status project %>"></span></td>
     <td><span class="circle <%= color_code_for_schedule_status project %>"></span></td>
-    <td><span class="circle <%= color_code_for_billability project %>"></span></td>
     <td class=""></td>
     <td><span class="circle <%= color_code_for_risk_average project %>"></span></td>
     <td><span class="circle <%= color_code_for_issue_average project %>"></span></td>
