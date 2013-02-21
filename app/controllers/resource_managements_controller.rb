@@ -738,7 +738,7 @@ class ResourceManagementsController < ApplicationController
     total_forecast = resources.sum {|a| a.capped_days_and_cost_report((from..to), nil, false, acctg)}
     total_rate = resources.sum {|a| a.get_rate((from..to),false, false, acctg)}
     #billed_amount = resources.sum {|a| a.get_rate((from..to),true, false, acctg)}
-    percent = "%.2f" % (total_forecast / available * 100).to_f
+    percent = available.eql?(0) ? 0 : "%.2f" % (total_forecast / available * 100).to_f
     available_hours = available * 8
     available_hours_with_holidays = available_with_holidays * 8
     project_allocation = total_forecast * 8
