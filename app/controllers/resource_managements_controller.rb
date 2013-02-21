@@ -32,9 +32,11 @@ class ResourceManagementsController < ApplicationController
     if params[:chart] == "forecast_billable"
       @users = User.engineers.find(:all, :order => "lastname ASC")
       @total_users = params[:total_users].to_i
-      @selection = (params[:selection].blank? ? "last 6 months" : params[:selection])
+      @selection = (params[:selection].blank? ? "current" : params[:selection])
       today = Date.today
       case @selection
+        when "current"
+          @from, @to = (today - 2.month).beginning_of_month, (today + 3.month).end_of_month
         when "last month"
           @from, @to = (today - 1.month).beginning_of_month, (today - 1.month).end_of_month
         when "last 3 months"

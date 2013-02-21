@@ -97,7 +97,7 @@
     </div>
 
     <div class="box">
-      <% options = ["last month", "last 3 months", "last 6 months", "this year", "last year"] %>
+      <% options = ["current", "last month", "last 3 months", "last 6 months", "this year", "last year"] %>
       <div id='forecast_billable_header'>
         <div style="float:left; width:60%; display:inline;">
         <h3>Available vs Forecast vs Billable</h3>
@@ -105,7 +105,7 @@
         </div>
         <div id="forecast_billable_controls" style="float:right; display:inline;">
         <a href="#" class="refresh" title="Refresh" style="float:left; margin:6px;"></a>
-        <%= select_tag "selection", options_for_select(options, options[2]) %>
+        <%= select_tag "selection", options_for_select(options, options[0]) %>
         </div>
       </div>
       <div class="auto_scroll_x"><div id="forecast_billable_chart"></div></div>
