@@ -280,6 +280,10 @@ class ResourceManagementsController < ApplicationController
 
   def forecasts_billable_detail
     @a = Hash.new
+    @total_billable_hours = 0
+    @total_forecasted_hours = 0
+    @billable_resources_count = 0
+    @total_available_hours = 0
     tick = "#{params[:tick]}"
     @tick = tick.split(/ /)
     month = Date::ABBR_MONTHNAMES.index(@tick[0])
@@ -293,6 +297,55 @@ class ResourceManagementsController < ApplicationController
       end
     end
     render :template => 'resource_managements/forecasts_billable_detail.rhtml', :layout => !request.xhr?
+  end
+
+  def export
+    @users = User.engineers.find(:all, :order => "lastname ASC")
+    @a = Hash.new
+    @total_billable_hours = 0
+    @total_forecasted_hours = 0
+    @billable_resources_count = 0
+    @total_available_hours = 0
+    tick = "#{params[:tick]}"
+    @tick = tick.split(/ /)
+    month = Date::ABBR_MONTHNAMES.index(@tick[0])
+    from = Date.new(@tick[1].to_i, month, 1)
+    to = from.end_of_month
+    @users = User.engineers.find(:all, :order => "lastname ASC")
+    @users.each do |u|
+      h_date, r_date = to_date_safe(u.hired_date), to_date_safe(u.resignation_date)
+      unless (h_date && h_date > to) || (r_date && r_date < from)
+        compute_details((from..to), u.members.all, "billable")
+      end
+    end
+
+    users_csv = FasterCSV.generate do |csv|
+      # header row
+      csv << ['','','','','','',"Total Billable Hours", @total_billable_hours]
+      csv << ['','','','','','',"Billable Resources", @billable_resources_count]
+      csv << ['','','','','','',"Expected Billable Hours"]
+      csv << ['','','','','','',"Expected Billable Revenue",'','',"Total Forecasted Hours", @total_forecasted_hours]
+      csv << ['','','','','','',"% Billability", "%.2f" % (@total_billable_hours/@total_available_hours * 100),'',"% Forecast Allocation",  "%.2f" % (@total_forecasted_hours/@total_available_hours * 100)]
+      csv << ["Firstname", "Lastname", "Role", "Location", "Hired Date", "End Date", "Status", "Allocation", "Days",
+              "Avail Hrs", "Days (Excl Hol)", "Available hours (Excl Hol)", "Rate", "Billable Revenue", "Project Allocation",
+              "Allocation Cost", "SOW Rate", "Variance", "Billed Hours", "Billed Amount", "Variance"]
+
+      # data rows
+      @users.each do |user|
+        if @a["#{user.login}"]
+        csv << [@a["#{user.login}"][:firstname],@a["#{user.login}"][:lastname], @a["#{user.login}"][:skill],
+            @a["#{user.login}"][:location], @a["#{user.login}"][:hired_date], @a["#{user.login}"][:end_date] ? @a["#{user.login}"][:end_date] : "",
+            "100%", @a["#{user.login}"][:status], @a["#{user.login}"][:available_with_holidays],
+            @a["#{user.login}"][:available_hours_with_holidays], @a["#{user.login}"][:available_days],
+            @a["#{user.login}"][:available_hours], '', '', @a["#{user.login}"][:project_allocation],
+            '', '',  @a["#{user.login}"][:project_allocation] - @a["#{user.login}"][:available_hours],
+            @a["#{user.login}"][:billable_hours], '',
+            @a["#{user.login}"][:billable_hours] - @a["#{user.login}"][:available_hours]]
+        end
+      end
+    end
+
+    send_data(users_csv, :type => 'text/csv', :filename => "#{params[:tick].gsub(' ', '_')}details.csv")
   end
 
   private
@@ -679,7 +732,7 @@ class ResourceManagementsController < ApplicationController
     available_with_holidays = user.available_hours_with_holidays(week.first, week.last, user.location)/8
     total_forecast = resources.sum {|a| a.capped_days_and_cost_report((from..to), nil, false, acctg)}
     total_rate = resources.sum {|a| a.get_rate((from..to),false, false, acctg)}
-    total_sow_rate = resources.sum {|a| a.get_rate((from..to),true, false, acctg)}
+    #billed_amount = resources.sum {|a| a.get_rate((from..to),true, false, acctg)}
     percent = "%.2f" % (total_forecast / available * 100).to_f
     available_hours = available * 8
     available_hours_with_holidays = available_with_holidays * 8
@@ -689,15 +742,18 @@ class ResourceManagementsController < ApplicationController
       @a["#{user.login}"] = { :lastname => user.lastname, :firstname => user.firstname, :skill => user.skill, :location => user.location,
                               :hired_date => user.hired_date, :end_date => user.resignation_date, :status => user.employee_status,
                               :allocation => percent, :available_with_holidays => available_with_holidays, :available_hours_with_holidays => available_hours_with_holidays,
-                              :available_days => available, :available_hours => available_hours, :rate => total_rate, :billable_hours => billable_hours,
-                              :sow_rate => total_sow_rate, :project_allocation => project_allocation}
+                              :available_days => available, :available_hours => available_hours, :billable_hours => billable_hours,
+                              :project_allocation => project_allocation}
     else
       @a["#{user.login}"] = { :lastname => user.lastname, :firstname => user.firstname, :skill => user.skill, :location => user.location,
                               :hired_date => user.hired_date, :end_date => user.resignation_date, :status => user.employee_status,
                               :allocation => percent, :available_with_holidays => available_with_holidays, :available_hours_with_holidays => available_hours_with_holidays,
                               :available_days => available, :available_hours => available_hours, :rate => total_rate, :billable_hours => billable_hours,
-                              :sow_rate => total_sow_rate, :project_allocation => project_allocation}
+                              :project_allocation => project_allocation}
     end
-
+    @total_billable_hours += billable_hours
+    @billable_resources_count += 1 if billable_hours > 0
+    @total_forecasted_hours += project_allocation
+    @total_available_hours += available_hours
   end
 end

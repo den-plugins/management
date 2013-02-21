@@ -2,56 +2,10 @@
 
 <h2><%= "#{params[:tick]} Details" %></h2>
 
+<%= link_to 'Download CSV', "/resource_managements/forecast_billable_detail/export?tick=#{params[:tick]}" %>
+
 <table>
-<thead>
-<tr style="height: 65px; background-color: #bfbfbf; border-bottom: 2px solid white;">
-<th>Name</th>
-<th>Role</th>
-<th>Location</th>
-<th>Hired Date</th>
-<th>End Date</th>
-<th>Status</th>
-<th style="background-color: #6fec6f;">Allocation</th>
-<th style="background-color: #6fec6f;">Days</th>
-<th style="background-color: #6fec6f;">Avail Hrs</th>
-<th style="background-color: #6fec6f;">Days (Excl Hol)</th>
-<th style="background-color: #6fec6f;">Available hours (Excl Hol)</th>
-<th style="background-color: #6fec6f;">Rate</th>
-<th style="background-color: #6fec6f;">Billable Revenue</th>
-<th style="background-color: #dc594e;">Project Allocation</th>
-<th style="background-color: #dc594e;">Allocation Cost</th>
-<th style="background-color: #dc594e;">SOW Rate</th>
-<th style="background-color: #dc594e;">Variance</th>
-<th style="background-color: #5296d9;">Billed Hours</th>
-<th style="background-color: #5296d9;">Billed Amount</th>
-<th style="background-color: #5296d9;">Variance</th>
-</tr>
-</thead>
-<tbody>
-<% @users.each do |user| %>
-<% if @a["#{user.login}"] %>
-<tr class="<%= cycle 'odd', 'even' %>">
-  <td><%= "#{@a["#{user.login}"][:lastname]}, #{@a["#{user.login}"][:firstname]}" %></td>
-  <td><%= "#{@a["#{user.login}"][:skill]}" %></td>
-  <td><%= "#{@a["#{user.login}"][:location]}" %></td>
-  <td><%= "#{@a["#{user.login}"][:hired_date]}" %></td>
-  <td><%= "#{@a["#{user.login}"][:end_date]}" %></td>
-  <td><%= "#{@a["#{user.login}"][:status]}" %></td>
-  <td>100%</td>
-  <td><%= "#{@a["#{user.login}"][:available_with_holidays]}" %></td>
-  <td><%= "#{@a["#{user.login}"][:available_hours_with_holidays]}" %></td>
-  <td><%= "#{@a["#{user.login}"][:available_days]}" %></td>
-  <td><%= "#{@a["#{user.login}"][:available_hours]}" %></td>
-  <td><%= "#{@a["#{user.login}"][:rate]}" %></td>
-  <td><%= "#{@a["#{user.login}"][:available_hours] * @a["#{user.login}"][:rate]}" %></td>
-  <td><%= "#{@a["#{user.login}"][:project_allocation]}" %></td>
-  <td><%= "#{@a["#{user.login}"][:project_allocation] * @a["#{user.login}"][:rate]}" %></td>
-  <td><%= "#{@a["#{user.login}"][:sow_rate]}" %></td>
-  <td><%= "#{@a["#{user.login}"][:project_allocation] - @a["#{user.login}"][:available_hours]}" %></td>
-  <td><%= "#{@a["#{user.login}"][:billable_hours]}" %></td>
-  <td><%= "#{@a["#{user.login}"][:billable_hours] * @a["#{user.login}"][:sow_rate]}" %></td>
-  <td><%= "#{@a["#{user.login}"][:billable_hours] - @a["#{user.login}"][:available_hours]}" %></td>
-</tr>
-<% end %>
-<% end %>
+  <%= render :partial => 'resource_managements/forecasts_billable_detail/header' %>
+  <%= render :partial => 'resource_managements/forecasts_billable_detail/list' %>
 </table>
+
