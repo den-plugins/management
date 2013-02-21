@@ -279,6 +279,10 @@ class ResourceManagementsController < ApplicationController
   end
 
   def forecasts_billable_detail
+    sort_clear
+    sort_init "lastname"
+    sort_update %w(lastname role location)
+
     @a = Hash.new
     @total_billable_hours = 0
     @total_forecasted_hours = 0
@@ -289,7 +293,7 @@ class ResourceManagementsController < ApplicationController
     month = Date::ABBR_MONTHNAMES.index(@tick[0])
     from = Date.new(@tick[1].to_i, month, 1)
     to = from.end_of_month
-    @users = User.engineers.find(:all, :order => "lastname ASC")
+    @users = User.engineers.find(:all, :order => sort_clause)
     @users.each do |u|
       h_date, r_date = to_date_safe(u.hired_date), to_date_safe(u.resignation_date)
       unless (h_date && h_date > to) || (r_date && r_date < from)
@@ -301,6 +305,7 @@ class ResourceManagementsController < ApplicationController
 
   def export
     @users = User.engineers.find(:all, :order => "lastname ASC")
+    sort_clause = params[:order]
     @a = Hash.new
     @total_billable_hours = 0
     @total_forecasted_hours = 0
@@ -311,7 +316,7 @@ class ResourceManagementsController < ApplicationController
     month = Date::ABBR_MONTHNAMES.index(@tick[0])
     from = Date.new(@tick[1].to_i, month, 1)
     to = from.end_of_month
-    @users = User.engineers.find(:all, :order => "lastname ASC")
+    @users = User.engineers.find(:all, :order => sort_clause)
     @users.each do |u|
       h_date, r_date = to_date_safe(u.hired_date), to_date_safe(u.resignation_date)
       unless (h_date && h_date > to) || (r_date && r_date < from)
