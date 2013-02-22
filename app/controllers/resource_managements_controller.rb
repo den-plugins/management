@@ -766,7 +766,7 @@ class ResourceManagementsController < ApplicationController
                               :project_allocation => project_allocation}
     end
     @total_billable_hours += billable_hours
-    @billable_resources_count += 1 if billable_hours > 0
+    @billable_resources_count += 1 if available_hours > 0
     @total_forecasted_hours += project_allocation
     @total_available_hours += available_hours
     @total_available_hours_with_holidays += available_hours_with_holidays
