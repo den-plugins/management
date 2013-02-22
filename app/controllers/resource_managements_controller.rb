@@ -283,7 +283,7 @@ class ResourceManagementsController < ApplicationController
   def forecasts_billable_detail
     sort_clear
     sort_init "lastname"
-    sort_update %w(lastname role location)
+    sort_update %w(lastname skill location)
 
     @a = Hash.new
     @total_billable_hours = 0
