@@ -16,7 +16,7 @@
             <th><%= display_week(week) %></th>
         </tr></thead>
         <% @members.each do |member| %>
-          <% if member.user.is_engineering && (member.resource_allocations.blank? == false && member.resource_allocations.last.end_date >= 1.month.ago.to_date rescue false) %>
+          <% if member.user.is_engineering && (member.resource_allocations.blank? == false && member.resource_allocations.last.end_date > 1.month.ago.to_date rescue false) %>
             <% member_days_cost = member.days_and_cost(week).to_f %>
             <tr class="<%= cycle('even', 'odd', :name => 'week_days') %> <%= allocation_to_class(member_days_cost, member.is_shadowed?(week.last)) %>">
               <td><%= member_days_cost %></td>
