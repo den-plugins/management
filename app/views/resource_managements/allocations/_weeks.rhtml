@@ -23,9 +23,9 @@
             </tr>
             <% categ = member.project.category.to_s %>
             <% categories_count[categ] += member_days_cost if !categories_count[categ].nil? and !member_days_cost.zero? %>
-            <% current_total_resources += 1 unless member.days_and_cost(week).eql?(0) %>
+            <% current_total_resources += 1 %>
           <% else %>
-            <% current_total_resources += 1 if (member.user.non_engr_on and week.last < member.user.non_engr_on.to_date) && member.days_and_cost(week) && (member.days_and_cost(week).zero?) %>
+            <% current_total_resources += 1 if (member.user.non_engr_on and week.last < member.user.non_engr_on.to_date) %>
           <% end %>
         <% end %>
         <% reset_cycle('week_days') %>
