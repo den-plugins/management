@@ -10,7 +10,7 @@
   </tr>
   </thead>
   <% @members.each do |member| %>
-    <% if member.user.is_engineering && (member.resource_allocations.blank? == false && member.resource_allocations.last.end_date >= 1.month.ago.to_date rescue false) %>
+    <% if member.user.is_engineering && (member.resource_allocations.blank? == false && member.resource_allocations.last.end_date > 1.month.ago.to_date rescue false) %>
         <tr class="<%= cycle('even', 'odd', :name => 'resources') %>">
           <td style="text-align: left"><%= link_to member.project.name, {:controller => 'resource_costs', :action => 'index', :project_id => member.project.identifier }, {:target => '_blank'} %></td>
           <td><%= member.project.category.gsub('Project', '') unless member.project.category.nil? %></td>
