@@ -223,8 +223,8 @@ module ResourceManagementsHelper
     else
       case allocation
         when 0; ""
-        when 0 .. 2.5; "lblue"
-        when 2.5 .. 5; "lgreen"
+        when 0 .. 0.5; "lblue"
+        when 0.5 .. 1; "lgreen"
         else; "lred"
       end
     end
@@ -381,7 +381,7 @@ module ResourceManagementsHelper
     unless param_from.nil? || param_to.nil? || param_from.empty? || param_to.empty?
           from, to = param_from, param_to
     else
-        selection = (param_selection.blank? || param_is_employed.nil?) ? "" : param_selection
+        selection = param_is_employed && !param_is_employed.blank? && param_selection ? param_selection : ""
           today = Date.today
            case selection
              when "last week"

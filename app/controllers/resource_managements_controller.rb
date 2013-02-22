@@ -408,7 +408,7 @@ class ResourceManagementsController < ApplicationController
       if filters[:is_employed] and !filters[:is_employed].blank? and filters[:is_employed].to_i.eql?(1)
         @available_resources = User.find(:all, :conditions => query, :order => order, :include => [:projects, :members]).reject {|v| to_date_safe(v.resignation_date) && to_date_safe(v.resignation_date) < @from.to_date ||
                                                          to_date_safe(v.hired_date) && to_date_safe(v.hired_date) > @to.to_date}
-        query << " and projects.id IN (#{@projects.join(', ')})"
+        #query << " and projects.id IN (#{@projects.join(', ')})"
         @resources_no_limit = User.find(:all, :conditions => query, :order => order, :include => [:projects, :members]).reject {|v| to_date_safe(v.resignation_date) && to_date_safe(v.resignation_date) < @from.to_date ||
                                                          to_date_safe(v.hired_date) && to_date_safe(v.hired_date) > @to.to_date}
         @resource_count = @resources_no_limit.count
@@ -423,7 +423,7 @@ class ResourceManagementsController < ApplicationController
 
       else
         @available_resources = User.find(:all, :conditions => query, :order => order, :include => [:projects, :members])
-        query << " and projects.id IN (#{@projects.join(', ')})"
+        #query << " and projects.id IN (#{@projects.join(', ')})"
         @resources_no_limit = User.find(:all, :conditions => query, :order => order, :include => [:projects, :members])
         @resource_count = @resources_no_limit.count
         @resource_pages = Paginator.new self, @resource_count, limit, params['page']
