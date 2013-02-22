@@ -290,6 +290,7 @@ class ResourceManagementsController < ApplicationController
     @total_forecasted_hours = 0
     @billable_resources_count = 0
     @total_available_hours = 0
+    @total_available_hours_with_holidays = 0
     tick = "#{params[:tick]}"
     @tick = tick.split(/ /)
     month = Date::ABBR_MONTHNAMES.index(@tick[0])
@@ -313,6 +314,7 @@ class ResourceManagementsController < ApplicationController
     @total_forecasted_hours = 0
     @billable_resources_count = 0
     @total_available_hours = 0
+    @total_available_hours_with_holidays = 0
     tick = "#{params[:tick]}"
     @tick = tick.split(/ /)
     month = Date::ABBR_MONTHNAMES.index(@tick[0])
@@ -328,11 +330,15 @@ class ResourceManagementsController < ApplicationController
 
     users_csv = FasterCSV.generate do |csv|
       # header row
-      csv << ['','','','','','',"Total Billable Hours", @total_billable_hours]
-      csv << ['','','','','','',"Billable Resources", @billable_resources_count]
-      csv << ['','','','','','',"Expected Billable Hours"]
-      csv << ['','','','','','',"Expected Billable Revenue",'','',"Total Forecasted Hours", @total_forecasted_hours]
-      csv << ['','','','','','',"% Billability", "%.2f" % (@total_billable_hours/@total_available_hours * 100),'',"% Forecast Allocation",  "%.2f" % (@total_forecasted_hours/@total_available_hours * 100)]
+      csv << ['','','','','','','','','','','','','',"Total Billable Hours", @total_available_hours]
+      csv << ['','','','','','','','','','','','','',"Billable Resources", @billable_resources_count]
+      csv << ['','','','','','','','','','','','','',"Expected Billable Hours", @total_available_hours_with_holidays,'',"Total Forecasted Hours",
+              @total_forecasted_hours, '', "Actual Billable", @total_billable_hours]
+      csv << ['','','','','','','','','','','','','',"Expected Billable Revenue"]
+      csv << ['','','','','','','','','','','','','',"85% Billability", "%.2f" % (@total_available_hours * 0.85), '', "% Forecast Allocation",
+              "%.2f" % (@total_forecasted_hours/@total_available_hours * 100), '',
+              "% Actual Billable", "%.2f" % (@total_billable_hours/@total_available_hours * 100)]
+      csv << []
       csv << ["Firstname", "Lastname", "Role", "Location", "Hired Date", "End Date", "Status", "Allocation", "Days",
               "Avail Hrs", "Days (Excl Hol)", "Available hours (Excl Hol)", "Rate", "Billable Revenue", "Project Allocation",
               "Allocation Cost", "SOW Rate", "Variance", "Billed Hours", "Billed Amount", "Variance"]
@@ -341,11 +347,12 @@ class ResourceManagementsController < ApplicationController
       @users.each do |user|
         if @a["#{user.login}"]
         csv << [@a["#{user.login}"][:firstname],@a["#{user.login}"][:lastname], @a["#{user.login}"][:skill],
-            @a["#{user.login}"][:location], @a["#{user.login}"][:hired_date], @a["#{user.login}"][:end_date] ? @a["#{user.login}"][:end_date] : "",
-            "100%", @a["#{user.login}"][:status], @a["#{user.login}"][:available_with_holidays],
+            @a["#{user.login}"][:location], @a["#{user.login}"][:hired_date],
+            @a["#{user.login}"][:end_date] ? @a["#{user.login}"][:end_date] : "", "100%",
+            @a["#{user.login}"][:status], @a["#{user.login}"][:available_with_holidays],
             @a["#{user.login}"][:available_hours_with_holidays], @a["#{user.login}"][:available_days],
-            @a["#{user.login}"][:available_hours], '', '', @a["#{user.login}"][:project_allocation],
-            '', '',  @a["#{user.login}"][:project_allocation] - @a["#{user.login}"][:available_hours],
+            @a["#{user.login}"][:available_hours], '', '', @a["#{user.login}"][:project_allocation], '', '',
+            @a["#{user.login}"][:project_allocation] - @a["#{user.login}"][:available_hours],
             @a["#{user.login}"][:billable_hours], '',
             @a["#{user.login}"][:billable_hours] - @a["#{user.login}"][:available_hours]]
         end
@@ -762,5 +769,6 @@ class ResourceManagementsController < ApplicationController
     @billable_resources_count += 1 if billable_hours > 0
     @total_forecasted_hours += project_allocation
     @total_available_hours += available_hours
+    @total_available_hours_with_holidays += available_hours_with_holidays
   end
 end

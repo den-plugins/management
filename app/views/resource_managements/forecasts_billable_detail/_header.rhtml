@@ -2,7 +2,7 @@
 <tr>
   <th colspan="6"></th>
   <th colspan="4" style="background-color: #6fec6f;">Total Billable Hours</th>
-  <th colspan="3" style="background-color: #6fec6f;"><%= @total_billable_hours %></th>
+  <th colspan="3" style="background-color: #6fec6f;"><%= @total_available_hours_with_holidays %></th>
   <th colspan="2" style="background-color: #dc594e;"></th>
   <th colspan="2" style="background-color: #dc594e;"></th>
   <th colspan="2" style="background-color: #5296d9;"></th>
@@ -20,6 +20,15 @@
 <tr>
   <th colspan="6"></th>
   <th colspan="4" style="background-color: #6fec6f;">Expected Billable Hours</th>
+  <th colspan="3" style="background-color: #6fec6f;"><%= @total_available_hours %></th>
+  <th colspan="2" style="background-color: #dc594e;">Total Forecasted Hours</th>
+  <th colspan="2" style="background-color: #dc594e;"><%= @total_forecasted_hours %></th>
+  <th colspan="2" style="background-color: #5296d9;">Actual Billable</th>
+  <th colspan="1" style="background-color: #5296d9;"><%= @total_billable_hours %></th>
+</tr>
+<tr>
+  <th colspan="6"></th>
+  <th colspan="4" style="background-color: #6fec6f;">Expected Billable Revenue</th>
   <th colspan="3" style="background-color: #6fec6f;"></th>
   <th colspan="2" style="background-color: #dc594e;"></th>
   <th colspan="2" style="background-color: #dc594e;"></th>
@@ -28,21 +37,12 @@
 </tr>
 <tr>
   <th colspan="6"></th>
-  <th colspan="4" style="background-color: #6fec6f;">Expected Billable Revenue</th>
-  <th colspan="3" style="background-color: #6fec6f;"></th>
-  <th colspan="2" style="background-color: #dc594e;">Total Forecasted Hours</th>
-  <th colspan="2" style="background-color: #dc594e;"><%= @total_forecasted_hours %></th>
-  <th colspan="2" style="background-color: #5296d9;">Actual Billable</th>
-  <th colspan="1" style="background-color: #5296d9;"></th>
-</tr>
-<tr>
-  <th colspan="6"></th>
-  <th colspan="4" style="background-color: #6fec6f;">% Billability</th>
-  <th colspan="3" style="background-color: #6fec6f;"><%= "%.2f" % ((@total_billable_hours/@total_available_hours) * 100) %></th>
+  <th colspan="4" style="background-color: #6fec6f;">85% Billability</th>
+  <th colspan="3" style="background-color: #6fec6f;"><%= "%.2f" % ((@total_available_hours.to_f) * 0.85) %></th>
   <th colspan="2" style="background-color: #dc594e;">% Forecast Allocation</th>
   <th colspan="2" style="background-color: #dc594e;"><%= "%.2f" % ((@total_forecasted_hours/@total_available_hours) * 100) %></th>
   <th colspan="2" style="background-color: #5296d9;">% Actual Billable</th>
-  <th colspan="1" style="background-color: #5296d9;"></th>
+  <th colspan="1" style="background-color: #5296d9;"><%= "%.2f" % ((@total_billable_hours/@total_available_hours) * 100) %></th>
 </tr>
 <tr style="height: 65px; background-color: #bfbfbf; border-bottom: 2px solid white;">
   <%= sort_header_tag('lastname', :caption => "Name") %>
@@ -54,11 +54,11 @@
   <th style="background-color: #6fec6f;">Allocation</th>
   <th style="background-color: #6fec6f;">Days</th>
   <th style="background-color: #6fec6f;">Avail Hrs</th>
-  <th style="background-color: #6fec6f;">Days (Excl Hol)</th>
-  <th style="background-color: #6fec6f;">Available hours (Excl Hol)</th>
+  <th style="background-color: #6fec6f; width: 50px;">Days (Excl Hol)</th>
+  <th style="background-color: #6fec6f; width: 50px;">Available hours (Excl Hol)</th>
   <th style="background-color: #6fec6f;">Rate</th>
-  <th style="background-color: #6fec6f;">Billable Revenue</th>
-  <th style="background-color: #dc594e;">Project Allocation</th>
+  <th style="background-color: #6fec6f; width: 50px;"">Billable Revenue</th>
+  <th style="background-color: #dc594e; width: 50px;">Project Allocation</th>
   <th style="background-color: #dc594e;">Allocation Cost</th>
   <th style="background-color: #dc594e;">SOW Rate</th>
   <th style="background-color: #dc594e;">Variance</th>

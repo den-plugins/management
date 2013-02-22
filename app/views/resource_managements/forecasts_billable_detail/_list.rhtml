@@ -8,20 +8,20 @@
           <td><%= "#{@a["#{user.login}"][:hired_date]}" %></td>
           <td><%= "#{@a["#{user.login}"][:end_date]}" %></td>
           <td><%= "#{@a["#{user.login}"][:status]}" %></td>
-          <td>100%</td>
-          <td><%= "#{@a["#{user.login}"][:available_with_holidays]}" %></td>
-          <td><%= "#{@a["#{user.login}"][:available_hours_with_holidays]}" %></td>
-          <td><%= "#{@a["#{user.login}"][:available_days]}" %></td>
-          <td><%= "#{@a["#{user.login}"][:available_hours]}" %></td>
+          <td align="right">100%</td>
+          <td align="right"><%= "#{@a["#{user.login}"][:available_with_holidays]}" %></td>
+          <td align="right"><%= "#{@a["#{user.login}"][:available_hours_with_holidays]}" %></td>
+          <td align="right"><%= "#{@a["#{user.login}"][:available_days]}" %></td>
+          <td align="right"><%= "#{@a["#{user.login}"][:available_hours]}" %></td>
           <td></td>
           <td></td>
-          <td><%= "#{@a["#{user.login}"][:project_allocation]}" %></td>
+          <td align="right"><%= "#{"%.2f" % (@a["#{user.login}"][:project_allocation])}" %></td>
           <td></td>
           <td></td>
-          <td><%= "#{"%.2f" % (@a["#{user.login}"][:project_allocation] - @a["#{user.login}"][:available_hours])}" %></td>
-          <td><%= "#{@a["#{user.login}"][:billable_hours]}" %></td>
+          <td align="right"><%= "#{"%.2f" % (@a["#{user.login}"][:project_allocation] - @a["#{user.login}"][:available_hours])}" %></td>
+          <td align="right"><%= "#{"%.2f" % (@a["#{user.login}"][:billable_hours])}" %></td>
           <td></td>
-          <td><%= "#{"%.2f" % (@a["#{user.login}"][:billable_hours] - @a["#{user.login}"][:available_hours])}" %></td>
+          <td align="right"><%= "#{"%.2f" % (@a["#{user.login}"][:billable_hours] - @a["#{user.login}"][:available_hours])}" %></td>
         </tr>
     <% end %>
 <% end %>
