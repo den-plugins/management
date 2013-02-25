@@ -286,16 +286,14 @@ class ResourceManagementsController < ApplicationController
     sort_update %w(lastname skill location)
 
     @a = Hash.new
-    @total_billable_hours = 0
-    @total_forecasted_hours = 0
-    @billable_resources_count = 0
-    @total_available_hours = 0
-    @total_available_hours_with_holidays = 0
-    tick = "#{params[:tick]}"
-    @tick = tick.split(/ /)
+    @total_billable_hours, @total_forecasted_hours, @billable_resources_count = 0, 0, 0
+    @total_available_hours, @total_available_hours_with_holidays = 0, 0
+
+    @tick = "#{params[:tick]}".split(/ /)
     month = Date::ABBR_MONTHNAMES.index(@tick[0])
     from = Date.new(@tick[1].to_i, month, 1)
     to = from.end_of_month
+
     @users = User.engineers.find(:all, :order => sort_clause)
     @users.each do |u|
       h_date, r_date = to_date_safe(u.hired_date), to_date_safe(u.resignation_date)
@@ -307,19 +305,16 @@ class ResourceManagementsController < ApplicationController
   end
 
   def export
-    @users = User.engineers.find(:all, :order => "lastname ASC")
     sort_clause = params[:order]
     @a = Hash.new
-    @total_billable_hours = 0
-    @total_forecasted_hours = 0
-    @billable_resources_count = 0
-    @total_available_hours = 0
-    @total_available_hours_with_holidays = 0
-    tick = "#{params[:tick]}"
-    @tick = tick.split(/ /)
+    @total_billable_hours, @total_forecasted_hours, @billable_resources_count = 0, 0, 0
+    @total_available_hours, @total_available_hours_with_holidays = 0, 0
+
+    @tick = "#{params[:tick]}".split(/ /)
     month = Date::ABBR_MONTHNAMES.index(@tick[0])
     from = Date.new(@tick[1].to_i, month, 1)
     to = from.end_of_month
+
     @users = User.engineers.find(:all, :order => sort_clause)
     @users.each do |u|
       h_date, r_date = to_date_safe(u.hired_date), to_date_safe(u.resignation_date)
@@ -742,29 +737,25 @@ class ResourceManagementsController < ApplicationController
   def compute_details(week, resources, acctg)
     from, to = week.first, week.last
     user = resources.first.user
-    available = user.available_hours(week.first, week.last, user.location)/8
-    available_with_holidays = user.available_hours_with_holidays(week.first, week.last, user.location)/8
     total_forecast = resources.sum {|a| a.capped_days_and_cost_report((from..to), nil, false, acctg)}
-    total_rate = resources.sum {|a| a.get_rate((from..to),false, false, acctg)}
-    #billed_amount = resources.sum {|a| a.get_rate((from..to),true, false, acctg)}
-    percent = available.eql?(0) ? 0 : "%.2f" % (total_forecast / available * 100).to_f
-    available_hours = available * 8
-    available_hours_with_holidays = available_with_holidays * 8
     project_allocation = total_forecast * 8
+
+    # available days and hours without weekends and holidays
+    available = user.available_hours(week.first, week.last, user.location)/8
+    available_hours = available * 8
+
+    # available days and hours without weekends
+    available_with_holidays = user.available_hours_with_holidays(week.first, week.last, user.location)/8
+    available_hours_with_holidays = available_with_holidays * 8
+
     billable_hours = resources.collect { |mem| mem.spent_time(from, to, "Billable", true).to_f }.sum.round(2)
-    if percent.to_f > 0
-      @a["#{user.login}"] = { :lastname => user.lastname, :firstname => user.firstname, :skill => user.skill, :location => user.location,
-                              :hired_date => user.hired_date, :end_date => user.resignation_date, :status => user.employee_status,
-                              :allocation => percent, :available_with_holidays => available_with_holidays, :available_hours_with_holidays => available_hours_with_holidays,
-                              :available_days => available, :available_hours => available_hours, :billable_hours => billable_hours,
-                              :project_allocation => project_allocation}
-    else
-      @a["#{user.login}"] = { :lastname => user.lastname, :firstname => user.firstname, :skill => user.skill, :location => user.location,
-                              :hired_date => user.hired_date, :end_date => user.resignation_date, :status => user.employee_status,
-                              :allocation => percent, :available_with_holidays => available_with_holidays, :available_hours_with_holidays => available_hours_with_holidays,
-                              :available_days => available, :available_hours => available_hours, :rate => total_rate, :billable_hours => billable_hours,
-                              :project_allocation => project_allocation}
-    end
+
+    @a["#{user.login}"] = { :lastname => user.lastname, :firstname => user.firstname, :skill => user.skill, :location => user.location,
+                            :hired_date => user.hired_date, :end_date => user.resignation_date, :status => user.employee_status,
+                            :available_with_holidays => available_with_holidays, :available_hours_with_holidays => available_hours_with_holidays,
+                            :available_days => available, :available_hours => available_hours, :billable_hours => billable_hours,
+                            :project_allocation => project_allocation}
+
     @total_billable_hours += billable_hours
     @billable_resources_count += 1 if available_hours > 0
     @total_forecasted_hours += project_allocation
