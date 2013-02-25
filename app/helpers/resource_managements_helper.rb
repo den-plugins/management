@@ -417,7 +417,7 @@ module ResourceManagementsHelper
   end
 
   def work_day_in_a_week(week)
-    default = 5
+    default = week.count
     week.each do |d|
       default -= 1 if Holiday.find_by_event_date(d.strftime.to_s)
     end
