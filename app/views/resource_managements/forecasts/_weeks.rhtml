@@ -95,6 +95,7 @@
     
     jQuery("#updated_at_text").show().text("as of <%= @updated_at.strftime('%b %d, %Y %I:%M %p') %>");
     jQuery("#icon_reload_forecasts").show().click(function() {
+        if (<%= params[:skill].nil? || params[:skill].eql?("N/A") ? true :false %>) {
       new Ajax.Request('/resource_managements/load_weekly_forecasts', {
         parameters: { 'selection': '<%= params[:selection] %>',
                                    'from': '<%= params[:from] %>',
@@ -109,5 +110,6 @@
                                    'updated_at' : '<%= @updated_at.to_s %>'},
         onLoading: "$('ajax-indicator').hide()"
       });
+    }
     });
 </script>
