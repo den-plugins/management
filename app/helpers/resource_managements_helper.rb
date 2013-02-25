@@ -424,4 +424,14 @@ module ResourceManagementsHelper
     default
   end
 
+  def resigned_engineers(engineers,week)
+    r_engrs = 0
+    engineers.each do |x|
+      if x.resignation_date != '' && x.resignation_date < week
+        r_engrs += 1
+      end
+    end
+    r_engrs
+  end
+
 end

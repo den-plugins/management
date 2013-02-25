@@ -81,6 +81,7 @@ class ResourceManagementsController < ApplicationController
   end
 
   def allocations
+    @engineers = User.engineers
     @categories = Project.project_categories
     if params[:sort] || params[:filters]
       render :update do |page|
