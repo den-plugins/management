@@ -417,11 +417,21 @@ module ResourceManagementsHelper
   end
 
   def work_day_in_a_week(week)
-    default = 5
+    default = week.count
     week.each do |d|
       default -= 1 if Holiday.find_by_event_date(d.strftime.to_s)
     end
     default
+  end
+
+  def resigned_engineers(engineers,week)
+    r_engrs = 0
+    engineers.each do |x|
+      if x.resignation_date != '' && x.resignation_date < week
+        r_engrs += 1
+      end
+    end
+    r_engrs
   end
 
 end
