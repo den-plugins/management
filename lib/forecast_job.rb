@@ -80,8 +80,8 @@ class ForecastJob < Struct.new(:from, :to, :accounting, :resources_no_limit, :sk
         skill_allocations[skill] = 0.0
       end
 
-      percent_unallocated = (current_total_available_resources.to_f / total_available_resources.to_f) * 100
-      percent_allocated = ((total_available_resources.to_f - current_total_available_resources.to_f ) / total_available_resources.to_f) * 100
+      percent_unallocated = (current_total_available_resources.to_f / weekly_resources_count.to_f) * 100
+      percent_allocated = 100 - percent_unallocated
       total_allocated_percent = (current_total_allocated_resources / weekly_resources_count.to_f) * 100
       
       # TODO: apply holidays
