@@ -21,7 +21,7 @@
           <td align="right"><%= "#{"%.2f" % (@a["#{user.login}"][:project_allocation] - @a["#{user.login}"][:available_hours])}" %></td>
           <td align="right"><%= "#{"%.2f" % (@a["#{user.login}"][:billable_hours])}" %></td>
           <td></td>
-          <td align="right"><%= "#{"%.2f" % (@a["#{user.login}"][:billable_hours] - @a["#{user.login}"][:available_hours])}" %></td>
+          <td align="right"><%= "#{"%.2f" % (@a["#{user.login}"][:billable_hours] - @a["#{user.login}"][:project_allocation])}" %></td>
         </tr>
     <% end %>
 <% end %>

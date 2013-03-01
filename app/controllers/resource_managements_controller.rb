@@ -350,7 +350,7 @@ class ResourceManagementsController < ApplicationController
             @a["#{user.login}"][:available_hours], '', '', @a["#{user.login}"][:project_allocation], '', '',
             @a["#{user.login}"][:project_allocation] - @a["#{user.login}"][:available_hours],
             @a["#{user.login}"][:billable_hours], '',
-            @a["#{user.login}"][:billable_hours] - @a["#{user.login}"][:available_hours]]
+            @a["#{user.login}"][:billable_hours] - @a["#{user.login}"][:project_allocation]]
         end
       end
     end
@@ -749,7 +749,7 @@ class ResourceManagementsController < ApplicationController
     available_with_holidays = user.available_hours_with_holidays(week.first, week.last, user.location)/8
     available_hours_with_holidays = available_with_holidays * 8
 
-    billable_hours = resources.collect { |mem| mem.spent_time(from, to, "Billable", true).to_f }.sum.round(2)
+    billable_hours = resources.collect { |mem| mem.spent_time(from, to, "Billable", true).to_f }.sum
 
     @a["#{user.login}"] = { :lastname => user.lastname, :firstname => user.firstname, :skill => user.skill, :location => user.location,
                             :hired_date => user.hired_date, :end_date => user.resignation_date, :status => user.employee_status,
