@@ -144,9 +144,7 @@ module ResourceManagementsHelper
   def get_resource_billability_forecast
     start_date, end_date = Date.today - 1.month, Date.today + 6.months
     weeks = get_weeks_range(start_date, end_date)
-    total_days = 0
     resource_count = {}
-    res_count_per_work_days = 0.0
     res_allocations_skill = {}
     res_billability_forecast = []
     projects = @projects.collect {|p| p.id if (p.accounting_type.eql?('Billable') || p.accounting_type.eql?('Non-billable'))}
@@ -154,26 +152,53 @@ module ResourceManagementsHelper
       user.members.select {|m| projects.include?(m.project.id)}.empty?
     end
     weeks.each do |week|
-     total_days = week.count
      weekly_resources_count = 0
      users.each do |resource|
-       res_allocations = resource.allocations(week, projects)
-       res_allocations_skill[resource.skill] = 0 if res_allocations_skill[resource.skill].nil?
-       resource_count[resource.skill] = 0 if resource_count[resource.skill].nil?
-       res_allocations_skill[resource.skill] += res_allocations if !resource.is_resigned
-       resource_count[resource.skill] += 1 if !res_allocations.zero? and !resource.is_resigned
-       weekly_resources_count += 1
-     end
-     current_res_allocated = 0.0
-     @skill_set.each do |skill|
-       res_allocations_skill[skill] = 0 if res_allocations_skill[skill].nil?
-       res_allocations_skill[skill] += get_total_allocations_per_skill(skill, week, nil)
-       res_count_per_work_days = res_allocations_skill[skill] ? (get_float(res_allocations_skill[skill])/get_float( total_days)) : 0.0
-       current_res_allocated += res_count_per_work_days
-       res_allocations_skill[skill] = 0.0
-     end
-     total_allocated_percent = weekly_resources_count != 0 ? (current_res_allocated / get_float(weekly_resources_count)) * 100 : 0.0
-     res_billability_forecast << [week.last, total_allocated_percent.round(2)]
+
+       resignation_date = to_date_safe(resource.resignation_date)
+       hired_date = to_date_safe(resource.hired_date)
+       start_date = hired_date && hired_date > week.first && hired_date < week.last ? hired_date : week.first
+       end_date = resignation_date && resignation_date > week.first && resignation_date < week.last ? resignation_date : week.last
+       total_working_days = (start_date..end_date).count
+       working_days = 0
+       alloc = resource.allocations(week, projects)
+
+       project_allocations = resource.members.collect(&:resource_allocations).flatten.select do |v|
+         @projects.include? v.member.project_id
+       end
+       if allocations = project_allocations.select {|a| a.start_date <= week.last && a.end_date >= week.first}.uniq
+         allocations.each do |allocation|
+           working_days = total_working_days - detect_holidays_in_week(allocation.location, week)
+         end
+       end
+       skill = resource.skill
+       res_allocations_skill[skill] ||= 0
+       res_allocations_skill[skill] += alloc unless resource.is_resigned
+       resource_count[skill] ||= 0
+       resource_count[skill] += 1 if alloc.zero? && !resource.is_resigned || alloc < working_days && !resource.is_resigned
+
+       if resignation_date && resignation_date > week.first && hired_date && hired_date < week.last
+         weekly_resources_count += 1
+       elsif !resignation_date && hired_date && hired_date < week.last
+         weekly_resources_count += 1
+       end
+
+      end
+
+      current_total_available_resources = 0         # current_total_res_available
+      current_res_allocated = 0         # current_res_allocated
+
+      @skill_set.each do |skill|
+        current_total_available_resources += resource_count[skill].to_i
+        resource_count_per_day = res_allocations_skill[skill].to_f/week.count.to_f
+        current_res_allocated += resource_count_per_day
+        resource_count[skill] = 0
+        res_allocations_skill[skill] = 0.00
+      end
+
+
+      total_allocated_percent = weekly_resources_count != 0 ? (current_res_allocated / get_float(weekly_resources_count)) * 100 : 0.00
+      res_billability_forecast << [week.last, total_allocated_percent]
     end
     return res_billability_forecast.to_json
   end
