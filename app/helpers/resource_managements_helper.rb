@@ -113,7 +113,7 @@ module ResourceManagementsHelper
   end
 
   def count_billabilty_skill_set(set, users, projects)
-    projects = projects.collect {|p| p.id if (p.accounting_type.eql?('Billable') || p.accounting_type.eql?('Non-billable'))}
+    projects = projects.collect {|p| p.id if (p.accounting_type.eql?('Billable'))}
     users = users.reject do |user|
       user.members.select {|m| projects.include?(m.project.id)}.empty?
     end
