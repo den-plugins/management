@@ -84,7 +84,7 @@
   </div>
   <div class="singleCol">
     <div class="box">
-      <h3>Billability by Skill as of <%= monday_last_week "%d-%b" %></h3>
+      <h3>Billability by Skill</h3>
       <div id="billability_skill_chart"></div>
       <div id="show_billability_skill">
         <% form_remote_tag(:url => {:action => 'load_chart', :chart => 'billability_skill'}) do %>

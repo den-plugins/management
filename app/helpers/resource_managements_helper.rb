@@ -98,7 +98,7 @@ module ResourceManagementsHelper
     projects = projects.collect {|p| p.id if (p.accounting_type.eql?('Billable'))}
 
     reports, totals = [], []
-    report_date =  (Date.today - 1.week).monday
+    report_date =  (Date.today).monday
     week = report_date .. (report_date + 4.days)
     set.each do |skill|
       report_count, total_count = 0
