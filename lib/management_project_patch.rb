@@ -25,6 +25,10 @@ module Management
     
     module InstanceMethods
       
+      def is_admin_project?
+        custom_values.detect{|x| x.custom_field_id == 15 && x.value.eql?("Admin")} ? true : false
+      end
+
       def project_type
         c = custom_values.detect {|v| v.mgt_custom "Project Type"}
         c ? c.value : nil
