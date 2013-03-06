@@ -56,7 +56,7 @@ module Management
           parent.children.each do |child|
             @project = child if child.custom_values.detect{|b| b.value ==  "Development"}
 
-            if @project && current_user && @project.members
+            if @project && current_user && @project.members && get_member
               get_member.resource_allocations.each do |allocation|
                 unless allocation
                   start_date = allocation.start_date
