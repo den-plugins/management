@@ -55,13 +55,17 @@ module Management
           current_user = User.current
           parent.children.each do |child|
             @project = child if child.custom_values.detect{|b| b.value ==  "Development"}
+
             if @project && current_user && @project.members
-              start_date = get_member.resource_allocations.last.start_date 
-              end_date = get_member.resource_allocations.last.end_date
-              if log_date.between?(start_date,end_date)
-                allow_log = true
+              get_member.resource_allocations.each do |allocation|
+                unless allocation
+                  start_date = allocation.start_date
+                  end_date = allocation.end_date
+                  allow_log = true if log_date.between?(start_date,end_date)
+                end
               end
             end
+
           end
         end
         allow_log
