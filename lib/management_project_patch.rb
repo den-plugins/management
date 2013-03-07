@@ -29,6 +29,10 @@ module Management
         custom_values.detect{|x| x.custom_field_id == 15 && x.value.eql?("Admin")} ? true : false
       end
 
+      def is_dev_project?
+        custom_values.detect{|x| x.custom_field_id == 15 && x.value.eql?("Development")} ? true : false
+      end      
+
       def get_member
         @project.members.detect{|u| u.user_id == User.current.id}
       end
@@ -49,10 +53,11 @@ module Management
         Date.today <= latest_allocation && lock_time_logging ? true : false
       end
 
-      def user_allocated_on_devt_proj(log_date=Date.today)
+      def user_allocated_on_proj(log_date=Date.today)
+        allow_log = false
+        current_user = User.current
+
         if is_admin_project?
-          allow_log = false
-          current_user = User.current
           parent.children.each do |child|
             @project = child if child.custom_values.detect{|b| b.value ==  "Development"}
 
@@ -67,6 +72,18 @@ module Management
             end
 
           end
+        elsif is_dev_project?
+          @project = self
+          if get_member
+            get_member.resource_allocations.each do |allocation|
+              if allocation
+                start_date = allocation.start_date
+                end_date = allocation.end_date
+                allow_log = true if log_date.between?(start_date,end_date)
+              end
+            end
+          end
+
         end
         allow_log
       end
