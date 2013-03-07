@@ -65,8 +65,8 @@ module Management
           if is_admin_project?
             parent.children.each do |child|
               @project = child if child.custom_values.detect{|b| b.value ==  "Development"}
-              member = get_user_members(user_id)
-              if @project && current_user && @project.members && member
+              member = get_user_members(user_id) if @project
+              if @project && member
                 member.resource_allocations.each do |allocation|
                   if allocation
                     start_date = allocation.start_date
