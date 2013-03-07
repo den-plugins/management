@@ -28,7 +28,7 @@
       <%= link_to_zoomed_chart 'resource_inventory' %>
     </div>
     <div class="box">
-      <h3>Resource Allocation as of <%= monday_last_week "%d-%b" %></h3>
+      <h3>Resource Allocation</h3>
       <div id="resource_allocation_chart"></div>
       <div id="show_resource_allocation">
         <% form_remote_tag(:url => {:action => 'load_chart', :chart => 'resource_allocation'}) do %>
@@ -39,7 +39,7 @@
       <%= link_to_zoomed_chart 'resource_allocation', :style => 'display: none' %>
     </div>
     <div class="box">
-      <h3>Time Logging as of <%= monday_last_week "%d-%b" %></h3>
+      <h3>Time Logging</h3>
       <div id="time_logging_chart"></div>
       <div id="show_time_logging">
         <% form_remote_tag(:url => {:action => 'load_chart', :chart => 'time_logging'}) do %>
