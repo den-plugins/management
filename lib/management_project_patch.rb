@@ -56,12 +56,25 @@ module Management
       def user_allocated_on_proj(log_date=Date.today)
         allow_log = false
         current_user = User.current
+        unless name == "Exist Engineering Admin"
+          if is_admin_project?
+            parent.children.each do |child|
+              @project = child if child.custom_values.detect{|b| b.value ==  "Development"}
 
-        if is_admin_project?
-          parent.children.each do |child|
-            @project = child if child.custom_values.detect{|b| b.value ==  "Development"}
+              if @project && current_user && @project.members && get_member
+                get_member.resource_allocations.each do |allocation|
+                  if allocation
+                    start_date = allocation.start_date
+                    end_date = allocation.end_date
+                    allow_log = true if log_date.between?(start_date,end_date)
+                  end
+                end
+              end
 
-            if @project && current_user && @project.members && get_member
+            end
+          elsif is_dev_project?
+            @project = self
+            if get_member
               get_member.resource_allocations.each do |allocation|
                 if allocation
                   start_date = allocation.start_date
@@ -72,18 +85,8 @@ module Management
             end
 
           end
-        elsif is_dev_project?
-          @project = self
-          if get_member
-            get_member.resource_allocations.each do |allocation|
-              if allocation
-                start_date = allocation.start_date
-                end_date = allocation.end_date
-                allow_log = true if log_date.between?(start_date,end_date)
-              end
-            end
-          end
-
+        else
+          allow_log = true
         end
         allow_log
       end
