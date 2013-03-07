@@ -37,6 +37,10 @@ module Management
         @project.members.detect{|u| u.user_id == User.current.id}
       end
 
+      def get_user_members(user_id)
+        @project.members.detect{|u| u.user_id == user_id}
+      end
+
       def archived?
         status.eql? 9 ? true : false
       end
@@ -53,16 +57,17 @@ module Management
         Date.today <= latest_allocation && lock_time_logging ? true : false
       end
 
-      def user_allocated_on_proj(log_date=Date.today)
+      def user_allocated_on_proj(user_id, log_date=Date.today)
         allow_log = false
-        current_user = User.current
+        current_user = User.find(user_id)
+
         unless name == "Exist Engineering Admin"
           if is_admin_project?
             parent.children.each do |child|
               @project = child if child.custom_values.detect{|b| b.value ==  "Development"}
-
-              if @project && current_user && @project.members && get_member
-                get_member.resource_allocations.each do |allocation|
+              member = get_user_members(user_id)
+              if @project && current_user && @project.members && member
+                member.resource_allocations.each do |allocation|
                   if allocation
                     start_date = allocation.start_date
                     end_date = allocation.end_date
@@ -74,8 +79,8 @@ module Management
             end
           elsif is_dev_project?
             @project = self
-            if get_member
-              get_member.resource_allocations.each do |allocation|
+            if member
+              member.resource_allocations.each do |allocation|
                 if allocation
                   start_date = allocation.start_date
                   end_date = allocation.end_date
