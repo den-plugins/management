@@ -79,6 +79,7 @@ module Management
             end
           elsif is_dev_project?
             @project = self
+            member = get_user_members(user_id)
             if member
               member.resource_allocations.each do |allocation|
                 if allocation
