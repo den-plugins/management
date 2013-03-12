@@ -9,6 +9,7 @@
     <% categories_count = set_categories_count(@categories) %>
     <% total_allocated = 0 %>
     <% total_allocated_percent = 0.0 %>
+    <% unless work_days_in_a_week.eql?(0) %>
     <div class='floating_table'>
       <table id="allocation_week" class="list fixed">
         <thead><tr>
@@ -68,6 +69,7 @@
     <script type="text/javascript">
       jQuery("#fixed_header .movable_table_container #weeks_header_holder").append("<div class='floating_table'><table id='allocation_week' class='list fixed'><thead><tr><th><%= display_week(week) %></th></tr></thead>");
     </script>
+    <% end %>
   <% end %>
 </div>
 

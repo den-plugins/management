@@ -329,7 +329,7 @@ class ResourceManagementsController < ApplicationController
       csv << ['','','','','','','','','','','','','',"Total Billable Hours", @total_available_hours]
       csv << ['','','','','','','','','','','','','',"Billable Resources", @billable_resources_count]
       csv << ['','','','','','','','','','','','','',"Expected Billable Hours", @total_available_hours_with_holidays,'',"Total Forecasted Hours",
-              @total_forecasted_hours, '', "Actual Billable", @total_billable_hours]
+              @total_forecasted_hours, '', "Actual Hours", @total_billable_hours]
       csv << ['','','','','','','','','','','','','',"Expected Billable Revenue"]
       csv << ['','','','','','','','','','','','','',"85% Billability", "%.2f" % (@total_available_hours * 0.85), '', "% Forecast Allocation",
               "%.2f" % (@total_forecasted_hours/@total_available_hours * 100), '',

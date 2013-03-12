@@ -29,6 +29,74 @@ module Management
         custom_values.detect{|x| x.custom_field_id == 15 && x.value.eql?("Admin")} ? true : false
       end
 
+      def is_dev_project?
+        custom_values.detect{|x| x.custom_field_id == 15 && x.value.eql?("Development")} ? true : false
+      end      
+
+      def get_member
+        @project.members.detect{|u| u.user_id == User.current.id}
+      end
+
+      def get_user_members(user_id)
+        @project.members.detect{|u| u.user_id == user_id}
+      end
+
+      def archived?
+        status.eql? 9 ? true : false
+      end
+
+      def user_allocated_end_date
+        if is_admin_project?
+          parent.children.each do |child|
+            @project = child if child.custom_values.detect{|b| b.value ==  "Development"}
+          end
+          if get_member && get_member.resource_allocations
+            latest_allocation = @project.members.detect{|u| u.user_id == User.current.id}.resource_allocations.last.end_date if @project.members && User.current
+          end
+        end
+        Date.today <= latest_allocation && lock_time_logging ? true : false
+      end
+
+      def user_allocated_on_proj(user_id, log_date=Date.today)
+        allow_log = false
+        current_user = User.find(user_id)
+
+        unless name == "Exist Engineering Admin"
+          if is_admin_project?
+            parent.children.each do |child|
+              @project = child if child.custom_values.detect{|b| b.value ==  "Development"}
+              member = get_user_members(user_id) if @project
+              if @project && member
+                member.resource_allocations.each do |allocation|
+                  if allocation
+                    start_date = allocation.start_date
+                    end_date = allocation.end_date
+                    allow_log = true if log_date.between?(start_date,end_date)
+                  end
+                end
+              end
+
+            end
+          elsif is_dev_project?
+            @project = self
+            member = get_user_members(user_id)
+            if member
+              member.resource_allocations.each do |allocation|
+                if allocation
+                  start_date = allocation.start_date
+                  end_date = allocation.end_date
+                  allow_log = true if log_date.between?(start_date,end_date)
+                end
+              end
+            end
+
+          end
+        else
+          allow_log = true
+        end
+        allow_log
+      end
+
       def project_type
         c = custom_values.detect {|v| v.mgt_custom "Project Type"}
         c ? c.value : nil
