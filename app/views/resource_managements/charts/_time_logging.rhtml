@@ -1,5 +1,5 @@
-<%  @from = (Date.today - 4.weeks).monday %>
-<%  @to = (Date.today - 1.week).monday  %>
+<%  @from = (Date.today - 1.weeks).monday %>
+<%  @to = @from + 4.days  %>
 
 <%  user_list = (@users.size > 0)? "time_entries.user_id in (#{@users.collect(&:id).join(',')}) and" : "" %>
 <%  project_list = (@projects.size > 0)? "time_entries.project_id in (#{@projects.collect(&:id).join(',')}) and" : "" %>

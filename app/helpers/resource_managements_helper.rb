@@ -315,7 +315,7 @@ module ResourceManagementsHelper
     with_complete_logs = 0
     if from && to && !members.empty?
       members.each do |m|
-        with_complete_logs += 1 if m[:total_hours_on_selected] >= m[:forecasted_hours_on_selected]
+        with_complete_logs += 1 if m[:total_hours] >= m[:forecasted_hours_on_selected]
       end
     end
     (with_complete_logs.to_f / members.count.to_f) * 100
