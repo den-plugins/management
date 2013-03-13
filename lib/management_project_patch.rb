@@ -61,7 +61,7 @@ module Management
         allow_log = false
         current_user = User.find(user_id)
 
-        unless name == "Exist Engineering Admin"
+        unless name == "Exist Engineering Admin" || name == "Engineering Project Shadow"
           if is_admin_project?
             parent.children.each do |child|
               @project = child if child.custom_values.detect{|b| b.value ==  "Development"}
