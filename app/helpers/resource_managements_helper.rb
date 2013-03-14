@@ -106,7 +106,7 @@ module ResourceManagementsHelper
         skill_users.each {|u| report_count += u.allocations(week, projects)}
         total_count = skill_users.count
       end
-      reports << [report_count.to_f/5, skill]
+      reports << [number_with_precision(report_count.to_f/5, :precision => 2), skill]
       totals << [total_count.to_i, skill]
     end if set.is_a? Array
     [reports, totals].to_json
