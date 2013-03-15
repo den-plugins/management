@@ -60,8 +60,8 @@ module Management
       def user_allocated_on_proj(user_id, log_date=Date.today)
         allow_log = false
         current_user = User.find(user_id)
-
-        unless name == "Exist Engineering Admin" || name == "Engineering Project Shadow"
+        exempted_projects = ["exist engineering admin","engineering project shadow","exist pre-sales"]
+        unless exempted_projects.include?(name.downcase)
           if is_admin_project?
             parent.children.each do |child|
               @project = child if child.custom_values.detect{|b| b.value ==  "Development"}
