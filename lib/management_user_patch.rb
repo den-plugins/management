@@ -123,7 +123,7 @@ module Management
             if allocations = project_allocations.select {|a| a.start_date <= day && a.end_date >= day}.uniq
               allocations.each do |alloc|
                 holiday = alloc.nil? ? 0 : detect_holidays_in_week(alloc.location, day)
-                days += (1 * (alloc.resource_allocation.to_f/100).to_f) if holiday.eql?(0)
+                days += (1 * (alloc.resource_allocation.to_f/100).to_f) if holiday.eql?(0) && alloc.resource_type !=2
               end unless allocations.empty?
             end
           end
