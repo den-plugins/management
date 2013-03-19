@@ -39,7 +39,7 @@
       <%= link_to_zoomed_chart 'resource_allocation', :style => 'display: none' %>
     </div>
     <div class="box">
-      <h3>Time Logging</h3>
+      <h3>Time Logging as of Last Week</h3>
       <div id="time_logging_chart"></div>
       <div id="show_time_logging">
         <% form_remote_tag(:url => {:action => 'load_chart', :chart => 'time_logging'}) do %>
