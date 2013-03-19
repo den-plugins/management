@@ -118,7 +118,7 @@ module ResourceManagementsHelper
       user.members.select {|m| projects.include?(m.project.id)}.empty?
     end
 
-    weeks = get_weeks_range(Date.today - 1.month, Date.today + 6.months)
+    weeks = get_weeks_range((Date.today-1.month).monday, Date.today + 6.months)
     resource_count = {}
 
     set.each do |skill|
