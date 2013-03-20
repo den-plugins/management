@@ -141,6 +141,7 @@ module ProgrammeHelper
   def jsoned_billability_percentage(projects, bill)
     ticks = []
     data = []
+    line_mark = []
     projects.each do |project|
       id = "billability_#{project.id}"
       percent = bill[id] ? bill[id]["total_percent_billability_week"] : nil
@@ -150,8 +151,9 @@ module ProgrammeHelper
         ticks << sub_name(project.name)
       end
       data << percent
+      line_mark << 85
     end
-    [ticks.to_json, data.to_json]
+    [ticks.to_json, data.to_json, line_mark.to_json]
   end
 
   def sched_chart_data(projects, min_date)
