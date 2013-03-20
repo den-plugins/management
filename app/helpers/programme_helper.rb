@@ -155,24 +155,26 @@ module ProgrammeHelper
   end
 
   def sched_chart_data(projects, min_date)
-    scheduled, planned = [], []
+    scheduled, planned, current = [], [], []
     projects.each do |project|
       pname = project.closed? ? sub_name("*** " + project.name.to_s) : sub_name(project.name.to_s)
       scheduled << (project.actual_end_date ? [project.actual_end_date.to_s, pname] : [min_date, pname])
       planned << (project.planned_end_date ? [project.planned_end_date.to_s, pname] : [min_date, pname])
+      current << [Date.today.to_s, pname]
     end
-    [scheduled.reverse, planned.reverse].to_json
+    [scheduled.reverse, planned.reverse, current.reverse].to_json
   end
 
   def sched_chart_data_with_maintenance(projects, min_date)
-    scheduled, planned, maintenance = [], [], []
+    scheduled, planned, maintenance, current = [], [], [], []
     projects.each do |project|
       pname = project.closed? ? sub_name("*** " + project.name.to_s) : sub_name(project.name.to_s)
       scheduled << (project.actual_end_date ? [project.actual_end_date.to_s, pname] : [min_date, pname])
       planned << (project.planned_end_date ? [project.planned_end_date.to_s, pname] : [min_date, pname])
       maintenance << (project.maintenance_end ? [project.maintenance_end.to_s, pname] : [min_date, pname])
+      current << [Date.today.to_s, pname]
     end
-    [maintenance.reverse, scheduled.reverse, planned.reverse].to_json
+    [maintenance.reverse, scheduled.reverse, planned.reverse, current.reverse].to_json
   end
 
 

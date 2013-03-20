@@ -1,78 +1,98 @@
 <% if @devt_projects.any? %>
-<div class="auto_scroll_y">
-  <div id="project_sched_chart"></div>
-</div>
-<div class="chart_legend">
-<div class="legend_wrapper">
-  <div class="legend_square" style="background-color:#FF8C00;"></div> Maintenance Date
-  <div class="legend_square" style="background-color:#dc594e;"></div> Scheduled End Date
-  <div class="legend_square" style="background-color:#5296d9;"></div> Planned End Date
-  <div class="clear"></div>
-  <div class="legend_square"></div> *** Closed Projects
-</div>
-</div>
+    <div class="auto_scroll_y">
+      <div id="project_sched_chart"></div>
+    </div>
+    <div class="chart_legend">
+      <div class="legend_wrapper">
+        <div class="legend_square" style="background-color:#FF8C00;"></div>
+        Maintenance Date
+        <div class="legend_square" style="background-color:#dc594e;"></div>
+        Scheduled End Date
+        <div class="legend_square" style="background-color:#5296d9;"></div>
+        Planned End Date
+        <div class="clear"></div>
+        <div class="legend_square"></div>
+        *** Closed Projects
+      </div>
+    </div>
 
-<% min_date = get_min_date(@devt_projects) %>
-<% if  @header == "Projects in Warranty Period Programme Dashboard" %>
-  <% jdata = sched_chart_data_with_maintenance(@devt_projects, min_date) %>
-<% else %>
-  <% jdata = sched_chart_data(@devt_projects, min_date) %>
-<% end %>
+    <% min_date = get_min_date(@devt_projects) %>
+    <% if  @header == "Projects in Warranty Period Programme Dashboard" %>
+        <% jdata = sched_chart_data_with_maintenance(@devt_projects, min_date) %>
+    <% else %>
+        <% jdata = sched_chart_data(@devt_projects, min_date) %>
+    <% end %>
 
-<script>
-  <% if @devt_projects.count > 10 %>
-  jQuery("#project_sched_chart").height(jQuery("#project_health_table").height());
-  <% end %>
-  jQuery(document).ready(function($) {
-    charts.project_sched = {
-      render: function(id) {
-        var plot = jQuery.jqplot('project_sched_chart', <%= jdata %>, {
-          seriesDefaults: {
-            renderer:jQuery.jqplot.BarRenderer,
-            pointLabels: { show: true, location: 'w'},
-            rendererOptions: {barDirection: 'horizontal', shadowOffset: 1, shadowAlpha: 0.05, barPadding: 0, barWidth: 9}
-          },
-          <% if  @header == "Projects in Warranty Period Programme Dashboard" %>
-            seriesColors: ["#FF8C00", "#dc594e", "#5296d9"],
-            series: [
-              {label: "Maintenance Date"},
-              {label: "Scheduled End Date"},
-              {label: "Planned End Date"}   ],
-          <% else %>
-            seriesColors: ["#dc594e", "#5296d9"],
-            series: [
-              {label: "Scheduled End Date"},
-              {label: "Planned End Date"}   ],
-          <% end %>
+    <script>
+        <% if @devt_projects.count > 10 %>
+        jQuery("#project_sched_chart").height(jQuery("#project_health_table").height());
+        <% end %>
+        jQuery(document).ready(function ($) {
+            charts.project_sched = {
+                render: function (id) {
+                    var plot = jQuery.jqplot('project_sched_chart', <%= jdata %>, {
+                        seriesDefaults: {
+                            renderer: jQuery.jqplot.BarRenderer,
+                            pointLabels: { show: true, location: 'w'},
+                            rendererOptions: {barDirection: 'horizontal', shadowOffset: 1, shadowAlpha: 0.05, barPadding: 0, barWidth: 9}
+                        },
+                        <% if  @header == "Projects in Warranty Period Programme Dashboard" %>
+                        seriesColors: ["#FF8C00", "#dc594e", "#5296d9", "#FF7F50"],
+                        series: [
+                            {label: "Maintenance Date"},
+                            {label: "Scheduled End Date"},
+                            {label: "Planned End Date"},
+                            {renderer: jQuery.jqplot.LineRenderer,
+                                pointLabels: { show: false},
+                                lineWidth: 0,
+                                linePattern: 'dotted',
+                                showMarker: false,
+                                shadow: false
+                            }
+                        ],
+                        <% else %>
+                        seriesColors: ["#dc594e", "#5296d9", "#FF7F50"],
+                        series: [
+                            {label: "Scheduled End Date"},
+                            {label: "Planned End Date"},
+                            {renderer: jQuery.jqplot.LineRenderer,
+                                pointLabels: { show: false},
+                                lineWidth: 0,
+                                linePattern: 'dotted',
+                                showMarker: false,
+                                shadow: false
+                            }
+                        ],
+                        <% end %>
 
-          axes: {
-            xaxis: {renderer: jQuery.jqplot.DateAxisRenderer,
-                    min: <%= min_date.to_json %>,
-                    tickRenderer: jQuery.jqplot.CanvasAxisTickRenderer,
-                    tickOptions: {angle: -45, formatString:'%b %e', fontSize: '7pt'}},
-            yaxis: {renderer: jQuery.jqplot.CategoryAxisRenderer,
-                   tickRenderer: jQuery.jqplot.CanvasAxisTickRenderer,
-                   tickOptions: {fontSize: '7pt', showGridline: false}}
-          },
-          legend: {show: false},
-          grid: {gridLineColor: '#c7c7c7'}
+                        axes: {
+                            xaxis: {renderer: jQuery.jqplot.DateAxisRenderer,
+                                min: <%= min_date.to_json %>,
+                                tickRenderer: jQuery.jqplot.CanvasAxisTickRenderer,
+                                tickOptions: {angle: -45, formatString: '%b %e', fontSize: '7pt'}},
+                            yaxis: {renderer: jQuery.jqplot.CategoryAxisRenderer,
+                                tickRenderer: jQuery.jqplot.CanvasAxisTickRenderer,
+                                tickOptions: {fontSize: '7pt', showGridline: false}}
+                        },
+                        legend: {show: false},
+                        grid: {gridLineColor: '#c7c7c7'}
+                    });
+
+                    if (id !== 'zoom_chart') {
+                        this.plot = plot;
+                    }
+                    return plot;
+                }
+            };
+            charts.project_sched.render('project_sched_chart');
+
+            jQuery(window).resize(function () {
+                jQuery('#project_sched_chart').empty();
+                charts.project_sched.render('project_sched_chart');
+            });
         });
 
-        if(id !== 'zoom_chart') {
-          this.plot = plot;
-        }
-        return plot;
-      }
-    };
-    charts.project_sched.render('project_sched_chart');
-
-    jQuery(window).resize(function() {
-      jQuery('#project_sched_chart').empty();
-      charts.project_sched.render('project_sched_chart');
-    });
-  });
-
-</script>
+    </script>
 <% else %>
-  <p class="nodata">No Development Projects Found.</p>
+    <p class="nodata">No Development Projects Found.</p>
 <% end %>
