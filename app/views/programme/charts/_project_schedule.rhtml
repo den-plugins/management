@@ -37,7 +37,7 @@
                             rendererOptions: {barDirection: 'horizontal', shadowOffset: 1, shadowAlpha: 0.05, barPadding: 0, barWidth: 9}
                         },
                         <% if  @header == "Projects in Warranty Period Programme Dashboard" %>
-                        seriesColors: ["#FF8C00", "#dc594e", "#5296d9", "#940f00"],
+                        seriesColors: ["#FF8C00", "#dc594e", "#5296d9", "#FF7F50"],
                         series: [
                             {label: "Maintenance Date"},
                             {label: "Scheduled End Date"},
@@ -45,20 +45,20 @@
                             {renderer: jQuery.jqplot.LineRenderer,
                                 pointLabels: { show: false},
                                 lineWidth: 0,
-                                linePattern: 'dotted',
+                                linePattern: 'dashed',
                                 showMarker: false,
                                 shadow: false
                             }
                         ],
                         <% else %>
-                        seriesColors: ["#dc594e", "#5296d9", "#940f00"],
+                        seriesColors: ["#dc594e", "#5296d9", "#FF7F50"],
                         series: [
                             {label: "Scheduled End Date"},
                             {label: "Planned End Date"},
                             {renderer: jQuery.jqplot.LineRenderer,
                                 pointLabels: { show: false},
                                 lineWidth: 0,
-                                linePattern: 'dotted',
+                                linePattern: 'dashed',
                                 showMarker: false,
                                 shadow: false
                             }

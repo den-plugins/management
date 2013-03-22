@@ -69,9 +69,11 @@
 <% content_for :header_tags do %>
     <%= stylesheet_link_tag 'management', :plugin => 'management' %>
     <%= stylesheet_link_tag 'jquery.jqplot.css', :plugin => 'redmine_burndown' %>
+    <%= stylesheet_link_tag 'jquery.jqplot.min.css', :plugin => 'redmine_burndown' %>
     <%= javascript_include_tag 'dashboard.js', :plugin => 'management' %>
     <%= javascript_include_tag 'jquery.min.js', :plugin => 'redmine_burndown' %>
     <%= javascript_include_tag 'jquery.jqplot.js', :plugin => 'redmine_burndown' %>
+    <%= javascript_include_tag 'jquery.jqplot.min.js', :plugin => 'redmine_burndown' %>
     <%= javascript_include_tag 'plugins/jqplot.barRenderer.min.js', :plugin => 'redmine_burndown' %>
     <%= javascript_include_tag 'plugins/jqplot.canvasAxisLabelRenderer.min.js', :plugin => 'redmine_burndown' %>
     <%= javascript_include_tag 'plugins/jqplot.canvasTextRenderer.min.js', :plugin => 'redmine_burndown' %>
