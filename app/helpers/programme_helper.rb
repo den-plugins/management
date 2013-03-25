@@ -141,7 +141,6 @@ module ProgrammeHelper
   def jsoned_billability_percentage(projects, bill)
     ticks = []
     data = []
-    line_mark = []
     projects.each do |project|
       id = "billability_#{project.id}"
       percent = bill[id] ? bill[id]["total_percent_billability_week"] : nil
@@ -151,32 +150,29 @@ module ProgrammeHelper
         ticks << sub_name(project.name)
       end
       data << percent
-      line_mark << 85
     end
-    [ticks.to_json, data.to_json, line_mark.to_json]
+    [ticks.to_json, data.to_json]
   end
 
   def sched_chart_data(projects, min_date)
-    scheduled, planned, current = [], [], []
+    scheduled, planned = [], []
     projects.each do |project|
       pname = project.closed? ? sub_name("*** " + project.name.to_s) : sub_name(project.name.to_s)
       scheduled << (project.actual_end_date ? [project.actual_end_date.to_s, pname] : [min_date, pname])
       planned << (project.planned_end_date ? [project.planned_end_date.to_s, pname] : [min_date, pname])
-      current << [Date.today.to_s, pname]
     end
-    [scheduled.reverse, planned.reverse, current.reverse].to_json
+    [scheduled.reverse, planned.reverse].to_json
   end
 
   def sched_chart_data_with_maintenance(projects, min_date)
-    scheduled, planned, maintenance, current = [], [], [], []
+    scheduled, planned, maintenance = [], [], []
     projects.each do |project|
       pname = project.closed? ? sub_name("*** " + project.name.to_s) : sub_name(project.name.to_s)
       scheduled << (project.actual_end_date ? [project.actual_end_date.to_s, pname] : [min_date, pname])
       planned << (project.planned_end_date ? [project.planned_end_date.to_s, pname] : [min_date, pname])
       maintenance << (project.maintenance_end ? [project.maintenance_end.to_s, pname] : [min_date, pname])
-      current << [Date.today.to_s, pname]
     end
-    [maintenance.reverse, scheduled.reverse, planned.reverse, current.reverse].to_json
+    [maintenance.reverse, scheduled.reverse, planned.reverse].to_json
   end
 
 

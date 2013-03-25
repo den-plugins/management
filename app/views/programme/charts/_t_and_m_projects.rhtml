@@ -8,7 +8,7 @@
       <div class="legend_square"></div>*** Closed Projects
     </div>
   </div>
-  <% jticks, jdata, jmark = jsoned_billability_percentage(@t_and_m_projects, @billabilities).collect %>
+  <% jticks, jdata = jsoned_billability_percentage(@t_and_m_projects, @billabilities).collect %>
   <script>
     <% if @t_and_m_projects.count > 10 %>
     jQuery("#t_and_m_projects_chart").width('<%= @t_and_m_projects.count * 55 %>px');
@@ -17,23 +17,13 @@
     charts.t_and_m_projects = {
       render: function(id) {
         var ticks = <%= jticks %>;
-        var tplot = jQuery.jqplot('t_and_m_projects_chart', [<%= jdata %>, <%= jmark %>], {
+        var tplot = jQuery.jqplot('t_and_m_projects_chart', [<%= jdata %>], {
           seriesDefaults:{
             renderer:jQuery.jqplot.BarRenderer,
             rendererOptions: {fillToZero: true, barPadding: 1},
             pointLabels: { show: true, location: 'e', edgeTolerance: -15 },
           },
-          seriesColors: ["#5296d9", "#940f00"],
-          series: [
-              {},
-              {renderer: jQuery.jqplot.LineRenderer,
-                  pointLabels: { show: false},
-                  lineWidth: 0,
-                  linePattern: 'dashed',
-                  showMarker: false,
-                  shadow: false
-              }
-          ],
+          seriesColors: ["#5296d9"],
           legend: { show: false },
           axes: {
             xaxis: { renderer: jQuery.jqplot.CategoryAxisRenderer, ticks: ticks,
@@ -41,7 +31,18 @@
             yaxis: { tickOptions: {formatString: '%.2f%d %'},
                      min: 0 }
           },
-          grid: {gridLineColor: '#c7c7c7'}
+          grid: {gridLineColor: '#c7c7c7'},
+            canvasOverlay: {
+                show: true,
+                objects: [
+                    {dashedHorizontalLine: {
+                        y: 85,
+                        xOffset: '0',
+                        color: 'rgb(204, 0, 0)',
+                        shadow: false
+                    }}
+                ]
+            }
         });
     
         if(id !== 'zoom_chart') {
