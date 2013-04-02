@@ -350,7 +350,7 @@ class ResourceManagementsController < ApplicationController
             @a["#{user.login}"][:available_hours], '', '', @a["#{user.login}"][:project_allocation],
             @a["#{user.login}"][:allocation_cost],
             @a["#{user.login}"][:project_allocation] - @a["#{user.login}"][:available_hours],
-            @a["#{user.login}"][:billable_hours], '',
+            @a["#{user.login}"][:billable_hours], @a["#{user.login}"][:billed_amount],
             @a["#{user.login}"][:billable_hours] - @a["#{user.login}"][:project_allocation]]
         end
       end
@@ -752,12 +752,13 @@ class ResourceManagementsController < ApplicationController
     available_hours_with_holidays = available_with_holidays * 8
 
     billable_hours = resources.collect { |mem| mem.spent_time(from, to, "Billable", true).to_f }.sum
+    billable_cost = resources.collect { |mem| mem.spent_cost(from, to, "Billable").to_f }.sum
 
     @a["#{user.login}"] = { :lastname => user.lastname, :firstname => user.firstname, :skill => user.skill, :location => user.location,
                             :hired_date => user.hired_date, :end_date => user.resignation_date, :status => user.employee_status,
                             :available_with_holidays => available_with_holidays, :available_hours_with_holidays => available_hours_with_holidays,
                             :available_days => available, :available_hours => available_hours, :billable_hours => billable_hours,
-                            :project_allocation => project_allocation, :allocation_cost => total_forecast_cost}
+                            :project_allocation => project_allocation, :allocation_cost => total_forecast_cost, :billed_amount => billable_cost}
 
     @total_billable_hours += billable_hours
     @billable_resources_count += 1 if available_hours > 0
