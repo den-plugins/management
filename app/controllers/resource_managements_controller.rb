@@ -326,18 +326,18 @@ class ResourceManagementsController < ApplicationController
 
     users_csv = FasterCSV.generate do |csv|
       # header row
-      csv << ['','','','','','','','','','','','','',"Total Billable Hours", @total_available_hours]
-      csv << ['','','','','','','','','','','','','',"Billable Resources", @billable_resources_count]
-      csv << ['','','','','','','','','','','','','',"Expected Billable Hours", @total_available_hours_with_holidays,'',"Total Forecasted Hours",
+      csv << ['','','','','','','','','','','','',"Total Billable Hours", @total_available_hours]
+      csv << ['','','','','','','','','','','','',"Billable Resources", @billable_resources_count]
+      csv << ['','','','','','','','','','','','',"Expected Billable Hours", @total_available_hours_with_holidays,'',"Total Forecasted Hours",
               @total_forecasted_hours, '', "Actual Hours", @total_billable_hours]
-      csv << ['','','','','','','','','','','','','',"Expected Billable Revenue"]
-      csv << ['','','','','','','','','','','','','',"85% Billability", "%.2f" % (@total_available_hours * 0.85), '', "% Forecast Allocation",
+      csv << ['','','','','','','','','','','','',"Expected Billable Revenue"]
+      csv << ['','','','','','','','','','','','',"85% Billability", "%.2f" % (@total_available_hours * 0.85), '', "% Forecast Allocation",
               "%.2f" % (@total_forecasted_hours/@total_available_hours * 100), '',
               "% Actual Billable", "%.2f" % (@total_billable_hours/@total_available_hours * 100)]
       csv << []
       csv << ["Firstname", "Lastname", "Role", "Location", "Hired Date", "End Date", "Status", "Allocation", "Days",
               "Avail Hrs", "Days (Excl Hol)", "Available hours (Excl Hol)", "Rate", "Billable Revenue", "Project Allocation",
-              "Allocation Cost", "SOW Rate", "Variance", "Billed Hours", "Billed Amount", "Variance"]
+              "Allocation Cost", "Variance", "Billed Hours", "Billed Amount", "Variance"]
 
       # data rows
       @users.each do |user|
@@ -347,7 +347,8 @@ class ResourceManagementsController < ApplicationController
             @a["#{user.login}"][:end_date] ? @a["#{user.login}"][:end_date] : "", "100%",
             @a["#{user.login}"][:status], @a["#{user.login}"][:available_with_holidays],
             @a["#{user.login}"][:available_hours_with_holidays], @a["#{user.login}"][:available_days],
-            @a["#{user.login}"][:available_hours], '', '', @a["#{user.login}"][:project_allocation], '', '',
+            @a["#{user.login}"][:available_hours], '', '', @a["#{user.login}"][:project_allocation],
+            @a["#{user.login}"][:allocation_cost],
             @a["#{user.login}"][:project_allocation] - @a["#{user.login}"][:available_hours],
             @a["#{user.login}"][:billable_hours], '',
             @a["#{user.login}"][:billable_hours] - @a["#{user.login}"][:project_allocation]]
@@ -738,7 +739,8 @@ class ResourceManagementsController < ApplicationController
   def compute_details(week, resources, acctg)
     from, to = week.first, week.last
     user = resources.first.user
-    total_forecast = resources.sum {|a| a.capped_days_and_cost_report((from..to), nil, false, acctg)}
+    total_forecast = resources.sum {|a| a.capped_days_report((from..to), nil, false, acctg)}
+    total_forecast_cost = resources.sum {|a| a.capped_cost_report((from..to), nil, false, acctg)}
     project_allocation = total_forecast * 8
 
     # available days and hours without weekends and holidays
@@ -755,7 +757,7 @@ class ResourceManagementsController < ApplicationController
                             :hired_date => user.hired_date, :end_date => user.resignation_date, :status => user.employee_status,
                             :available_with_holidays => available_with_holidays, :available_hours_with_holidays => available_hours_with_holidays,
                             :available_days => available, :available_hours => available_hours, :billable_hours => billable_hours,
-                            :project_allocation => project_allocation}
+                            :project_allocation => project_allocation, :allocation_cost => total_forecast_cost}
 
     @total_billable_hours += billable_hours
     @billable_resources_count += 1 if available_hours > 0
