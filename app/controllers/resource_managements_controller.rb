@@ -299,7 +299,7 @@ class ResourceManagementsController < ApplicationController
     @users.each do |u|
       h_date, r_date = to_date_safe(u.hired_date), to_date_safe(u.resignation_date)
       unless (h_date && h_date > to) || (r_date && r_date < from)
-        compute_details((from..to), u.members.all, "billable")
+        compute_details((from..to), u, u.members.all, "billable")
       end
     end
     render :template => 'resource_managements/forecasts_billable_detail.rhtml', :layout => !request.xhr?
@@ -320,7 +320,7 @@ class ResourceManagementsController < ApplicationController
     @users.each do |u|
       h_date, r_date = to_date_safe(u.hired_date), to_date_safe(u.resignation_date)
       unless (h_date && h_date > to) || (r_date && r_date < from)
-        compute_details((from..to), u.members.all, "billable")
+        compute_details((from..to),u, u.members.all, "billable")
       end
     end
 
@@ -736,9 +736,8 @@ class ResourceManagementsController < ApplicationController
     end
   end
 
-  def compute_details(week, resources, acctg)
+  def compute_details(week, user, resources, acctg)
     from, to = week.first, week.last
-    user = resources.first.user
     total_forecast = resources.sum {|a| a.capped_days_report((from..to), nil, false, acctg)}
     total_forecast_cost = resources.sum {|a| a.capped_cost_report((from..to), nil, false, acctg)}
     project_allocation = total_forecast * 8
