@@ -295,7 +295,7 @@ class ResourceManagementsController < ApplicationController
     from = Date.new(@tick[1].to_i, month, 1)
     to = from.end_of_month
 
-    @users = User.engineers.find(:all, :order => sort_clause)
+    @users = User.engineers.find(:all, :include => [:memberships, :members, :time_entries], :order => sort_clause)
     @users.each do |u|
       h_date, r_date = to_date_safe(u.hired_date), to_date_safe(u.resignation_date)
       unless (h_date && h_date > to) || (r_date && r_date < from)
@@ -316,7 +316,7 @@ class ResourceManagementsController < ApplicationController
     from = Date.new(@tick[1].to_i, month, 1)
     to = from.end_of_month
 
-    @users = User.engineers.find(:all, :order => sort_clause)
+    @users = User.engineers.find(:all, :include => [:memberships, :members, :time_entries], :order => sort_clause)
     @users.each do |u|
       h_date, r_date = to_date_safe(u.hired_date), to_date_safe(u.resignation_date)
       unless (h_date && h_date > to) || (r_date && r_date < from)
