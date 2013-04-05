@@ -337,20 +337,22 @@ class ResourceManagementsController < ApplicationController
       csv << []
       csv << ["Firstname", "Lastname", "Role", "Location", "Hired Date", "End Date", "Status", "Allocation", "Days",
               "Avail Hrs", "Days (Excl Hol)", "Available hours (Excl Hol)", "Rate", "Billable Revenue", "Project Allocation",
-              "Allocation Cost", "Variance", "Billed Hours", "Billed Amount", "Variance"]
+              "Allocation Cost", "SOW Rate", "Variance", "Billed Hours", "Billed Amount", "SOW Rate","Variance"]
 
       # data rows
       @users.each do |user|
         if @a["#{user.login}"]
         csv << [@a["#{user.login}"][:firstname],@a["#{user.login}"][:lastname], @a["#{user.login}"][:skill],
             @a["#{user.login}"][:location], @a["#{user.login}"][:hired_date],
-            @a["#{user.login}"][:end_date] ? @a["#{user.login}"][:end_date] : "", "100%",
-            @a["#{user.login}"][:status], @a["#{user.login}"][:available_with_holidays],
+            @a["#{user.login}"][:end_date] ? @a["#{user.login}"][:end_date] : "",
+            @a["#{user.login}"][:status], "100%", @a["#{user.login}"][:available_with_holidays],
             @a["#{user.login}"][:available_hours_with_holidays], @a["#{user.login}"][:available_days],
             @a["#{user.login}"][:available_hours], '', '', @a["#{user.login}"][:project_allocation],
             @a["#{user.login}"][:allocation_cost],
+            @a["#{user.login}"][:project_allocation] > 0 ? "#{"%.2f" % (@a["#{user.login}"][:allocation_cost]/@a["#{user.login}"][:project_allocation])}" : 0,
             @a["#{user.login}"][:project_allocation] - @a["#{user.login}"][:available_hours],
             @a["#{user.login}"][:billable_hours], @a["#{user.login}"][:billed_amount],
+            @a["#{user.login}"][:billable_hours] > 0 ? "#{"%.2f" % (@a["#{user.login}"][:billed_amount]/@a["#{user.login}"][:billable_hours])}" : 0,
             @a["#{user.login}"][:billable_hours] - @a["#{user.login}"][:project_allocation]]
         end
       end
