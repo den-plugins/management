@@ -1,6 +1,8 @@
 class ProgrammeController < ApplicationController
   helper :sort
+  helper :efficiency
   include SortHelper
+  include EfficiencyHelper
 
   menu_item :dashboard, :only => :index
   menu_item :interactive, :only => :interactive
