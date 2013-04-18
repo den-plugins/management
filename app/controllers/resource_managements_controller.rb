@@ -281,6 +281,19 @@ class ResourceManagementsController < ApplicationController
     end
   end
 
+  def project_billing_detail
+    if FileTest.exists?("#{RAILS_ROOT}/config/project_billing_detail.yml")
+      @billing_detail = (file=YAML.load(File.open("#{RAILS_ROOT}/config/project_billing_detail.yml"))) ? file : {}
+    else
+      @billing_detail = {}
+    end
+    @tick = "Apr 2013"
+    @projects = Project.development.select {|v| v.planned_start_date && v.planned_start_date < Date.today.end_of_month &&
+        v.planned_end_date && v.planned_end_date > Date.today.beginning_of_month && v.accounting_type == 'Billable'}
+    @beginning_of_month = Date.today.beginning_of_month
+    @end_of_month = Date.today.end_of_month
+  end
+
   def forecasts_billable_detail
     sort_clear
     sort_init "lastname"

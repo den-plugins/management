@@ -1,0 +1,13 @@
+<%= render :partial => 'header' %>
+
+<h2>Project Billing Details</h2>
+<h3><%= @tick %></h3>
+
+<div id="content">
+  <table>
+  <%= render :partial => "resource_managements/project_billing_detail/header" %>
+  <% @projects.each do |@project| %>
+        <%= render :partial => "resource_managements/project_billing_detail/list" %>
+  <% end %>
+  </table>
+</div>
