@@ -1,9 +1,9 @@
 <tbody>
 <tr>
-  <% bm = Project.find_by_id(@project.id).billing_model %>
-  <td><strong><%= @project.name %>: <%= bm %></strong>
+  <% bm = Project.find_by_id(@proj.id).billing_model %>
+  <td><strong><%= @proj.name %>: <%= bm %></strong>
   <td>
-    <% members = @project.members %>
+    <% members = @proj.members %>
     <% total_allocated_hours = 0.0 %>
     <% total_allocated_cost = 0.0 %>
     <% total_actual_hours = 0.0 %>

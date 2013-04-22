@@ -8,7 +8,7 @@
 <div id="content">
   <table>
   <%= render :partial => "resource_managements/project_billing_detail/header" %>
-  <% @projects.each do |@project| %>
+  <% @projects.each do |@proj| %>
         <%= render :partial => "resource_managements/project_billing_detail/list" %>
   <% end %>
   </table>
