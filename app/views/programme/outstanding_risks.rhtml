@@ -4,39 +4,41 @@
   <thead>
   <tr style="height: 65px; background-color: #bfbfbf; border-bottom: 2px solid white;">
     <th>Date Raised</th>
-    <th>Raised by</th>
-    <th>Issue Description</th>
-    <th>Action Required/Taken</th>
+    <th>Risk Description</th>
+    <th>Potential Effects</th>
+    <th>Mitigation/ Contingency Strategy</th>
     <th>Owner</th>
     <th>Due Date</th>
     <th>Days Overdue</th>
+    <th>Status</th>
     <th></th>
   </tr>
   </thead>
   <tbody>
 
-  <% @high_impact_issues.each do |project, issues| %>
-    <tr style="background-color: #a9a9a9;">
-      <% unless issues.empty? %>
-        <td colspan="9"><%= project %></td>
-        <% issues.each do |issue| %>
-          <tr class="<%= cycle 'podd', 'peven' %>">
-            <td><%= issue.created_on %></td>
-            <td><%= user_name(issue.raised_by) %></td>
-            <td><p><%= textilizable issue.issue_description, :pm_dashboard_issues => issue %></p></td>
-            <td><%= textilizable issue.action, :pm_dashboard_issues => issue %></td>
-            <td><%= user_name(issue.owner) %></td>
-            <% days_overdue = issue.date_due ? Date.today - issue.date_due.to_datetime : 0 %>
-            <td  class="center <%= "high-impact" if issue.date_due && issue.date_due == Date.today || days_overdue > 0 %>"><%= issue.date_due %></td>
-            <td class="center <%= "overdue" if days_overdue > 0 %>"><%= days_overdue < 0 ? 0 : days_overdue %></td>
-            <td align="center">
-            <%= link_to image_tag('edit.png'), {:controller => 'pm_dashboard_issues', :action => 'edit', :id => issue, :project_id => Project.find_by_name(project)},
-                        :title => l(:button_edit) %>
-            </td>
-          </tr>
+  <% @risk_issues.each do |project, risks| %>
+      <tr style="background-color: #a9a9a9;">
+        <% unless risks.empty? %>
+            <td colspan="9"><%= project %></td>
+            <% risks.each do |risk| %>
+                <tr class="<%= cycle 'podd', 'peven' %>">
+                  <td><%= risk.created_on.strftime("%Y-%m-%d") %></td>
+                  <td><%= textilizable risk.risk_description, :risks => risk %></td>
+                  <td><%= textilizable risk.potential_effect, :risks => risk %></td>
+                  <td><%= textilizable risk.mitigating_action, :risks => risk %></td>
+                  <td><%= user_name(risk.owner) %></td>
+                  <% days_overdue = risk.target_resolution_date ? Date.today - risk.target_resolution_date.to_datetime : 0 %>
+                  <td  class="center <%= "high-impact" if risk.target_resolution_date && risk.target_resolution_date == Date.today || days_overdue > 0 %>"><%= risk.target_resolution_date %></td>
+                  <td class="center <%= "overdue" if days_overdue > 0 %>"><%= days_overdue < 0 ? 0 : days_overdue %></td>
+                  <td><%= risk.status %></td>
+                  <td align="center">
+                    <%= link_to image_tag('edit.png'), {:controller => 'risks', :action => 'update', :id => risk, :project_id => Project.find_by_name(project)},
+                                :title => l(:button_edit) %>
+                  </td>
+                </tr>
+            <% end %>
         <% end %>
-      <% end %>
-    </tr>
+        </tr>
   <% end %>
 
   </tbody>

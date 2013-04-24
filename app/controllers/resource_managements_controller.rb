@@ -32,9 +32,11 @@ class ResourceManagementsController < ApplicationController
     if params[:chart] == "forecast_billable"
       @users = User.engineers.find(:all, :order => "lastname ASC")
       @total_users = params[:total_users].to_i
-      @selection = (params[:selection].blank? ? "last 6 months" : params[:selection])
+      @selection = (params[:selection].blank? ? "current" : params[:selection])
       today = Date.today
       case @selection
+        when "current"
+          @from, @to = (today - 2.month).beginning_of_month, (today + 3.month).end_of_month
         when "last month"
           @from, @to = (today - 1.month).beginning_of_month, (today - 1.month).end_of_month
         when "last 3 months"
@@ -79,6 +81,7 @@ class ResourceManagementsController < ApplicationController
   end
 
   def allocations
+    @engineers = User.engineers
     @categories = Project.project_categories
     if params[:sort] || params[:filters]
       render :update do |page|
@@ -278,6 +281,86 @@ class ResourceManagementsController < ApplicationController
     end
   end
 
+  def forecasts_billable_detail
+    sort_clear
+    sort_init "lastname"
+    sort_update %w(lastname skill location)
+
+    @a = Hash.new
+    @total_billable_hours, @total_forecasted_hours, @billable_resources_count = 0, 0, 0
+    @total_available_hours, @total_available_hours_with_holidays = 0, 0
+
+    @tick = "#{params[:tick]}".split(/ /)
+    month = Date::ABBR_MONTHNAMES.index(@tick[0])
+    from = Date.new(@tick[1].to_i, month, 1)
+    to = from.end_of_month
+
+    @users = User.engineers.find(:all, :order => sort_clause)
+    @users.each do |u|
+      h_date, r_date = to_date_safe(u.hired_date), to_date_safe(u.resignation_date)
+      unless (h_date && h_date > to) || (r_date && r_date < from)
+        compute_details((from..to), u, u.members.all, "billable")
+      end
+    end
+    render :template => 'resource_managements/forecasts_billable_detail.rhtml', :layout => !request.xhr?
+  end
+
+  def export
+    sort_clause = params[:order]
+    @a = Hash.new
+    @total_billable_hours, @total_forecasted_hours, @billable_resources_count = 0, 0, 0
+    @total_available_hours, @total_available_hours_with_holidays = 0, 0
+
+    @tick = "#{params[:tick]}".split(/ /)
+    month = Date::ABBR_MONTHNAMES.index(@tick[0])
+    from = Date.new(@tick[1].to_i, month, 1)
+    to = from.end_of_month
+
+    @users = User.engineers.find(:all, :order => sort_clause)
+    @users.each do |u|
+      h_date, r_date = to_date_safe(u.hired_date), to_date_safe(u.resignation_date)
+      unless (h_date && h_date > to) || (r_date && r_date < from)
+        compute_details((from..to),u, u.members.all, "billable")
+      end
+    end
+
+    users_csv = FasterCSV.generate do |csv|
+      # header row
+      csv << ['','','','','','','','','','','','',"Total Billable Hours", @total_available_hours]
+      csv << ['','','','','','','','','','','','',"Billable Resources", @billable_resources_count]
+      csv << ['','','','','','','','','','','','',"Expected Billable Hours", @total_available_hours_with_holidays,'',"Total Forecasted Hours",
+              @total_forecasted_hours, '', "Actual Hours", @total_billable_hours]
+      csv << ['','','','','','','','','','','','',"Expected Billable Revenue"]
+      csv << ['','','','','','','','','','','','',"85% Billability", "%.2f" % (@total_available_hours * 0.85), '', "% Forecast Allocation",
+              "%.2f" % (@total_forecasted_hours/@total_available_hours * 100), '',
+              "% Actual Billable", "%.2f" % (@total_billable_hours/@total_available_hours * 100)]
+      csv << []
+      csv << ["Firstname", "Lastname", "Role", "Location", "Hired Date", "End Date", "Status", "Allocation", "Days",
+              "Avail Hrs", "Days (Excl Hol)", "Available hours (Excl Hol)", "Rate", "Billable Revenue", "Project Allocation",
+              "Allocation Cost", "SOW Rate", "Variance", "Billed Hours", "Billed Amount", "SOW Rate","Variance"]
+
+      # data rows
+      @users.each do |user|
+        if @a["#{user.login}"]
+        csv << [@a["#{user.login}"][:firstname],@a["#{user.login}"][:lastname], @a["#{user.login}"][:skill],
+            @a["#{user.login}"][:location], @a["#{user.login}"][:hired_date],
+            @a["#{user.login}"][:end_date] ? @a["#{user.login}"][:end_date] : "",
+            @a["#{user.login}"][:status], "100%", @a["#{user.login}"][:available_with_holidays],
+            @a["#{user.login}"][:available_hours_with_holidays], @a["#{user.login}"][:available_days],
+            @a["#{user.login}"][:available_hours], '', '', @a["#{user.login}"][:project_allocation],
+            @a["#{user.login}"][:allocation_cost],
+            @a["#{user.login}"][:project_allocation] > 0 ? "#{"%.2f" % (@a["#{user.login}"][:allocation_cost]/@a["#{user.login}"][:project_allocation])}" : 0,
+            @a["#{user.login}"][:project_allocation] - @a["#{user.login}"][:available_hours],
+            @a["#{user.login}"][:billable_hours], @a["#{user.login}"][:billed_amount],
+            @a["#{user.login}"][:billable_hours] > 0 ? "#{"%.2f" % (@a["#{user.login}"][:billed_amount]/@a["#{user.login}"][:billable_hours])}" : 0,
+            @a["#{user.login}"][:billable_hours] - @a["#{user.login}"][:project_allocation]]
+        end
+      end
+    end
+
+    send_data(users_csv, :type => 'text/csv', :filename => "#{params[:tick].gsub(' ', '_')}details.csv")
+  end
+
   private
   def require_management
     return unless require_login
@@ -324,7 +407,7 @@ class ResourceManagementsController < ApplicationController
       if filters[:is_employed] and !filters[:is_employed].blank? and filters[:is_employed].to_i.eql?(1)
         @available_resources = User.find(:all, :conditions => query, :order => order, :include => [:projects, :members]).reject {|v| to_date_safe(v.resignation_date) && to_date_safe(v.resignation_date) < @from.to_date ||
                                                          to_date_safe(v.hired_date) && to_date_safe(v.hired_date) > @to.to_date}
-        query << " and projects.id IN (#{@projects.join(', ')})"
+        #query << " and projects.id IN (#{@projects.join(', ')})"
         @resources_no_limit = User.find(:all, :conditions => query, :order => order, :include => [:projects, :members]).reject {|v| to_date_safe(v.resignation_date) && to_date_safe(v.resignation_date) < @from.to_date ||
                                                          to_date_safe(v.hired_date) && to_date_safe(v.hired_date) > @to.to_date}
         @resource_count = @resources_no_limit.count
@@ -339,7 +422,7 @@ class ResourceManagementsController < ApplicationController
 
       else
         @available_resources = User.find(:all, :conditions => query, :order => order, :include => [:projects, :members])
-        query << " and projects.id IN (#{@projects.join(', ')})"
+        #query << " and projects.id IN (#{@projects.join(', ')})"
         @resources_no_limit = User.find(:all, :conditions => query, :order => order, :include => [:projects, :members])
         @resource_count = @resources_no_limit.count
         @resource_pages = Paginator.new self, @resource_count, limit, params['page']
@@ -655,4 +738,33 @@ class ResourceManagementsController < ApplicationController
     end
   end
 
+  def compute_details(week, user, resources, acctg)
+    from, to = week.first, week.last
+    total_forecast = resources.sum {|a| a.capped_days_report((from..to), nil, false, acctg)}
+    total_forecast_cost = resources.sum {|a| a.capped_cost_report((from..to), nil, false, acctg)}
+    project_allocation = total_forecast * 8
+
+    # available days and hours without weekends and holidays
+    available = user.available_hours(week.first, week.last, user.location)/8
+    available_hours = available * 8
+
+    # available days and hours without weekends
+    available_with_holidays = user.available_hours_with_holidays(week.first, week.last, user.location)/8
+    available_hours_with_holidays = available_with_holidays * 8
+
+    billable_hours = resources.collect { |mem| mem.spent_time(from, to, "Billable", true).to_f }.sum
+    billable_cost = resources.collect { |mem| mem.spent_cost(from, to, "Billable").to_f }.sum
+
+    @a["#{user.login}"] = { :lastname => user.lastname, :firstname => user.firstname, :skill => user.skill, :location => user.location,
+                            :hired_date => user.hired_date, :end_date => user.resignation_date, :status => user.employee_status,
+                            :available_with_holidays => available_with_holidays, :available_hours_with_holidays => available_hours_with_holidays,
+                            :available_days => available, :available_hours => available_hours, :billable_hours => billable_hours,
+                            :project_allocation => project_allocation, :allocation_cost => total_forecast_cost, :billed_amount => billable_cost}
+
+    @total_billable_hours += billable_hours
+    @billable_resources_count += 1 if available_hours > 0
+    @total_forecasted_hours += project_allocation
+    @total_available_hours += available_hours
+    @total_available_hours_with_holidays += available_hours_with_holidays
+  end
 end

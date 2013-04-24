@@ -13,9 +13,9 @@ module ProgrammeHelper
   def code_by_billability_rate(percent)
     if percent
       case
-        when percent > 85; "green"
-        when (80 ... 85) === percent; "yellow"
-        when (0 ... 80) === percent; "red"
+        when percent > 88; "green"
+        when (85 ... 88) === percent; "yellow"
+        when (0 ... 85) === percent; "red"
       end
     end
   end
@@ -88,6 +88,24 @@ module ProgrammeHelper
     return color
   end
 
+  def color_code_for_billability(project)
+    return "not-applicable" if project.category.eql?("Internal Project") || display_by_billing_model(project).eql?("fixed")
+    if project.planned_start_date
+        project_id = "billability_#{project.id}"
+        billability = (@billabilities[project_id] ? @billabilities[project_id]["total_percent_billability_week"] : 0)
+        if billability < 85
+          code = "red"
+        elsif billability >= 85 && billability < 88
+          code = "yellow"
+        else
+          code = "green"
+        end
+    else
+      code = "nocolor"
+    end
+    code
+  end
+
   def color_code_for_warranty(project)
     project.in_warranty? ? "warrantied" : ""
   end
@@ -145,6 +163,18 @@ module ProgrammeHelper
     end
     [scheduled.reverse, planned.reverse].to_json
   end
+
+  def sched_chart_data_with_maintenance(projects, min_date)
+    scheduled, planned, maintenance = [], [], []
+    projects.each do |project|
+      pname = project.closed? ? sub_name("*** " + project.name.to_s) : sub_name(project.name.to_s)
+      scheduled << (project.actual_end_date ? [project.actual_end_date.to_s, pname] : [min_date, pname])
+      planned << (project.planned_end_date ? [project.planned_end_date.to_s, pname] : [min_date, pname])
+      maintenance << (project.maintenance_end ? [project.maintenance_end.to_s, pname] : [min_date, pname])
+    end
+    [maintenance.reverse, scheduled.reverse, planned.reverse].to_json
+  end
+
 
   def fixed_cost_projects_chart_data(projects, fixed_costs)
     data, ticks = [], []

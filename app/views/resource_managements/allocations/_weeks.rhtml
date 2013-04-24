@@ -5,51 +5,52 @@
     jQuery('#fixed_header #weeks_header_holder').empty();
   </script>
   <% weeks.each do |week| %>
+    <% work_days_in_a_week = work_day_in_a_week(week) %>
     <% categories_count = set_categories_count(@categories) %>
     <% total_allocated = 0 %>
     <% total_allocated_percent = 0.0 %>
-    <% current_total_resources = 0 %>
+    <% unless work_days_in_a_week.eql?(0) %>
     <div class='floating_table'>
       <table id="allocation_week" class="list fixed">
         <thead><tr>
             <th><%= display_week(week) %></th>
         </tr></thead>
+
         <% @members.each do |member| %>
-          <% if member.user.is_engineering %>
+          <% if member.user.is_engineering && (member.resource_allocations.blank? == false && member.resource_allocations.last.end_date > 1.month.ago.to_date rescue false) %>
             <% member_days_cost = member.days_and_cost(week).to_f %>
             <tr class="<%= cycle('even', 'odd', :name => 'week_days') %> <%= allocation_to_class(member_days_cost, member.is_shadowed?(week.last)) %>">
               <td><%= member_days_cost %></td>
             </tr>
             <% categ = member.project.category.to_s %>
             <% categories_count[categ] += member_days_cost if !categories_count[categ].nil? and !member_days_cost.zero? %>
-            <% current_total_resources += 1 %>
           <% else %>
-            <% current_total_resources += 1 if (member.user.non_engr_on and week.last < member.user.non_engr_on.to_date) %>
           <% end %>
         <% end %>
         <% reset_cycle('week_days') %>
         <tr style="background-color: #eee;"><th>&nbsp;</th></tr>
         <% @categories.each do |category| %>
           <tr style="background-color: #eee;">
-            <td><%= get_string(categories_count[category] / 5) %></td>
-            <% total_allocated += (categories_count[category] / 5) %>
+            <td><%= get_string(categories_count[category] / work_days_in_a_week) %></td>
+            <% total_allocated += (categories_count[category] / work_days_in_a_week) %>
           </tr>
         <% end %>
+        <% current_total_resources = @engineers.count - resigned_engineers(@engineers,week.last.to_s) %>
         <% bench = current_total_resources - total_allocated %>
-        <tr style="background-color: #eee;"><td><%= get_string(categories_count[""] / 5) %></td></tr>
+        <tr style="background-color: #eee;"><td><%= get_string(categories_count[""] / work_days_in_a_week) %></td></tr>
         <tr style="background-color: #eee;"><td><%= get_string(bench) %></td></tr>
         <tr style="background-color: #eee;"><td><%= get_string(total_allocated) %></td></tr>
         <tr style="background-color: #eee;"><td><%= get_string(current_total_resources) %></td></tr>
         <tr style="background-color: #eee;"><th>&nbsp;</th></tr>
         <% @categories.each do |category| %>
           <tr style="background-color: #eee;">
-            <% project_categ_percent = (current_total_resources.zero? ? 0.00 : (get_float(categories_count[category]/5) / get_float(current_total_resources))) * 100 %>
+            <% project_categ_percent = (current_total_resources.zero? ? 0.00 : (get_float(categories_count[category]/work_days_in_a_week) / get_float(current_total_resources))) * 100 %>
             <td><%= get_string(project_categ_percent.round(2)) %>%</td>
             <% total_allocated_percent += project_categ_percent %>
           </tr>
         <% end %>
         <%# for uncategorized projects percentage %>
-        <% project_categ_percent = (current_total_resources.zero? ? 0.00 : (get_float(categories_count[""]/5) / get_float(current_total_resources))) * 100 %>
+        <% project_categ_percent = (current_total_resources.zero? ? 0.00 : (get_float(categories_count[""]/work_days_in_a_week) / get_float(current_total_resources))) * 100 %>
         <tr style="background-color: #eee;">
           <td>
             <%= get_string(project_categ_percent.round(2)) %>%
@@ -68,6 +69,7 @@
     <script type="text/javascript">
       jQuery("#fixed_header .movable_table_container #weeks_header_holder").append("<div class='floating_table'><table id='allocation_week' class='list fixed'><thead><tr><th><%= display_week(week) %></th></tr></thead>");
     </script>
+    <% end %>
   <% end %>
 </div>
 

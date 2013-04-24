@@ -30,21 +30,36 @@ class ForecastJob < Struct.new(:from, :to, :accounting, :resources_no_limit, :sk
 
       @resources_no_limit.each do |resource|
 #        resource = User.find(r)
+
+        resignation_date = to_date_safe(resource.resignation_date)
+        hired_date = to_date_safe(resource.hired_date)
+        start_date = hired_date && hired_date > week.first && hired_date < week.last ? hired_date : week.first
+        end_date = resignation_date && resignation_date > week.first && resignation_date < week.last ? resignation_date : week.last
+        total_working_days = (start_date..end_date).count
+        working_days = 0
         alloc = resource.allocations(week, @projects)
+
+        project_allocations = resource.members.collect(&:resource_allocations).flatten.select do |v|
+          @projects.include? v.member.project_id
+        end
+        if allocations = project_allocations.select {|a| a.start_date <= week.last && a.end_date >= week.first}.uniq
+          allocations.each do |allocation|
+            working_days = total_working_days - detect_holidays_in_week(allocation.location, week)
+          end
+        end
         skill = resource.skill
         skill_allocations[skill] ||= 0
         skill_allocations[skill] += alloc unless resource.is_resigned
         resource_count[skill] ||= 0
-        resource_count[skill] += 1 if !alloc.zero? and !resource.is_resigned
-        resignation_date = to_date_safe(resource.resignation_date)
-        hired_date = to_date_safe(resource.hired_date)
+        resource_count[skill] += 1 if alloc.zero? && !resource.is_resigned || alloc < working_days && !resource.is_resigned
+
         if resignation_date && resignation_date > week.first && hired_date && hired_date < week.last
           weekly_resources_count += 1
         elsif !resignation_date && hired_date && hired_date < week.last
           weekly_resources_count += 1
         end
         
-        forecasts_this_week[resource.id] = alloc
+        forecasts_this_week[resource.id] = working_days.eql?(0) ? 0 : alloc/working_days
       end
       
       current_total_available_resources = 0         # current_total_res_available
@@ -65,8 +80,8 @@ class ForecastJob < Struct.new(:from, :to, :accounting, :resources_no_limit, :sk
         skill_allocations[skill] = 0.0
       end
 
-      percent_allocated = (current_total_available_resources.to_f / total_available_resources.to_f) * 100
-      percent_unallocated = ((total_available_resources.to_f - current_total_available_resources.to_f ) / total_available_resources.to_f) * 100
+      percent_unallocated = (current_total_available_resources.to_f / weekly_resources_count.to_f) * 100
+      percent_allocated = 100 - percent_unallocated
       total_allocated_percent = (current_total_allocated_resources / weekly_resources_count.to_f) * 100
       
       # TODO: apply holidays
@@ -87,5 +102,12 @@ class ForecastJob < Struct.new(:from, :to, :accounting, :resources_no_limit, :sk
     File.open("#{RAILS_ROOT}/config/rm_forecasts.yml", "w") do |out|
       YAML.dump(mgt, out)
     end
+  end
+
+  def detect_holidays_in_week(location, week)
+    locations = [6]
+    locations << location if location
+    locations << 3 if location.eql?(1) || location.eql?(2)
+    Holiday.count(:all, :conditions => ["event_date > ? and event_date < ? and location in (#{locations.join(', ')})", week.first, week.last])
   end
 end

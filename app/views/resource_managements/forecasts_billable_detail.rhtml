@@ -1,0 +1,11 @@
+<%= render :partial => 'header' %>
+
+<h2><%= "#{params[:tick]} Details" %></h2>
+
+<%= link_to 'Download CSV', "/resource_managements/forecast_billable_detail/export?tick=#{params[:tick]}&order=#{sort_clause}" %>
+
+<table>
+  <%= render :partial => 'resource_managements/forecasts_billable_detail/header' %>
+  <%= render :partial => 'resource_managements/forecasts_billable_detail/list' %>
+</table>
+

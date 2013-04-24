@@ -1,12 +1,15 @@
 class ProgrammeController < ApplicationController
   helper :sort
+  helper :efficiency
   include SortHelper
+  include EfficiencyHelper
 
   menu_item :dashboard, :only => :index
   menu_item :interactive, :only => :interactive
   menu_item :pre_sales, :only => :pre_sales
   menu_item :maintenance, :only => :maintenance
   menu_item :outstanding_issues, :only => :outstanding_issues
+  menu_item :outstanding_risks, :only => :outstanding_risks
 
   before_filter :require_pmanagement
 
@@ -141,6 +144,26 @@ class ProgrammeController < ApplicationController
       end
     else
       render :template => 'programme/outstanding_issues'
+    end
+  end
+
+  def outstanding_risks
+    @header = "Outstanding Risks"
+    @projects = Project.find(:all, :include => [:manager],
+                             :conditions => ["projects.status = ?", Project::STATUS_ACTIVE])
+    @risk_issues = Hash.new
+    @devt_projects = @projects.sort_by { |s| s.name.downcase }
+
+    @devt_projects.each do |project|
+      @risk_issues["#{project}"] = project.risks.find(:all, :conditions => ["status <> ? AND final_risk_rating > ? ", 'C', 15])
+    end
+
+    if request.xhr?
+      render :update do |page|
+        page.replace_html :programme_project_health, :partial => "programme/project_health"
+      end
+    else
+      render :template => 'programme/outstanding_risks'
     end
   end
 

@@ -28,9 +28,21 @@
           axes: {
             xaxis: { renderer: jQuery.jqplot.CategoryAxisRenderer, ticks: ticks,
                            tickRenderer: jQuery.jqplot.CanvasAxisTickRenderer, tickOptions: {angle: -45, fontSize: '7pt', showGridline: false}},
-            yaxis: { tickOptions: {formatString: '%.2f%d %'}}
+            yaxis: { tickOptions: {formatString: '%.2f%d %'},
+                     min: 0 }
           },
-          grid: {gridLineColor: '#c7c7c7'}
+          grid: {gridLineColor: '#c7c7c7'},
+            canvasOverlay: {
+                show: true,
+                objects: [
+                    {dashedHorizontalLine: {
+                        y: 85,
+                        xOffset: '0',
+                        color: 'rgb(204, 0, 0)',
+                        shadow: false
+                    }}
+                ]
+            }
         });
     
         if(id !== 'zoom_chart') {

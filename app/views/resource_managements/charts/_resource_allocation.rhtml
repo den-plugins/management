@@ -4,10 +4,11 @@
 <% data = {} %>
   <% @categories.each {|category| data[category] = Array.new} %>
   <% week_range.each do |week| %>
+    <% work_days_in_a_week = work_day_in_a_week(week) %>
     <% @categories.each do |category| %>
       <% total_allocation = 0 %>
       <% @members.select{|m| m.project.category.eql?(category)}.each {|r| total_allocation += r.days_and_cost(week)} %>
-      <% data[category] << [week.first.end_of_week, (total_allocation.to_f/5).to_f] %>
+      <% data[category] << [week.first.end_of_week, (total_allocation.to_f/work_days_in_a_week).to_f] %>
     <% end %>
   <% end %>
 <% end %>
