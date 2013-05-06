@@ -35,8 +35,8 @@
           <td><%= user.name %></td>
           <td>
             <% if res_alloc && res_alloc.count > 1 %>
-                <% sow_count = res_alloc.select { |v| v.sow_rate > 0 }.count %>
-                <% if sow_count > 0 %>
+                <% sow_count = res_alloc.select { |v| v.sow_rate && v.sow_rate > 0 }.count %>
+                <% if sow_count && sow_count > 0 %>
                     <% res_alloc.each do |v| %>
                         <% start_date = v.start_date < @beginning_of_month ? @beginning_of_month : v.start_date %>
                         <% end_date = v.end_date > @end_of_month ? @end_of_month : v.end_date %>
