@@ -1,7 +1,7 @@
 <% weeks = get_weeks_range(@from.to_date, @to.to_date) %>
 <div id='floating_tables_holder' style="width: <%= weeks.count * 85 %>px">
 <% weeks.each do |week| %>
-    <% lweek = to_yml(week.last) %>
+    <% lweek = week.last %>
     <% sweek = @summary[lweek] %>
     <% fweek = @forecasts[lweek] %>
     <div class='floating_table'>
@@ -26,9 +26,9 @@
         <tr style="background-color: #eee;">
             <% if (sweek && sweek["resource_count"]) %>
               <% if params[:skill] && !params[:skill].eql?('N/A') && !params[:skill].blank? %>
-                  <td><%= params[:skill].eql?(skill) && sweek["resource_count"][to_yml(skill)] ? sweek["resource_count"][to_yml(skill)] : 0 %></td>
+                  <td><%= params[:skill].eql?(skill) && sweek["resource_count"][skill] ? sweek["resource_count"][skill] : 0 %></td>
               <% else %>
-                  <td><%= (s=sweek["resource_count"][to_yml(skill)]) ? s : 0 %></td>
+                  <td><%= (s=sweek["resource_count"][skill]) ? s : 0 %></td>
               <% end %>
             <% else %>
               <td>0</td>
@@ -56,13 +56,13 @@
           <% if params[:skill] && !params[:skill].eql?('N/A') && !params[:skill].blank? %>
             <td>
               <% if params[:skill].eql?(skill) %>
-                <%= get_string((sweek && sweek["resource_count_per_day"]) ? sweek["resource_count_per_day"][to_yml(skill)] : 0) %>
+                <%= get_string((sweek && sweek["resource_count_per_day"]) ? sweek["resource_count_per_day"][skill] : 0) %>
               <% else %>
                 <%= 0 %>
               <% end %>
             </td>
           <% else %>
-            <td><%= get_string((sweek && sweek["resource_count_per_day"]) ? sweek["resource_count_per_day"][to_yml(skill)] : 0) %></td>
+            <td><%= get_string((sweek && sweek["resource_count_per_day"]) ? sweek["resource_count_per_day"][skill] : 0) %></td>
           <% end %>
         </tr>
         <% end %>
@@ -93,23 +93,5 @@
     });
     forecastsFixedHeader();
     
-    jQuery("#updated_at_text").show().text("as of <%= @updated_at.strftime('%b %d, %Y %I:%M %p') %>");
-    jQuery("#icon_reload_forecasts").show().click(function() {
-        if (<%= params[:skill].nil? || params[:skill].eql?("N/A") ? true :false %>) {
-      new Ajax.Request('/resource_managements/load_weekly_forecasts', {
-        parameters: { 'selection': '<%= params[:selection] %>',
-                                   'from': '<%= params[:from] %>',
-                                   'to': '<%= params[:to] %>',
-                                   'total_res_available': '<%= params[:total_res_available] %>',
-                                   'acctg': '<%= params[:acctg] %>',
-                                   'location': '<%= params[:location] %>',
-                                   'skill': '<%= params[:skill] %>',
-                                   'lastname': '<%= params[:lastname] %>',
-                                   'is_employed': '<%= params[:is_employed] %>',
-                                   'reload' : 'true',
-                                   'updated_at' : '<%= @updated_at.to_s %>'},
-        onLoading: "$('ajax-indicator').hide()"
-      });
-    }
-    });
+
 </script>
