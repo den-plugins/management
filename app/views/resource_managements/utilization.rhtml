@@ -16,7 +16,7 @@
     </fieldset>
     <br/>
 
-    <% @den_project = Project.find_by_name("New DEN Development").members(&:user_id) %>
+    <% @den_project = Project.find_by_name("New DEN Development").members.project_team(&:user_id) %>
     <% @valid_usernames = ["gcordero"] %>
     <% @den_project.each do |v| %>
       <% @valid_usernames << User.find(v.user_id).login %>
