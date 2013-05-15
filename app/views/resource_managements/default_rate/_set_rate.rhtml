@@ -1,0 +1,17 @@
+<h3>Rates for <%= @resources.each {|v| v.name} %></h3>
+
+<div style="width:100%; max-height:500px; overflow:auto;">
+
+  <% filter_by = params[:skill] ? params[:skill] : nil %>
+  <% form_for @resources, :url => {:controller => "resource_managements", :action => "save_default_rate"} do |f| %>
+    <label>Default Rate</label>
+    <%= f.hidden_field :id%>
+    <%= f.hidden_field :filter_by, :value => filter_by %>
+    <p><%= f.text_field :default_rate, :size => 5 %></p>
+    <label>Effective Date</label>
+    <p><%= f.text_field :effective_date, :size => 5 %> <%= calendar_for('user_effective_date') %></p>
+    <%= f.submit "Save" %>
+  <% end %>
+
+</div>
+

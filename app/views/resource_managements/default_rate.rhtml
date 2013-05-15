@@ -1,0 +1,55 @@
+<%= render :partial => 'resource_managements/header' %>
+
+<h2>Default Rate Maintenance</h2>
+
+<% form_tag({}, :id => 'default_rate_select') do %>
+<strong>Role:</strong><%= select_tag 'skill', options_for_select(User::SKILLS, (@skill_selected || 'N/A')) %>
+    <%= link_to_remote l(:button_apply), "#", :class => "icon icon-checked",
+                       :onclick => "$('default_rate_select').submit();",
+                       :style => "margin-left: 15px;" %>
+<% end %>
+
+
+<table>
+  <thead>
+  <tr style="background-color: #EEEEEE">
+    <%= sort_header_tag('lastname', :caption => "Name") %>
+    <%= sort_header_tag('skill', :caption => "Role") %>
+    <th align="center"  height="40px">Default Rate</th>
+    <th align="center"  height="40px">Effective Date</th>
+  </tr>
+  </thead>
+  <% @resources.each do |resource| %>
+      <tr class="<%= cycle 'odd', 'even' %>">
+        <td><%= facebox_link_to resource.name, {:url => {:controller => 'resource_managements', :action => 'set_rate', :user_id => resource, :skill => @skill_selected }} %></td>
+        <td><%= resource.skill %></td>
+        <td><%= resource.default_rate %></td>
+        <td><%= resource.effective_date %></td>
+      <tr>
+
+  <% end %>
+
+</table>
+<script type="text/javascript">
+    j = jQuery.noConflict();
+    toggleQuery();
+</script>
+
+<% content_for :header_tags do %>
+    <%= stylesheet_link_tag 'facebox', :plugin => 'facebox_render' %>
+    <%= javascript_include_tag 'facebox.js', :plugin => 'facebox_render' %>
+    <%= javascript_include_tag 'css_browser_selector.js', :plugin => 'pm_dashboard' %>
+    <%= javascript_include_tag('calendar/calendar.js') %>
+    <%= javascript_include_tag("calendar/lang/calendar-en.js") %>
+    <%= javascript_include_tag('calendar/calendar-setup.js') %>
+    <%= stylesheet_link_tag('calendar') %>
+    <style type="text/css" rel="stylesheet" media="screen">
+        #facebox .body { width: 380px;}
+        .linux.gecko #facebox .popup {
+            width: 871px;
+        }
+        #facebox .popup { width: 780px;}
+        #facebox .tl, #facebox .tr, #facebox .bl, #facebox .br { background-repeat: no-repeat; width: 5px;}
+    </style>
+<% end %>
+

@@ -6,6 +6,7 @@ class ResourceManagementsController < ApplicationController
   menu_item :users, :only => :users
   menu_item :utilization, :only => :utilization
 
+  include FaceboxRender
   helper :users, :custom_management, :custom_fields, :scrums, :resource_utilization, :resource_costs
 
   require 'json'
@@ -430,6 +431,39 @@ class ResourceManagementsController < ApplicationController
     end
 
     send_data(users_csv, :type => 'text/csv', :filename => "#{params[:tick].gsub(' ', '_')}details.csv")
+  end
+
+  def default_rate
+    sort_clear
+    sort_init "lastname"
+    sort_update %w(lastname skill)
+
+    available_user_conditions = []
+    @skill_selected = params[:filter_by] ? params[:filter_by] : params[:skill] || "N/A"
+    available_user_conditions << "skill = '#{@skill_selected}'" if !@skill_selected.blank? and !@skill_selected.eql?("N/A")
+
+    @resources = User.active.engineers.find(:all, :conditions => available_user_conditions, :order => sort_clause)
+    render :template => 'resource_managements/default_rate.rhtml', :layout => !request.xhr?
+  end
+
+
+  def set_rate
+    if params[:cancel]
+      render_updates(true)
+    else
+      user_id = params[:user_id]
+      @resources = User.find(:all, :conditions => ["id = ?",user_id])
+      respond_to do |format|
+        format.html
+        format.js { render_to_facebox :partial => "resource_managements/default_rate/set_rate" }
+      end
+    end
+  end
+
+  def save_default_rate
+    user = User.find(params[:user][:id])
+    user.update_attributes :default_rate => params[:user][:default_rate], :effective_date => params[:user][:effective_date]
+    redirect_to :action=>"default_rate", :controller=>"resource_managements", :filter_by => params[:user][:filter_by]
   end
 
   private
