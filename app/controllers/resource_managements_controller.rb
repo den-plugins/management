@@ -311,8 +311,8 @@ class ResourceManagementsController < ApplicationController
 
 
       projects.each do |project|
-        csv << [project.name]
         bm = Project.find_by_id(project.id).billing_model
+        csv << ["#{project.name}: #{bm}"]
 
         members = project.members
         total_allocated_hours = 0.0
@@ -331,18 +331,18 @@ class ResourceManagementsController < ApplicationController
           res_alloc = member.resource_allocations.select { |alloc| alloc.start_date < end_of_month && alloc.end_date > beginning_of_month }
           if res_alloc && !res_alloc.empty?
             user = member.user
-            total_allocated_hours += total_forecast += member.capped_days_report((beginning_of_month..end_of_month), nil, false, "billable") * 8
-            total_allocated_cost += total_forecast_cost += member.capped_cost_report((beginning_of_month..end_of_month), nil, false, "billable")
+            sow_rate = res_alloc.last.sow_rate ? res_alloc.last.sow_rate : 0.0
+            if bm == "T and M (Man-month)" && res_alloc.detect { |alloc| alloc.start_date <= beginning_of_month }
+              total_allocated_hours += total_forecast += ((20 * 8) * res_alloc.last.resource_allocation)/100
+              total_allocated_cost += total_forecast_cost += total_forecast * sow_rate
+            else
+              total_allocated_hours += total_forecast += member.capped_days_report((beginning_of_month..end_of_month), nil, false, "billable") * 8
+              total_allocated_cost += total_forecast_cost += member.capped_cost_report((beginning_of_month..end_of_month), nil, false, "billable")
+            end
             total_actual_hours += actual_hours += member.spent_time(beginning_of_month, end_of_month, "Billable", true).to_f
             total_billable_amount += billable_amount += member.spent_cost(beginning_of_month, end_of_month, "Billable").to_f
-            sow_rate = res_alloc.last.sow_rate ? res_alloc.last.sow_rate : 0.0
-            if bm == "T and M (Man-month)"
-              total_billable_hours += billable_hours = 20 * 8
-              total_actual_billable += actual_billable = billable_hours * sow_rate
-            else
-              total_billable_hours += billable_hours = actual_hours
-              total_actual_billable += actual_billable = billable_amount
-            end
+            total_billable_hours += billable_hours = actual_hours
+            total_actual_billable += actual_billable = billable_amount
             project_member << user.name
             if res_alloc && res_alloc.count > 1
               sow_count = res_alloc.select { |v| v.sow_rate > 0 }.count
