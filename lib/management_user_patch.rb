@@ -181,6 +181,21 @@ module Management
         total
       end
 
+      def billable_revenue(from, to, location)
+        revenue = 0.0
+        if effective_date && effective_date <= from && default_rate && !default_rate.eql?(0)
+          from = effective_date > from ? effective_date : from
+          h_date, r_date = to_date_safe(hired_date), to_date_safe(resignation_date)
+          from_date = ((from..to).include_with_range?(h_date) ? h_date - 1.day : from - 1.day)
+          f = ((from..to).include_with_range?(h_date) ? h_date : from )
+          t = ((from..to).include_with_range?(r_date) ? r_date : to)
+
+          total = ((t - from_date).to_i - holidays?(f, t, location)) * 8
+          revenue = default_rate * total
+        end
+        revenue
+      end
+
       def available_hours_with_holidays(from, to, location)
         h_date, r_date = to_date_safe(hired_date), to_date_safe(resignation_date)
         from_date = ((from..to).include_with_range?(h_date) ? h_date - 1.day : from - 1.day)

@@ -3,36 +3,68 @@
 <h2>Default Rate Maintenance</h2>
 
 <% form_tag({}, :id => 'default_rate_select') do %>
-<strong>Role:</strong><%= select_tag 'skill', options_for_select(User::SKILLS, (@skill_selected || 'N/A')) %>
+    <strong>Role:</strong><%= select_tag 'skill', options_for_select(User::SKILLS, (@skill_selected || 'N/A')) %>
     <%= link_to_remote l(:button_apply), "#", :class => "icon icon-checked",
                        :onclick => "$('default_rate_select').submit();",
                        :style => "margin-left: 15px;" %>
 <% end %>
 
+<%= facebox_link_to "Set Rate", "#", :onclick => "requestRate()",
+                    :style => "padding:2px; border: 1px solid #7f7f7f; background-color: #fff; display: none;",
+                    :id => "btn_rate_selected" %>
 
-<table>
-  <thead>
-  <tr style="background-color: #EEEEEE">
-    <%= sort_header_tag('lastname', :caption => "Name") %>
-    <%= sort_header_tag('skill', :caption => "Role") %>
-    <th align="center"  height="40px">Default Rate</th>
-    <th align="center"  height="40px">Effective Date</th>
-  </tr>
-  </thead>
-  <% @resources.each do |resource| %>
-      <tr class="<%= cycle 'odd', 'even' %>">
-        <td><%= facebox_link_to resource.name, {:url => {:controller => 'resource_managements', :action => 'set_rate', :user_id => resource, :skill => @skill_selected }} %></td>
-        <td><%= resource.skill %></td>
-        <td><%= resource.default_rate %></td>
-        <td><%= resource.effective_date %></td>
-      <tr>
+<form id="rate_form" method="POST" action="/resource_managements/set_rate">
+  <table>
+    <thead>
+    <tr style="background-color: #EEEEEE">
+      <th><%= check_box_tag "select-all", nil, false, :id => "select-all", :onchange => "toggle_rate_btn()" %></th>
+      <%= sort_header_tag('lastname', :caption => "Name") %>
+      <%= sort_header_tag('skill', :caption => "Role") %>
+      <%= sort_header_tag('default_rate', :caption => "Default Rate") %>
+      <%= sort_header_tag('effective_date', :caption => "Effective Date") %>
+    </tr>
+    </thead>
+    <% @resources.each do |resource| %>
+        <tr class="<%= cycle 'odd', 'even' %>">
+          <td><%= check_box_tag("resource_ids[]", resource.id, false, :id => nil, :onchange => "toggle_rate_btn()", :class => "allocation_check_box") %></td>
+          <td><%= facebox_link_to resource.name, {:url => {:controller => 'resource_managements', :action => 'set_rate', :user_id => resource, :skill => @skill_selected}} %></td>
+          <td><%= resource.skill %></td>
+          <td><%= resource.default_rate %></td>
+          <td><%= resource.effective_date %></td>
+        <tr>
 
-  <% end %>
+    <% end %>
 
-</table>
+  </table>
+</form>
+
 <script type="text/javascript">
-    j = jQuery.noConflict();
-    toggleQuery();
+    jQuery(function () {
+        jQuery('#select-all').click(function (event) {
+
+            var selected = this.checked;
+
+            jQuery(':checkbox').each(function () {
+                this.checked = selected;
+            });
+
+        });
+    });
+
+    function toggle_rate_btn() {
+        btn = jQuery("#btn_rate_selected");
+        (jQuery("input:checked").length > 0) ? btn.show() : btn.hide();
+    }
+
+    function requestRate() {
+        var resourceids = new Array();
+        jQuery("input:checked").each(function () {
+            resourceids.push('' + jQuery(this).val());
+        });
+        $('rate_form').request({
+            parameters: { 'resource_ids[]': resourceids, 'skill': "<%= @skill_selected %>" }
+        });
+    }
 </script>
 
 <% content_for :header_tags do %>
@@ -44,12 +76,23 @@
     <%= javascript_include_tag('calendar/calendar-setup.js') %>
     <%= stylesheet_link_tag('calendar') %>
     <style type="text/css" rel="stylesheet" media="screen">
-        #facebox .body { width: 380px;}
+        #facebox .body {
+            width: 700px;
+        }
+
         .linux.gecko #facebox .popup {
             width: 871px;
         }
-        #facebox .popup { width: 780px;}
-        #facebox .tl, #facebox .tr, #facebox .bl, #facebox .br { background-repeat: no-repeat; width: 5px;}
+
+        #facebox .popup {
+            width: 780px;
+        }
+
+        #facebox .tl, #facebox .tr, #facebox .bl, #facebox .br {
+            background-repeat: no-repeat;
+            width: 5px;
+        }
     </style>
+
 <% end %>
 

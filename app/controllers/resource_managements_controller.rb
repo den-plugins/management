@@ -360,7 +360,7 @@ class ResourceManagementsController < ApplicationController
 
     @a = Hash.new
     @total_billable_hours, @total_forecasted_hours, @billable_resources_count = 0, 0, 0
-    @total_available_hours, @total_available_hours_with_holidays = 0, 0
+    @total_available_hours, @total_available_hours_with_holidays, @total_billable_revenue = 0, 0, 0
 
     @tick = "#{params[:tick]}".split(/ /)
     month = Date::ABBR_MONTHNAMES.index(@tick[0])
@@ -381,7 +381,7 @@ class ResourceManagementsController < ApplicationController
     sort_clause = params[:order]
     @a = Hash.new
     @total_billable_hours, @total_forecasted_hours, @billable_resources_count = 0, 0, 0
-    @total_available_hours, @total_available_hours_with_holidays = 0, 0
+    @total_available_hours, @total_available_hours_with_holidays, @total_billable_revenue = 0, 0, 0
 
     @tick = "#{params[:tick]}".split(/ /)
     month = Date::ABBR_MONTHNAMES.index(@tick[0])
@@ -402,7 +402,7 @@ class ResourceManagementsController < ApplicationController
       csv << ['', '', '', '', '', '', '', '', '', '', '', '', "Billable Resources", @billable_resources_count]
       csv << ['', '', '', '', '', '', '', '', '', '', '', '', "Expected Billable Hours", @total_available_hours_with_holidays, '', "Total Forecasted Hours",
               @total_forecasted_hours, '', "Actual Hours", @total_billable_hours]
-      csv << ['', '', '', '', '', '', '', '', '', '', '', '', "Expected Billable Revenue"]
+      csv << ['', '', '', '', '', '', '', '', '', '', '', '', "Expected Billable Revenue", @total_billable_revenue]
       csv << ['', '', '', '', '', '', '', '', '', '', '', '', "85% Billability", "%.2f" % (@total_available_hours * 0.85), '', "% Forecast Allocation",
               "%.2f" % (@total_forecasted_hours/@total_available_hours * 100), '',
               "% Actual Billable", "%.2f" % (@total_billable_hours/@total_available_hours * 100)]
@@ -419,8 +419,8 @@ class ResourceManagementsController < ApplicationController
                   @a["#{user.login}"][:end_date] ? @a["#{user.login}"][:end_date] : "",
                   @a["#{user.login}"][:status], "100%", @a["#{user.login}"][:available_with_holidays],
                   @a["#{user.login}"][:available_hours_with_holidays], @a["#{user.login}"][:available_days],
-                  @a["#{user.login}"][:available_hours], '', '', @a["#{user.login}"][:project_allocation],
-                  @a["#{user.login}"][:allocation_cost],
+                  @a["#{user.login}"][:available_hours], @a["#{user.login}"][:default_rate], @a["#{user.login}"][:revenue],
+                  @a["#{user.login}"][:project_allocation], @a["#{user.login}"][:allocation_cost],
                   @a["#{user.login}"][:project_allocation] > 0 ? "#{"%.2f" % (@a["#{user.login}"][:allocation_cost]/@a["#{user.login}"][:project_allocation])}" : 0,
                   @a["#{user.login}"][:project_allocation] - @a["#{user.login}"][:available_hours],
                   @a["#{user.login}"][:billable_hours], @a["#{user.login}"][:billed_amount],
@@ -436,7 +436,7 @@ class ResourceManagementsController < ApplicationController
   def default_rate
     sort_clear
     sort_init "lastname"
-    sort_update %w(lastname skill)
+    sort_update %w(lastname skill default_rate effective_date)
 
     available_user_conditions = []
     @skill_selected = params[:filter_by] ? params[:filter_by] : params[:skill] || "N/A"
@@ -451,8 +451,10 @@ class ResourceManagementsController < ApplicationController
     if params[:cancel]
       render_updates(true)
     else
-      user_id = params[:user_id]
-      @resources = User.find(:all, :conditions => ["id = ?",user_id])
+      resources = params[:resource_ids] ? (params[:resource_ids]).reject { |l| l =~ /[on]/ } : []
+      resources << params[:user_id] if params[:user_id]
+      @resources = User.find(:all, :conditions => ["id in (?)", resources])
+      @resource_list = @resources.map(&:name)
       respond_to do |format|
         format.html
         format.js { render_to_facebox :partial => "resource_managements/default_rate/set_rate" }
@@ -461,9 +463,12 @@ class ResourceManagementsController < ApplicationController
   end
 
   def save_default_rate
-    user = User.find(params[:user][:id])
-    user.update_attributes :default_rate => params[:user][:default_rate], :effective_date => params[:user][:effective_date]
-    redirect_to :action=>"default_rate", :controller=>"resource_managements", :filter_by => params[:user][:filter_by]
+    users = params[:res_ids].split(',').map(&:to_i)
+    users.each do |user|
+      u = User.find(user)
+      u.update_attributes :default_rate => params[:user][:default_rate], :effective_date => params[:user][:effective_date]
+    end
+    redirect_to :action=>"default_rate", :controller=>"resource_managements", :filter_by => params[:filter_by]
   end
 
   private
@@ -852,7 +857,9 @@ class ResourceManagementsController < ApplicationController
 
     # available days and hours without weekends and holidays
     available = user.available_hours(week.first, week.last, user.location)/8
+    revenue = user.billable_revenue(week.first, week.last, user.location)
     available_hours = available * 8
+    default_rate = user.effective_date && user.effective_date <= from ? user.default_rate : 0
 
     # available days and hours without weekends
     available_with_holidays = user.available_hours_with_holidays(week.first, week.last, user.location)/8
@@ -865,8 +872,10 @@ class ResourceManagementsController < ApplicationController
                            :hired_date => user.hired_date, :end_date => user.resignation_date, :status => user.employee_status,
                            :available_with_holidays => available_with_holidays, :available_hours_with_holidays => available_hours_with_holidays,
                            :available_days => available, :available_hours => available_hours, :billable_hours => billable_hours,
-                           :project_allocation => project_allocation, :allocation_cost => total_forecast_cost, :billed_amount => billable_cost}
+                           :project_allocation => project_allocation, :allocation_cost => total_forecast_cost, :billed_amount => billable_cost,
+                           :revenue => revenue, :default_rate => default_rate}
 
+    @total_billable_revenue += revenue
     @total_billable_hours += billable_hours
     @billable_resources_count += 1 if available_hours > 0
     @total_forecasted_hours += project_allocation
