@@ -1,0 +1,15 @@
+<%= render :partial => 'header' %>
+
+<h2>Project Billing Details</h2>
+<h3><%= @tick %></h3>
+
+<%= link_to 'Download CSV', "/resource_managements/forecast_billable_detail/export_project_billing_detail?month=#{params[:month]}&year=#{params[:date][:year]}" %>
+
+<div id="content">
+  <table>
+  <%= render :partial => "resource_managements/project_billing_detail/header" %>
+  <% @projects.each do |@proj| %>
+        <%= render :partial => "resource_managements/project_billing_detail/list" %>
+  <% end %>
+  </table>
+</div>
