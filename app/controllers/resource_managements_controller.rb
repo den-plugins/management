@@ -1059,7 +1059,7 @@ class ResourceManagementsController < ApplicationController
     available = user.available_hours(week.first, week.last, user.location)/8
     revenue = user.billable_revenue(week.first, week.last, user.location)
     available_hours = available * 8
-    default_rate = user.effective_date && user.effective_date <= from ? user.default_rate : 0
+    default_rate = user.default_rate ? user.default_rate : 0
 
     # available days and hours without weekends
     available_with_holidays = user.available_hours_with_holidays(week.first, week.last, user.location)/8

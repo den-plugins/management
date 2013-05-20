@@ -183,8 +183,7 @@ module Management
 
       def billable_revenue(from, to, location)
         revenue = 0.0
-        if effective_date && effective_date <= from && default_rate && !default_rate.eql?(0)
-          from = effective_date > from ? effective_date : from
+        if default_rate && !default_rate.eql?(0)
           h_date, r_date = to_date_safe(hired_date), to_date_safe(resignation_date)
           from_date = ((from..to).include_with_range?(h_date) ? h_date - 1.day : from - 1.day)
           f = ((from..to).include_with_range?(h_date) ? h_date : from )
