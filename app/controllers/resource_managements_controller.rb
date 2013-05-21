@@ -651,13 +651,25 @@ class ResourceManagementsController < ApplicationController
     if params[:cancel]
       render_updates(true)
     else
+      @resource = User.find(:all, :conditions => ["id = ?", params[:user_id]])
+      respond_to do |format|
+        format.html
+        format.js { render_to_facebox :partial => "resource_managements/default_rate/set_rate" }
+      end
+    end
+  end
+
+  def multiple_set_rate
+    if params[:cancel]
+      render_updates(true)
+    else
       resources = params[:resource_ids] ? (params[:resource_ids]).reject { |l| l =~ /[on]/ } : []
       resources << params[:user_id] if params[:user_id]
       @resources = User.find(:all, :conditions => ["id in (?)", resources])
       @resource_list = @resources.map(&:name)
       respond_to do |format|
         format.html
-        format.js { render_to_facebox :partial => "resource_managements/default_rate/set_rate" }
+        format.js { render_to_facebox :partial => "resource_managements/default_rate/multiple_set_rate" }
       end
     end
   end
@@ -666,9 +678,30 @@ class ResourceManagementsController < ApplicationController
     users = params[:res_ids].split(',').map(&:to_i)
     users.each do |user|
       u = User.find(user)
+      if u.default_rate && u.effective_date
+        history = RateHistory.new
+        history.default_rate = u.default_rate
+        history.user_id = u.id
+        history.effective_date = u.effective_date
+        history.end_date = params[:user][:effective_date]
+        history.save
+      end
       u.update_attributes :default_rate => params[:user][:default_rate], :effective_date => params[:user][:effective_date]
     end
     redirect_to :action=>"default_rate", :controller=>"resource_managements", :filter_by => params[:filter_by]
+  end
+
+  def show_rate_history
+    if params[:cancel]
+      render_updates(true)
+    else
+      @resource = User.find_by_id(params[:user_id])
+      @rate_history = @resource.rate_histories
+      respond_to do |format|
+        format.html
+        format.js { render_to_facebox :partial => "resource_managements/default_rate/show_rate_history" }
+      end
+    end
   end
 
   private
