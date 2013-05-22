@@ -15,7 +15,7 @@
     <% user = member.user %>
     <% if user.rate_histories && rate = user.rate_histories.detect {|v| v.effective_date && v.effective_date <= @end_of_month && v.end_date && v.end_date >= @beginning_of_month } %>
       <% default_rate = rate.default_rate %>
-    <% elsif user.effective_date && @beginning_of_month <= user.effective_date %>
+    <% elsif user.effective_date && @beginning_of_month >= user.effective_date %>
       <% default_rate = user.default_rate %>
     <% else %>
       <% default_rate = 0 %>
