@@ -27,7 +27,7 @@
     <% @resources.each do |resource| %>
         <tr class="<%= cycle 'odd', 'even' %>">
           <td><%= check_box_tag("resource_ids[]", resource.id, false, :id => nil, :onchange => "toggle_rate_btn()", :class => "allocation_check_box") %></td>
-          <td><%= facebox_link_to resource.name, {:url => {:controller => 'resource_managements', :action => 'set_rate', :user_id => resource, :skill => @skill_selected}} %></td>
+          <td><%= facebox_link_to "#{resource.lastname}, #{resource.firstname}", {:url => {:controller => 'resource_managements', :action => 'set_rate', :user_id => resource, :skill => @skill_selected}} %></td>
           <td><%= resource.skill %></td>
           <td><%= facebox_link_to resource.default_rate, {:url => {:controller => 'resource_managements', :action => 'show_rate_history', :user_id => resource}} %></td>
           <td><%= resource.effective_date %></td>
