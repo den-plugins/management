@@ -676,17 +676,19 @@ class ResourceManagementsController < ApplicationController
 
   def save_default_rate
     users = params[:res_ids].split(',').map(&:to_i)
+    default_rate = params[:user][:default_rate]
+    effective_date = params[:user][:effective_date]
     users.each do |user|
       u = User.find(user)
-      if u.default_rate && u.effective_date
+      if u.default_rate && u.effective_date && default_rate && !effective_date.blank? && u.effective_date <= to_date_safe(effective_date)
         history = RateHistory.new
         history.default_rate = u.default_rate
         history.user_id = u.id
         history.effective_date = u.effective_date
-        history.end_date = params[:user][:effective_date]
+        history.end_date = effective_date
         history.save
       end
-      u.update_attributes :default_rate => params[:user][:default_rate], :effective_date => params[:user][:effective_date]
+      u.update_attributes :default_rate => default_rate, :effective_date => effective_date
     end
     redirect_to :action=>"default_rate", :controller=>"resource_managements", :filter_by => params[:filter_by]
   end
