@@ -1112,7 +1112,7 @@ class ResourceManagementsController < ApplicationController
 
     if user.rate_histories && rate = user.rate_histories.detect {|v| v.effective_date && v.effective_date <= to && v.end_date && v.end_date >= from }
       default_rate = rate.default_rate
-    elsif user.effective_date && from <= user.effective_date && to >= user.effective_date
+    elsif user.effective_date && from <= user.effective_date
       default_rate = user.default_rate
     else
       default_rate = 0
