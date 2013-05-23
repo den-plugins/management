@@ -55,12 +55,12 @@
                 <%= sow_rate %>
             <% end %>
           </td>
-          <td><%= number_with_precision(total_forecast, :precision => 2) %></td>
-          <td><%= number_with_precision(total_forecast_cost, :precision => 2) %></td>
-          <td><%= number_with_precision(actual_hours, :precision => 2) %></td>
-          <td><%= number_with_precision(billable_amount, :precision => 2) %></td>
-          <td><%= number_with_precision(billable_hours, :precision => 2) %></td>
-          <td><%= number_with_precision(actual_billable, :precision => 2) %></td>
+          <td><%= number_with_precision(total_forecast, :precision => 2, :delimiter => ',') %></td>
+          <td><%= number_with_precision(total_forecast_cost, :precision => 2, :delimiter => ',') %></td>
+          <td><%= number_with_precision(actual_hours, :precision => 2, :delimiter => ',') %></td>
+          <td><%= number_with_precision(billable_amount, :precision => 2, :delimiter => ',') %></td>
+          <td><%= number_with_precision(billable_hours, :precision => 2, :delimiter => ',') %></td>
+          <td><%= number_with_precision(actual_billable, :precision => 2, :delimiter => ',') %></td>
         </tr>
     <% end %>
 <% end %>
@@ -68,11 +68,11 @@
 <tr>
   <td></td>
   <td></td>
-  <td style="background-color: #E0EEEE"><strong><%= number_with_precision(total_allocated_hours, :precision => 2) %></strong></td>
-  <td style="background-color: #E0EEEE"><strong><%= number_with_precision(total_allocated_cost, :precision => 2) %></strong></td>
-  <td style="background-color: #E0EEEE"><strong><%= number_with_precision(total_actual_hours, :precision => 2) %></strong></td>
-  <td style="background-color: #E0EEEE"><strong><%= number_with_precision(total_billable_amount, :precision => 2) %></strong></td>
-  <td style="background-color: #E0EEEE"><strong><%= number_with_precision(total_billable_hours, :precision => 2) %></strong></td>
-  <td style="background-color: #E0EEEE"><strong><%= number_with_precision(total_actual_billable, :precision => 2) %></strong></td>
+  <td style="background-color: #E0EEEE"><strong><%= number_with_precision(total_allocated_hours, :precision => 2, :delimiter => ',') %></strong></td>
+  <td style="background-color: #E0EEEE"><strong><%= number_with_precision(total_allocated_cost, :precision => 2, :delimiter => ',') %></strong></td>
+  <td style="background-color: #E0EEEE"><strong><%= number_with_precision(total_actual_hours, :precision => 2, :delimiter => ',') %></strong></td>
+  <td style="background-color: #E0EEEE"><strong><%= number_with_precision(total_billable_amount, :precision => 2, :delimiter => ',') %></strong></td>
+  <td style="background-color: #E0EEEE"><strong><%= number_with_precision(total_billable_hours, :precision => 2, :delimiter => ',') %></strong></td>
+  <td style="background-color: #E0EEEE"><strong><%= number_with_precision(total_actual_billable, :precision => 2, :delimiter => ',') %></strong></td>
 </tr>
 </tbody>
