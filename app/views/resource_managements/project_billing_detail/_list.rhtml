@@ -3,7 +3,7 @@
   <% bm = Project.find_by_id(@proj.id).billing_model %>
   <td><strong><%= @proj.name %>: <%= bm %></strong>
   <td>
-    <% members = @proj.members %>
+    <% members = @proj.members.sort_by {|x| [x.user.lastname, x.user.firstname] } %>
     <% total_allocated_hours = 0.0 %>
     <% total_allocated_cost = 0.0 %>
     <% total_actual_hours = 0.0 %>
@@ -40,7 +40,7 @@
           <% total_billable_amount += billable_amount += member.spent_cost(@beginning_of_month, @end_of_month, "Billable").to_f %>
           <% total_billable_hours += billable_hours = actual_hours %>
           <% total_actual_billable += actual_billable = billable_amount %>
-          <td><%= user.name %></td>
+          <td><%= "#{user.lastname}, #{user.firstname}" %></td>
           <td><%= default_rate %></td>
           <td>
             <% if res_alloc && res_alloc.count > 1 %>

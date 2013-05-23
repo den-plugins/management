@@ -360,7 +360,7 @@ class ResourceManagementsController < ApplicationController
     @tick = "#{tick_month} #{year}"
     @beginning_of_month = Date.new(year.to_i, month, 1)
     @end_of_month = @beginning_of_month.end_of_month
-    @users = User.engineers.find(:all)
+    @users = User.engineers.find(:all, :order => "lastname ASC, firstname ASC")
   end
 
   def project_billing_detail
@@ -381,7 +381,7 @@ class ResourceManagementsController < ApplicationController
     tick = "#{tick_month} #{year}"
     beginning_of_month = Date.new(year.to_i, month, 1)
     end_of_month = beginning_of_month.end_of_month
-    users = User.engineers.find(:all)
+    users = User.engineers.find(:all, :order => "lastname ASC, firstname ASC")
 
     resource_csv = FasterCSV.generate do |csv|
       # header row
@@ -395,7 +395,7 @@ class ResourceManagementsController < ApplicationController
         unless (h_date && h_date > end_of_month ) || (r_date && r_date < beginning_of_month )
           members = user.members
 
-          csv << ["#{user.name}"]
+          csv << ["#{user.lastname}, #{user.firstname}"]
 
           total_allocated_hours = 0.0
           total_allocated_cost = 0.0
@@ -489,7 +489,7 @@ class ResourceManagementsController < ApplicationController
         bm = Project.find_by_id(project.id).billing_model
         csv << ["#{project.name}: #{bm}"]
 
-        members = project.members
+        members = project.members.sort_by {|x| [x.user.lastname, x.user.firstname] }
         total_allocated_hours = 0.0
         total_allocated_cost = 0.0
         total_actual_hours = 0.0
@@ -526,7 +526,7 @@ class ResourceManagementsController < ApplicationController
             total_billable_amount += billable_amount += member.spent_cost(beginning_of_month, end_of_month, "Billable").to_f
             total_billable_hours += billable_hours = actual_hours
             total_actual_billable += actual_billable = billable_amount
-            project_member << user.name
+            project_member << "#{user.lastname}, #{user.firstname}"
             project_member << default_rate
             if res_alloc && res_alloc.count > 1
               sow_count = res_alloc.select { |v| v.sow_rate > 0 }.count

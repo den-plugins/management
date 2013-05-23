@@ -1,5 +1,5 @@
 <tbody>
-<tr><td><strong><%= @user.name %></strong><td></tr>
+<tr><td><strong><%= "#{@user.lastname}, #{@user.firstname}" %></strong><td></tr>
 <% members = @user.members %>
 
   <% total_allocated_hours = 0.0 %>
