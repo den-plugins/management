@@ -368,10 +368,17 @@ class ResourceManagementsController < ApplicationController
     tick_month = params[:month] && !params[:month].empty? ? params[:month] : Date::ABBR_MONTHNAMES[Date.today.month]
     year = params[:date][:year]
     @tick = "#{tick_month} #{year}"
+    @pb = Hash.new
+    @per_project = Hash.new
+    @overall_forcasted_hours = 0.0
+    @overall_actual_hours = 0.0
     @beginning_of_month = Date.new(year.to_i, month, 1)
     @end_of_month = @beginning_of_month.end_of_month
-    @projects = Project.development.select { |v| v.planned_start_date && v.planned_start_date < @end_of_month &&
-        v.planned_end_date && v.planned_end_date > @beginning_of_month && v.accounting_type == 'Billable' }
+    @projects = Project.development.select { |v| v.planned_start_date && v.planned_start_date <= @end_of_month &&
+        v.planned_end_date && v.planned_end_date >= @beginning_of_month && v.accounting_type == 'Billable' }
+    @projects.each do |proj|
+      get_project_billing_details(proj, @beginning_of_month, @end_of_month)
+    end
   end
 
   def export_resource_billing_detail
@@ -1106,9 +1113,9 @@ class ResourceManagementsController < ApplicationController
     project_allocation = total_forecast * 8
 
     # available days and hours without weekends and holidays
-    available = user.available_hours(week.first, week.last, user.location)/8
+    available_hours = user.available_hours(week.first, week.last, user.location)
     revenue = user.billable_revenue(week.first, week.last, user.location)
-    available_hours = available * 8
+    available = available_hours/8
 
     if user.rate_histories && rate = user.rate_histories.detect {|v| v.effective_date && v.effective_date <= to && v.end_date && v.end_date >= from }
       default_rate = rate.default_rate
@@ -1138,6 +1145,78 @@ class ResourceManagementsController < ApplicationController
     @total_forecasted_hours += project_allocation
     @total_available_hours += available_hours
     @total_available_hours_with_holidays += available_hours_with_holidays
+  end
+
+  def get_project_billing_details(project, from, to)
+    bm = Project.find_by_id(project.id).billing_model
+
+    members = project.members.sort_by {|x| [x.user.lastname, x.user.firstname] }
+    total_allocated_hours, total_allocated_cost, total_actual_hours = 0.0, 0.0, 0.0
+    total_billable_amount, total_billable_hours, total_actual_billable = 0.0, 0.0, 0.0
+
+    members.each do |member|
+      user = member.user
+      h_date, r_date = to_date_safe(user.hired_date), to_date_safe(user.resignation_date)
+      unless (h_date && h_date > to) || (r_date && r_date < from)
+        if user.rate_histories && rate = user.rate_histories.detect {|v| v.effective_date && v.effective_date <= to && v.end_date && v.end_date >= from }
+          default_rate = rate.default_rate
+        elsif user.effective_date && from >= user.effective_date
+          default_rate = user.default_rate
+        else
+          default_rate = 0
+        end
+
+        total_forecast, total_forecast_cost = 0.0, 0.0
+        actual_hours, billable_amount = 0.0, 0.0
+        res_alloc = member.resource_allocations.select { |alloc| alloc.start_date <= to && alloc.end_date >= from }
+        if res_alloc && !res_alloc.empty?
+          sow_rate = res_alloc.last.sow_rate ? res_alloc.last.sow_rate : 0.0
+          total_allocated_hours += total_forecast += member.capped_days_report((from..to), nil, false, "billable") * 8
+          total_allocated_cost += total_forecast_cost += member.capped_cost_report((from..to), nil, false, "billable")
+          total_actual_hours += actual_hours += member.spent_time(from, to, "Billable", true).to_f + member.spent_time_on_admin(from, to, "Billable", true).to_f
+          total_billable_amount += billable_amount += member.spent_cost(from, to, "Billable").to_f
+          total_billable_hours += billable_hours = actual_hours
+          total_actual_billable += actual_billable = billable_amount
+          name = "#{user.lastname}, #{user.firstname}"
+
+          if res_alloc && res_alloc.count > 1
+            sow_count = res_alloc.select { |v| v.sow_rate && v.sow_rate > 0 }.count
+            if sow_count && sow_count > 0
+              alloc_array = ""
+              old_rate = 0
+              res_alloc.each do |v|
+                start_date = v.start_date < from ? from : v.start_date
+                end_date = v.end_date > to ? to : v.end_date
+                unless old_rate == v.sow_rate
+                  alloc_array += "#{v.sow_rate} (#{start_date.strftime("%m/%d")} - #{end_date.strftime("%m/%d")}) "
+                else
+                  alloc_array += "(#{start_date.strftime("%m/%d")} - #{end_date.strftime("%m/%d")}) "
+                end
+                old_rate = v.sow_rate
+              end
+              sow_rate = alloc_array
+            else
+              sow_rate = sow_rate
+            end
+          else
+            sow_rate = sow_rate
+          end
+          @pb["#{member.id}"] = {:name => name, :default_rate => default_rate, :sow_rate => sow_rate,
+                                :allocated_hours => total_forecast, :allocated_cost => total_forecast_cost,
+                                :actual_hours => actual_hours, :billable_amount => billable_amount,
+                                :billable_hours => billable_hours, :actual_billable => actual_billable }
+
+        end
+      end
+    end
+    @per_project["#{project.id}"] = { :total_allocated_hours => total_allocated_hours,
+                                      :total_allocated_cost => total_allocated_cost,
+                                      :total_actual_hours => total_actual_hours,
+                                      :total_billable_amount => total_billable_amount,
+                                      :total_billable_hours => total_billable_hours,
+                                      :total_actual_billable => total_actual_billable }
+    @overall_forcasted_hours += total_allocated_hours
+    @overall_actual_hours += total_actual_hours
   end
 
   def detect_holidays_in_week(location, week)
