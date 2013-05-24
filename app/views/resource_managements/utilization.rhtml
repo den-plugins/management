@@ -16,16 +16,18 @@
     </fieldset>
     <br/>
 
-    <% @den_project = Project.find_by_name("New DEN Development").members(&:user_id) %>
+    <% @den_project = Project.find_by_name("New DEN Development").members.project_team(&:user_id) %>
     <% @valid_usernames = ["gcordero"] %>
     <% @den_project.each do |v| %>
       <% @valid_usernames << User.find(v.user_id).login %>
     <% end %>
 
-    <% if @valid_usernames.include? User.current.login %>
-      <fieldset><%= link_to "Add time logs", contractor_logs_path %></fieldset><br />
-    <% end %>
-
+    <fieldset>
+      <% if @valid_usernames.include? User.current.login %>
+        <%= link_to "Add time logs", contractor_logs_path %><br />
+      <% end %>
+      <%= link_to "Default Rate", {:controller => "resource_managements", :action => "default_rate"} %>
+    </fieldset><br />
     <% unless @selected_users.empty? %>
       <div id="mgt_resources_list">
         <%= render :partial => "resource_managements/utilization/list" %>

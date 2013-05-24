@@ -117,6 +117,19 @@
       </div>
       <%= link_to_zoomed_chart 'forecast_billable', :style => 'display: none' %>
     </div>
+
+    <% form_tag({:action=> "resource_billing_detail"}, {:target => "_blank"}) do %>
+        <%= select_tag "month", options_for_select(Date::ABBR_MONTHNAMES, Date::ABBR_MONTHNAMES[Date.today.month]) %>
+        <%= select_year(Date.today, :start_year => 2001, :end_year => Date.today.year) %>
+        <%= submit_tag "View Resource Billing Detail" %>
+    <% end %>
+    <br />
+
+    <% form_tag({:action=> "project_billing_detail"}, {:target => "_blank"}) do %>
+        <%= select_tag "month", options_for_select(Date::ABBR_MONTHNAMES, Date::ABBR_MONTHNAMES[Date.today.month]) %>
+        <%= select_year(Date.today, :start_year => 2001, :end_year => Date.today.year) %>
+        <%= submit_tag "View Project Billing Detail" %>
+    <% end %>
   </div>
 </div>
 

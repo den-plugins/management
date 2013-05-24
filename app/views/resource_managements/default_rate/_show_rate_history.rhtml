@@ -1,0 +1,19 @@
+<p>History default rate for <strong><%= @resource.name %></strong></p>
+
+<br />
+<table>
+  <thead>
+  <th>Default Rate</th>
+  <th>Effective Date</th>
+  <th>End Date</th>
+  </thead>
+  <tbody>
+  <% @rate_history.each do |f| %>
+      <tr class="<%= cycle 'odd', 'even' %>">
+        <td><%= f.default_rate %></td>
+        <td><%= f.effective_date %></td>
+        <td><%= f.end_date %></td>
+      </tr>
+  <% end %>
+  </tbody>
+</table>

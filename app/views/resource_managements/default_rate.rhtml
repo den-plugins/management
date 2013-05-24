@@ -1,0 +1,98 @@
+<%= render :partial => 'resource_managements/header' %>
+
+<h2>Default Rate Maintenance</h2>
+
+<% form_tag({}, :id => 'default_rate_select') do %>
+    <strong>Role:</strong><%= select_tag 'skill', options_for_select(User::SKILLS, (@skill_selected || 'N/A')) %>
+    <%= link_to_remote l(:button_apply), "#", :class => "icon icon-checked",
+                       :onclick => "$('default_rate_select').submit();",
+                       :style => "margin-left: 15px;" %>
+<% end %>
+
+<%= facebox_link_to "Set Rate", "#", :onclick => "requestRate()",
+                    :style => "padding:2px; border: 1px solid #7f7f7f; background-color: #fff; display: none;",
+                    :id => "btn_rate_selected" %>
+
+<form id="rate_form" method="POST" action="/resource_managements/multiple_set_rate">
+  <table>
+    <thead>
+    <tr style="background-color: #EEEEEE">
+      <th><%= check_box_tag "select-all", nil, false, :id => "select-all", :onchange => "toggle_rate_btn()" %></th>
+      <%= sort_header_tag('lastname', :caption => "Name") %>
+      <%= sort_header_tag('skill', :caption => "Role") %>
+      <%= sort_header_tag('default_rate', :caption => "Default Rate") %>
+      <%= sort_header_tag('effective_date', :caption => "Effective Date") %>
+    </tr>
+    </thead>
+    <% @resources.each do |resource| %>
+        <tr class="<%= cycle 'odd', 'even' %>">
+          <td><%= check_box_tag("resource_ids[]", resource.id, false, :id => nil, :onchange => "toggle_rate_btn()", :class => "allocation_check_box") %></td>
+          <td><%= facebox_link_to "#{resource.lastname}, #{resource.firstname}", {:url => {:controller => 'resource_managements', :action => 'set_rate', :user_id => resource, :skill => @skill_selected}} %></td>
+          <td><%= resource.skill %></td>
+          <td><%= facebox_link_to resource.default_rate, {:url => {:controller => 'resource_managements', :action => 'show_rate_history', :user_id => resource}} %></td>
+          <td><%= resource.effective_date %></td>
+        <tr>
+
+    <% end %>
+
+  </table>
+</form>
+
+<script type="text/javascript">
+    jQuery(function () {
+        jQuery('#select-all').click(function (event) {
+
+            var selected = this.checked;
+
+            jQuery(':checkbox').each(function () {
+                this.checked = selected;
+            });
+
+        });
+    });
+
+    function toggle_rate_btn() {
+        btn = jQuery("#btn_rate_selected");
+        (jQuery("input:checked").length > 0) ? btn.show() : btn.hide();
+    }
+
+    function requestRate() {
+        var resourceids = new Array();
+        jQuery("input:checked").each(function () {
+            resourceids.push('' + jQuery(this).val());
+        });
+        $('rate_form').request({
+            parameters: { 'resource_ids[]': resourceids, 'skill': "<%= @skill_selected %>" }
+        });
+    }
+</script>
+
+<% content_for :header_tags do %>
+    <%= stylesheet_link_tag 'facebox', :plugin => 'facebox_render' %>
+    <%= javascript_include_tag 'facebox.js', :plugin => 'facebox_render' %>
+    <%= javascript_include_tag 'css_browser_selector.js', :plugin => 'pm_dashboard' %>
+    <%= javascript_include_tag('calendar/calendar.js') %>
+    <%= javascript_include_tag("calendar/lang/calendar-en.js") %>
+    <%= javascript_include_tag('calendar/calendar-setup.js') %>
+    <%= stylesheet_link_tag('calendar') %>
+    <style type="text/css" rel="stylesheet" media="screen">
+        #facebox .body {
+            width: 700px;
+        }
+
+        .linux.gecko #facebox .popup {
+            width: 871px;
+        }
+
+        #facebox .popup {
+            width: 780px;
+        }
+
+        #facebox .tl, #facebox .tr, #facebox .bl, #facebox .br {
+            background-repeat: no-repeat;
+            width: 5px;
+        }
+    </style>
+
+<% end %>
+

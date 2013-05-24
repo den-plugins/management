@@ -1,0 +1,78 @@
+<tbody>
+<tr><td><strong><%= @user.name %></strong><td></tr>
+<% members = @user.members %>
+
+  <% total_allocated_hours = 0.0 %>
+  <% total_allocated_cost = 0.0 %>
+  <% total_actual_hours = 0.0 %>
+  <% total_billable_amount = 0.0 %>
+  <% total_billable_hours = 0.0 %>
+  <% total_actual_billable = 0.0 %>
+
+<% members.each do |member| %>
+    <% total_forecast = 0.00 %>
+    <% total_forecast_cost = 0.00 %>
+    <% actual_hours = 0.0 %>
+    <% billable_amount = 0.0 %>
+    <% res_alloc = member.resource_allocations.select { |alloc| alloc.start_date < @end_of_month && alloc.end_date > @beginning_of_month } %>
+    <% if res_alloc && !res_alloc.empty? %>
+        <tr class="odd">
+          <% project = member.project %>
+          <% bm = member.project.billing_model %>
+          <% sow_rate = res_alloc.last.sow_rate ? res_alloc.last.sow_rate : 0.0 %>
+          <% if bm == "T and M (Man-month)" && res_alloc.detect { |alloc| alloc.start_date <= @beginning_of_month } %>
+              <% total_allocated_hours += total_forecast += ((20 * 8) * res_alloc.last.resource_allocation)/100 %>
+              <% total_allocated_cost += total_forecast_cost += total_forecast * sow_rate %>
+          <% else %>
+              <% total_allocated_hours += total_forecast += member.capped_days_report((@beginning_of_month..@end_of_month), nil, false, "billable") * 8 %>
+              <% total_allocated_cost += total_forecast_cost += member.capped_cost_report((@beginning_of_month..@end_of_month), nil, false, "billable") %>
+          <% end %>
+          <% total_actual_hours += actual_hours += member.spent_time(@beginning_of_month, @end_of_month, "Billable", true).to_f %>
+          <% total_billable_amount += billable_amount += member.spent_cost(@beginning_of_month, @end_of_month, "Billable").to_f %>
+          <% total_billable_hours += billable_hours = actual_hours %>
+          <% total_actual_billable += actual_billable = billable_amount %>
+          <td><%= project.name %>: <%= bm %></td>
+          <td>
+            <% if res_alloc && res_alloc.count > 1 %>
+                <% sow_count = res_alloc.select { |v| v.sow_rate && v.sow_rate > 0 }.count %>
+                <% if sow_count && sow_count > 0 %>
+                <% old_rate = 0 %>
+                    <% res_alloc.each do |v| %>
+                        <% start_date = v.start_date < @beginning_of_month ? @beginning_of_month : v.start_date %>
+                        <% end_date = v.end_date > @end_of_month ? @end_of_month : v.end_date %>
+
+                        <% unless old_rate == v.sow_rate %>
+                          <%= "#{v.sow_rate} (#{start_date.strftime("%m/%d")} - #{end_date.strftime("%m/%d")}) " %>
+                        <% else %>
+                          <%= "(#{start_date.strftime("%m/%d")} - #{end_date.strftime("%m/%d")}) " %>
+                        <% end %>
+                        <% old_rate = v.sow_rate %>
+                    <% end %>
+                <% else %>
+                    <%= sow_rate %>
+                <% end %>
+            <% else %>
+                <%= sow_rate %>
+            <% end %>
+          </td>
+          <td><%= number_with_precision(total_forecast, :precision => 2) %></td>
+          <td><%= number_with_precision(total_forecast_cost, :precision => 2) %></td>
+          <td><%= number_with_precision(actual_hours, :precision => 2) %></td>
+          <td><%= number_with_precision(billable_amount, :precision => 2) %></td>
+          <td><%= number_with_precision(billable_hours, :precision => 2) %></td>
+          <td><%= number_with_precision(actual_billable, :precision => 2) %></td>
+        </tr>
+    <% end %>
+<% end %>
+
+<tr>
+  <td></td>
+  <td></td>
+  <td style="background-color: #E0EEEE"><strong><%= number_with_precision(total_allocated_hours, :precision => 2) %></strong></td>
+  <td style="background-color: #E0EEEE"><strong><%= number_with_precision(total_allocated_cost, :precision => 2) %></strong></td>
+  <td style="background-color: #E0EEEE"><strong><%= number_with_precision(total_actual_hours, :precision => 2) %></strong></td>
+  <td style="background-color: #E0EEEE"><strong><%= number_with_precision(total_billable_amount, :precision => 2) %></strong></td>
+  <td style="background-color: #E0EEEE"><strong><%= number_with_precision(total_billable_hours, :precision => 2) %></strong></td>
+  <td style="background-color: #E0EEEE"><strong><%= number_with_precision(total_actual_billable, :precision => 2) %></strong></td>
+</tr>
+</tbody>

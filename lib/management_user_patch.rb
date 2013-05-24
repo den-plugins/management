@@ -181,6 +181,27 @@ module Management
         total
       end
 
+      def billable_revenue(from, to, location)
+        revenue = 0.0
+        rate_history = rate_histories
+
+        h_date, r_date = to_date_safe(hired_date), to_date_safe(resignation_date)
+        from_date = ((from..to).include_with_range?(h_date) ? h_date - 1.day : from - 1.day)
+        f = ((from..to).include_with_range?(h_date) ? h_date : from )
+        t = ((from..to).include_with_range?(r_date) ? r_date : to)
+
+        (f..t).each do |day|
+          unless day.wday.eql?(0) || day.wday.eql?(6) || holidays?(day, day, location) > 0
+            if rate = rate_history.detect {|v| v.effective_date && v.effective_date <= day && v.end_date && v.end_date > day }
+              revenue += rate.default_rate * 8
+            elsif effective_date && effective_date <= day
+              revenue += default_rate * 8
+            end
+          end
+        end
+        revenue
+      end
+
       def available_hours_with_holidays(from, to, location)
         h_date, r_date = to_date_safe(hired_date), to_date_safe(resignation_date)
         from_date = ((from..to).include_with_range?(h_date) ? h_date - 1.day : from - 1.day)
