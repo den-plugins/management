@@ -6,7 +6,7 @@
 <% members.each do |member| %>
 <% if @pb["#{member.id}"] %>
         <tr class="<%= cycle 'odd', 'even' %>">
-          <td><%= @pb["#{member.id}"][:name] %></td>
+          <td style="width:400px;"><%= @pb["#{member.id}"][:name] %></td>
           <td><%= @pb["#{member.id}"][:default_rate] %></td>
           <td><%= @pb["#{member.id}"][:sow_rate] %></td>
           <td align="right"><%= number_with_precision(@pb["#{member.id}"][:allocated_hours], :precision => 2, :delimiter => ',') %></td>
