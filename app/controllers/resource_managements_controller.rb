@@ -479,11 +479,15 @@ class ResourceManagementsController < ApplicationController
     month = params[:month] && !params[:month].empty? ? Date::ABBR_MONTHNAMES.index(params[:month]) : Date.today.month
     tick_month = params[:month] && !params[:month].empty? ? params[:month] : Date::ABBR_MONTHNAMES[Date.today.month]
     year = params[:year]
-    tick = "#{tick_month} #{year}"
-    beginning_of_month = Date.new(year.to_i, month, 1)
-    end_of_month = beginning_of_month.end_of_month
-    projects = Project.development.select { |v| v.planned_start_date && v.planned_start_date < end_of_month &&
-        v.planned_end_date && v.planned_end_date > beginning_of_month && v.accounting_type == 'Billable' }
+    @tick = "#{tick_month} #{year}"
+    @pb = Hash.new
+    @per_project = Hash.new
+    @overall_forcasted_hours = 0.0
+    @overall_actual_hours = 0.0
+    @beginning_of_month = Date.new(year.to_i, month, 1)
+    @end_of_month = @beginning_of_month.end_of_month
+    @projects = Project.development.select { |v| v.planned_start_date && v.planned_start_date <= @end_of_month &&
+        v.planned_end_date && v.planned_end_date >= @beginning_of_month && v.accounting_type == 'Billable' }
 
     project_csv = FasterCSV.generate do |csv|
       # header row
@@ -492,84 +496,27 @@ class ResourceManagementsController < ApplicationController
       csv << ['Project', "Name", "Default Rate", "SOW Rate", "Allocated Hours", "Allocated Cost", "Actual Hours", "Billable Amount", "Billable Hours", "Actual Billable"]
 
 
-      projects.each do |project|
-        bm = Project.find_by_id(project.id).billing_model
-        csv << ["#{project.name}: #{bm}"]
+      @projects.each do |proj|
+        get_project_billing_details(proj, @beginning_of_month, @end_of_month)
+        bm = Project.find_by_id(proj.id).billing_model
+        csv << ["#{proj.name}: #{bm}"]
 
-        members = project.members.sort_by {|x| [x.user.lastname, x.user.firstname] }
-        total_allocated_hours = 0.0
-        total_allocated_cost = 0.0
-        total_actual_hours = 0.0
-        total_billable_amount = 0.0
-        total_billable_hours = 0.0
-        total_actual_billable = 0.0
+        members = proj.members.sort_by {|x| [x.user.lastname, x.user.firstname] }
 
         members.each do |member|
-          user = member.user
-          if user.rate_histories && rate = user.rate_histories.detect {|v| v.effective_date && v.effective_date <= end_of_month && v.end_date && v.end_date >= beginning_of_month }
-            default_rate = rate.default_rate
-          elsif user.effective_date && beginning_of_month >= user.effective_date
-            default_rate = user.default_rate
-          else
-            default_rate = 0
+          if @pb["#{member.id}"]
+            csv << ['', @pb["#{member.id}"][:name], @pb["#{member.id}"][:default_rate], @pb["#{member.id}"][:sow_rate],
+                    "%.2f" % @pb["#{member.id}"][:allocated_hours], "%.2f" % @pb["#{member.id}"][:allocated_cost],
+                    "%.2f" % @pb["#{member.id}"][:actual_hours], "%.2f" % @pb["#{member.id}"][:billable_amount],
+                    "%.2f" % @pb["#{member.id}"][:billable_hours],"%.2f" % @pb["#{member.id}"][:actual_billable]]
           end
-
-          project_member = []
-          total_forecast = 0.00
-          total_forecast_cost = 0.00
-          actual_hours = 0.0
-          billable_amount = 0.0
-          res_alloc = member.resource_allocations.select { |alloc| alloc.start_date < end_of_month && alloc.end_date > beginning_of_month }
-          if res_alloc && !res_alloc.empty?
-            sow_rate = res_alloc.last.sow_rate ? res_alloc.last.sow_rate : 0.0
-            if bm == "T and M (Man-month)" && res_alloc.detect { |alloc| alloc.start_date <= beginning_of_month }
-              total_allocated_hours += total_forecast += ((20 * 8) * res_alloc.last.resource_allocation)/100
-              total_allocated_cost += total_forecast_cost += total_forecast * sow_rate
-            else
-              total_allocated_hours += total_forecast += member.capped_days_report((beginning_of_month..end_of_month), nil, false, "billable") * 8
-              total_allocated_cost += total_forecast_cost += member.capped_cost_report((beginning_of_month..end_of_month), nil, false, "billable")
-            end
-            total_actual_hours += actual_hours += member.spent_time(beginning_of_month, end_of_month, "Billable", true).to_f
-            total_billable_amount += billable_amount += member.spent_cost(beginning_of_month, end_of_month, "Billable").to_f
-            total_billable_hours += billable_hours = actual_hours
-            total_actual_billable += actual_billable = billable_amount
-            project_member << "#{user.lastname}, #{user.firstname}"
-            project_member << default_rate
-            if res_alloc && res_alloc.count > 1
-              sow_count = res_alloc.select { |v| v.sow_rate > 0 }.count
-              if sow_count && sow_count > 0
-                alloc_array = ""
-                old_rate = 0
-                res_alloc.each do |v|
-                  start_date = v.start_date < beginning_of_month ? beginning_of_month : v.start_date
-                  end_date = v.end_date > end_of_month ? end_of_month : v.end_date
-                  unless old_rate == v.sow_rate
-                    alloc_array += "#{v.sow_rate} (#{start_date.strftime("%m/%d")} - #{end_date.strftime("%m/%d")}) "
-                  else
-                    alloc_array += "(#{start_date.strftime("%m/%d")} - #{end_date.strftime("%m/%d")}) "
-                  end
-                  old_rate = v.sow_rate
-                end
-                project_member << alloc_array
-              else
-                project_member << sow_rate
-              end
-            else
-              project_member << sow_rate
-            end
-            project_member << "%.2f" % total_forecast
-            project_member << "%.2f" % total_forecast_cost
-            project_member << "%.2f" % actual_hours
-            project_member << "%.2f" % billable_amount
-            project_member << "%.2f" % billable_hours
-            project_member << "%.2f" % actual_billable
-          end
-          csv << [''] + project_member unless project_member.empty?
         end
-        csv << ['', '', '', '', "%.2f" % total_allocated_hours, "%.2f" % total_allocated_cost,
-                "%.2f" % total_actual_hours, "%.2f" % total_billable_amount,
-                "%.2f" % total_billable_hours, "%.2f" % total_actual_billable]
-
+        csv << ['', '', '', '', "%.2f" % @per_project["#{proj.id}"][:total_allocated_hours],
+                "%.2f" % @per_project["#{proj.id}"][:total_allocated_cost],
+                "%.2f" % @per_project["#{proj.id}"][:total_actual_hours],
+                "%.2f" % @per_project["#{proj.id}"][:total_billable_amount],
+                "%.2f" % @per_project["#{proj.id}"][:total_billable_hours],
+                "%.2f" % @per_project["#{proj.id}"][:total_actual_billable]]
       end
     end
     send_data(project_csv, :type => 'text/csv', :filename => "#{params[:month]}_#{params[:year]}_project_billing_details.csv")
