@@ -1158,7 +1158,7 @@ class ResourceManagementsController < ApplicationController
               total_billable_hours += billable_hours = actual_hours
               total_actual_billable += actual_billable = billable_amount
               if res_alloc && res_alloc.count > 1
-                sow_count = res_alloc.select { |v| v.sow_rate > 0 }.count
+                sow_count = res_alloc.select { |v| v.sow_rate && v.sow_rate > 0 }.count
                 if sow_count > 0
                   alloc_array = ""
                   old_rate = 0
