@@ -395,6 +395,8 @@ class ResourceManagementsController < ApplicationController
     year = params[:year]
     @rb = Hash.new
     @per_user = Hash.new
+    @overall_forcasted_hours = 0.0
+    @overall_actual_hours = 0.0
     beginning_of_month = Date.new(year.to_i, month, 1)
     end_of_month = beginning_of_month.end_of_month
     users = User.engineers.find(:all, :order => "lastname ASC, firstname ASC")
