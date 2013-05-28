@@ -360,6 +360,8 @@ class ResourceManagementsController < ApplicationController
     @tick = "#{tick_month} #{year}"
     @rb = Hash.new
     @per_user = Hash.new
+    @overall_forcasted_hours = 0.0
+    @overall_actual_hours = 0.0
     @beginning_of_month = Date.new(year.to_i, month, 1)
     @end_of_month = @beginning_of_month.end_of_month
     @users = User.engineers.find(:all, :order => "lastname ASC, firstname ASC")
@@ -1149,14 +1151,9 @@ class ResourceManagementsController < ApplicationController
             res_alloc = member.resource_allocations.select { |alloc| alloc.start_date <= end_of_month && alloc.end_date >= beginning_of_month }
             if res_alloc && !res_alloc.empty?
               sow_rate = res_alloc.last.sow_rate ? res_alloc.last.sow_rate : 0.0
-              if bm == "T and M (Man-month)" && res_alloc.detect { |alloc| alloc.start_date <= beginning_of_month }
-                total_allocated_hours += total_forecast += ((20 * 8) * res_alloc.last.resource_allocation)/100
-                total_allocated_cost += total_forecast_cost += total_forecast * sow_rate
-              else
-                total_allocated_hours += total_forecast += member.capped_days_report((beginning_of_month..end_of_month), nil, false, "billable") * 8
-                total_allocated_cost += total_forecast_cost += member.capped_cost_report((beginning_of_month..end_of_month), nil, false, "billable")
-              end
-              total_actual_hours += actual_hours += member.spent_time(beginning_of_month, end_of_month, "Billable", true).to_f
+              total_allocated_hours += total_forecast += member.capped_days_report((beginning_of_month..end_of_month), nil, false, "billable") * 8
+              total_allocated_cost += total_forecast_cost += member.capped_cost_report((beginning_of_month..end_of_month), nil, false, "billable")
+              total_actual_hours += actual_hours += member.spent_time(beginning_of_month, end_of_month, "Billable", true).to_f + member.spent_time_on_admin(beginning_of_month, end_of_month, "Billable", true).to_f
               total_billable_amount += billable_amount += member.spent_cost(beginning_of_month, end_of_month, "Billable").to_f
               total_billable_hours += billable_hours = actual_hours
               total_actual_billable += actual_billable = billable_amount
@@ -1196,8 +1193,9 @@ class ResourceManagementsController < ApplicationController
                                       :total_billable_hours => total_billable_hours,
                                       :total_actual_billable => total_actual_billable }
 
+          @overall_forcasted_hours += total_allocated_hours
+          @overall_actual_hours += total_actual_hours
         end
-
   end
 
   def detect_holidays_in_week(location, week)
