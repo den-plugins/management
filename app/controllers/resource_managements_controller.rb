@@ -510,6 +510,59 @@ class ResourceManagementsController < ApplicationController
     render :template => 'resource_managements/forecasts_billable_detail.rhtml', :layout => !request.xhr?
   end
 
+  def export_weekly_actual_hours
+    month = params[:month] && !params[:month].empty? ? Date::ABBR_MONTHNAMES.index(params[:month]) : Date.today.month
+    tick_month = params[:month] && !params[:month].empty? ? params[:month] : Date::ABBR_MONTHNAMES[Date.today.month]
+    year = params[:year]
+    @tick = "#{tick_month} #{year}"
+    @pb = Hash.new
+    @per_project = Hash.new
+    @overall_forcasted_hours = 0.0
+    @overall_actual_hours = 0.0
+    @beginning_of_month = Date.new(year.to_i, month, 1)
+    @end_of_month = @beginning_of_month.end_of_month
+    @projects = Project.development.select { |v| v.planned_start_date && v.planned_start_date <= @end_of_month &&
+        v.planned_end_date && v.planned_end_date >= @beginning_of_month }
+    weeks = get_weeks_range(@beginning_of_month, @end_of_month)
+    week_array = []
+    week_array2 = []
+    weeks.each do |week|
+      week_array << "#{week.first} - #{week.last}"
+      week_array2 << week.last
+    end
+    project_csv = FasterCSV.generate do |csv|
+      # header row
+      csv << ["Weekly Project Billing Report for #{tick_month} #{year}"]
+      csv << ['']
+      csv << ['', '', '', '', "#{week_array[0]}", '',"#{week_array[1]}", '', "#{week_array[2]}", '', "#{week_array[3]}"]
+      csv << ['Project', "Name", "Role","Allocated Hours", "Actual Hours","Allocated Hours", "Actual Hours","Allocated Hours", "Actual Hours","Allocated Hours", "Actual Hours"]
+
+
+      @projects.each do |proj|
+        get_project_billing_details_weekly(proj, @beginning_of_month, @end_of_month)
+
+        members = proj.members.sort_by { |x| [x.user.lastname, x.user.firstname] }
+
+        members.each do |member|
+          res_alloc = member.resource_allocations.select { |alloc| alloc.start_date <= @end_of_month && alloc.end_date >= @beginning_of_month }
+          if res_alloc && !res_alloc.empty?
+            csv << ["#{proj.name}", @pb["#{member.id}"][:name], "#{member.user.skill}",
+                    @pb["#{member.id}"]["allocated_hours_#{week_array2[0]}"],
+                    @pb["#{member.id}"]["actual_hours_#{week_array2[0]}"],
+                    @pb["#{member.id}"]["allocated_hours_#{week_array2[1]}"],
+                    @pb["#{member.id}"]["actual_hours_#{week_array2[1]}"],
+                    @pb["#{member.id}"]["allocated_hours_#{week_array2[2]}"],
+                    @pb["#{member.id}"]["actual_hours_#{week_array2[2]}"],
+                    @pb["#{member.id}"]["allocated_hours_#{week_array2[3]}"],
+                    @pb["#{member.id}"]["actual_hours_#{week_array2[3]}"]]
+          end
+        end
+      end
+    end
+    send_data(project_csv, :type => 'text/csv', :filename => "#{params[:month]}_#{params[:year]}_weekly_logged_details.csv")
+
+  end
+
   def export
     sort_clause = params[:order]
     @a = Hash.new
@@ -1184,6 +1237,33 @@ class ResourceManagementsController < ApplicationController
       @overall_actual_hours += total_actual_hours
     end
   end
+
+  def get_project_billing_details_weekly(project, from, to)
+    weeks = get_weeks_range(@beginning_of_month, @end_of_month)
+
+    members = project.members.sort_by { |x| [x.user.lastname, x.user.firstname] }
+
+    members.each do |member|
+      user = member.user
+      h_date, r_date = to_date_safe(user.hired_date), to_date_safe(user.resignation_date)
+      unless (h_date && h_date >= to) || (r_date && r_date <= from)
+        @pb["#{member.id}"] = {:name => "#{user.lastname}, #{user.firstname}"}
+        weeks.each do |week|
+          total_forecast = 0.00
+          actual_hours = 0.0
+          res_alloc = member.resource_allocations.select { |alloc| alloc.start_date <= week.last && alloc.end_date >= week.first }
+          if res_alloc && !res_alloc.empty?
+            total_forecast += member.capped_days_weekly_report((week.first..week.last), nil, false) * 8
+            actual_hours += member.spent_time(week.first, week.last, nil, true).to_f + member.spent_time_on_admin(week.first, week.last, nil, true).to_f
+          end
+          @pb["#{member.id}"]["allocated_hours_#{week.last}"] = total_forecast
+          @pb["#{member.id}"]["actual_hours_#{week.last}"] = actual_hours
+        end
+      end
+
+    end
+  end
+
 
   def detect_holidays_in_week(location, week)
     locations = [6]

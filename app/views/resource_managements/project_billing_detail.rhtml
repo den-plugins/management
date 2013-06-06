@@ -7,7 +7,8 @@
 <h2>Project Billing Details</h2>
 <h3><%= @tick %></h3>
 
-<%= link_to 'Download CSV', "/resource_managements/project_billing_detail/export_project_billing_detail?month=#{params[:month]}&year=#{params[:date][:year]}" %>
+<%= link_to 'Download CSV', "/resource_managements/project_billing_detail/export_project_billing_detail?month=#{params[:month]}&year=#{params[:date][:year]}" %><br />
+<%= link_to 'Download Weekly Report CSV', "/resource_managements/project_billing_detail/export_weekly_actual_hours?month=#{params[:month]}&year=#{params[:date][:year]}" %>
 
 <div class="scroll-pane" style="height: 510px;" id="mgt_allocations_scroll_pane">
   <div class='tables_container' id="mgt_allocations_table_container">
