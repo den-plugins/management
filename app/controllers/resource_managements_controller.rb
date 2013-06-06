@@ -521,8 +521,10 @@ class ResourceManagementsController < ApplicationController
     @overall_actual_hours = 0.0
     @beginning_of_month = Date.new(year.to_i, month, 1)
     @end_of_month = @beginning_of_month.end_of_month
-    @projects = Project.development.select { |v| v.planned_start_date && v.planned_start_date <= @end_of_month &&
-        v.planned_end_date && v.planned_end_date >= @beginning_of_month }
+    all_proj = Project.all
+    @projects = all_proj.select {|v| v.project_type && v.project_type == "Admin" || v.project_type && v.project_type == "Development" &&
+        v.planned_start_date && v.planned_start_date <= @end_of_month &&
+        v.planned_end_date && v.planned_end_date >= @beginning_of_month}.sort_by {|v| v.name}
     weeks = get_weeks_range(@beginning_of_month, @end_of_month)
     week_array = []
     week_array2 = []
@@ -534,8 +536,11 @@ class ResourceManagementsController < ApplicationController
       # header row
       csv << ["Weekly Project Billing Report for #{tick_month} #{year}"]
       csv << ['']
-      csv << ['', '', '', '', "#{week_array[0]}", '',"#{week_array[1]}", '', "#{week_array[2]}", '', "#{week_array[3]}"]
-      csv << ['Project', "Name", "Role","Allocated Hours", "Actual Hours","Allocated Hours", "Actual Hours","Allocated Hours", "Actual Hours","Allocated Hours", "Actual Hours"]
+      csv << ['', '', '', '', "#{week_array[0]}", '',"#{week_array[1]}", '', "#{week_array[2]}", '', "#{week_array[3]}",
+              '',  week_array[4] ? "#{week_array[4]}" : '']
+      csv << ['Project', "Name", "Role","Allocated Hours", "Actual Hours","Allocated Hours", "Actual Hours","Allocated Hours",
+              "Actual Hours","Allocated Hours", "Actual Hours" ,week_array[4] ? "Allocated Hours" : '',
+              week_array[4] ? "Actual Hours" : '']
 
 
       @projects.each do |proj|
@@ -545,16 +550,19 @@ class ResourceManagementsController < ApplicationController
 
         members.each do |member|
           res_alloc = member.resource_allocations.select { |alloc| alloc.start_date <= @end_of_month && alloc.end_date >= @beginning_of_month }
-          if @pb && @pb["#{member.id}"] && member && proj && res_alloc && !res_alloc.empty?
+          if @pb && @pb["#{member.id}"] && member && proj && proj.project_type == "Development" && res_alloc && !res_alloc.empty? ||
+              @pb && @pb["#{member.id}"] && member && proj && proj.project_type == "Admin"
             csv << ["#{proj.name}", @pb["#{member.id}"][:name] ? @pb["#{member.id}"][:name] : "", "#{member.user.skill}",
-                    @pb["#{member.id}"]["allocated_hours_#{week_array2[0]}"] ? @pb["#{member.id}"]["allocated_hours_#{week_array2[0]}"] : 0.0,
-                    @pb["#{member.id}"]["actual_hours_#{week_array2[0]}"] ? @pb["#{member.id}"]["actual_hours_#{week_array2[0]}"] : 0.0,
-                    @pb["#{member.id}"]["allocated_hours_#{week_array2[1]}"] ? @pb["#{member.id}"]["allocated_hours_#{week_array2[1]}"] : 0.0,
-                    @pb["#{member.id}"]["actual_hours_#{week_array2[1]}"] ? @pb["#{member.id}"]["actual_hours_#{week_array2[1]}"] : 0.0,
-                    @pb["#{member.id}"]["allocated_hours_#{week_array2[2]}"] ? @pb["#{member.id}"]["allocated_hours_#{week_array2[2]}"] : 0.0,
-                    @pb["#{member.id}"]["actual_hours_#{week_array2[2]}"] ? @pb["#{member.id}"]["actual_hours_#{week_array2[2]}"] : 0.0,
-                    @pb["#{member.id}"]["allocated_hours_#{week_array2[3]}"] ? @pb["#{member.id}"]["allocated_hours_#{week_array2[3]}"] : 0.0,
-                    @pb["#{member.id}"]["actual_hours_#{week_array2[3]}"] ? @pb["#{member.id}"]["actual_hours_#{week_array2[3]}"] : 0.0]
+                    @pb["#{member.id}"]["allocated_hours_#{week_array2[0]}"],
+                    @pb["#{member.id}"]["actual_hours_#{week_array2[0]}"],
+                    @pb["#{member.id}"]["allocated_hours_#{week_array2[1]}"],
+                    @pb["#{member.id}"]["actual_hours_#{week_array2[1]}"],
+                    @pb["#{member.id}"]["allocated_hours_#{week_array2[2]}"],
+                    @pb["#{member.id}"]["actual_hours_#{week_array2[2]}"],
+                    @pb["#{member.id}"]["allocated_hours_#{week_array2[3]}"],
+                    @pb["#{member.id}"]["actual_hours_#{week_array2[3]}"],
+                    @pb["#{member.id}"]["allocated_hours_#{week_array2[4]}"] ? @pb["#{member.id}"]["allocated_hours_#{week_array2[4]}"] : '',
+                    @pb["#{member.id}"]["actual_hours_#{week_array2[4]}"] ? @pb["#{member.id}"]["actual_hours_#{week_array2[4]}"] : '']
           end
         end
       end
@@ -1252,9 +1260,9 @@ class ResourceManagementsController < ApplicationController
           total_forecast = 0.00
           actual_hours = 0.0
           res_alloc = member.resource_allocations.select { |alloc| alloc.start_date <= week.last && alloc.end_date >= week.first }
-          if res_alloc && !res_alloc.empty?
+          if project.project_type == 'Development' && res_alloc && !res_alloc.empty? || project.project_type == 'Admin'
             total_forecast += member.capped_days_weekly_report((week.first..week.last), nil, false) * 8
-            actual_hours += member.spent_time(week.first, week.last, nil, true).to_f + member.spent_time_on_admin(week.first, week.last, nil, true).to_f
+            actual_hours += member.spent_time(week.first, week.last, nil, true).to_f
           end
           @pb["#{member.id}"]["allocated_hours_#{week.last}"] = total_forecast
           @pb["#{member.id}"]["actual_hours_#{week.last}"] = actual_hours
