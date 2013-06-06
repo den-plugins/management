@@ -1261,7 +1261,7 @@ class ResourceManagementsController < ApplicationController
           actual_hours = 0.0
           res_alloc = member.resource_allocations.select { |alloc| alloc.start_date <= week.last && alloc.end_date >= week.first }
           if project.project_type == 'Development' && res_alloc && !res_alloc.empty? || project.project_type == 'Admin'
-            total_forecast += member.capped_days_weekly_report((week.first..week.last), nil, false) * 8
+            total_forecast += member.capped_days_weekly_report((week.first..week.last), nil, false, "Both") * 8
             actual_hours += member.spent_time(week.first, week.last, nil, true).to_f
           end
           @pb["#{member.id}"]["allocated_hours_#{week.last}"] = total_forecast
