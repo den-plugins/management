@@ -547,14 +547,14 @@ class ResourceManagementsController < ApplicationController
           res_alloc = member.resource_allocations.select { |alloc| alloc.start_date <= @end_of_month && alloc.end_date >= @beginning_of_month }
           if @pb && member && proj && res_alloc && !res_alloc.empty?
             csv << ["#{proj.name}", @pb["#{member.id}"][:name], "#{member.user.skill}",
-                    @pb["#{member.id}"]["allocated_hours_#{week_array2[0]}"],
-                    @pb["#{member.id}"]["actual_hours_#{week_array2[0]}"],
-                    @pb["#{member.id}"]["allocated_hours_#{week_array2[1]}"],
-                    @pb["#{member.id}"]["actual_hours_#{week_array2[1]}"],
-                    @pb["#{member.id}"]["allocated_hours_#{week_array2[2]}"],
-                    @pb["#{member.id}"]["actual_hours_#{week_array2[2]}"],
-                    @pb["#{member.id}"]["allocated_hours_#{week_array2[3]}"],
-                    @pb["#{member.id}"]["actual_hours_#{week_array2[3]}"]]
+                    @pb["#{member.id}"]["allocated_hours_#{week_array2[0]}"] ? @pb["#{member.id}"]["allocated_hours_#{week_array2[0]}"] : 0.0,
+                    @pb["#{member.id}"]["actual_hours_#{week_array2[0]}"] ? @pb["#{member.id}"]["actual_hours_#{week_array2[0]}"] : 0.0,
+                    @pb["#{member.id}"]["allocated_hours_#{week_array2[1]}"] ? @pb["#{member.id}"]["allocated_hours_#{week_array2[1]}"] : 0.0,
+                    @pb["#{member.id}"]["actual_hours_#{week_array2[1]}"] ? @pb["#{member.id}"]["actual_hours_#{week_array2[1]}"] : 0.0,
+                    @pb["#{member.id}"]["allocated_hours_#{week_array2[2]}"] ? @pb["#{member.id}"]["allocated_hours_#{week_array2[2]}"] : 0.0,
+                    @pb["#{member.id}"]["actual_hours_#{week_array2[2]}"] ? @pb["#{member.id}"]["actual_hours_#{week_array2[2]}"] : 0.0,
+                    @pb["#{member.id}"]["allocated_hours_#{week_array2[3]}"] ? @pb["#{member.id}"]["allocated_hours_#{week_array2[3]}"] : 0.0,
+                    @pb["#{member.id}"]["actual_hours_#{week_array2[3]}"] ? @pb["#{member.id}"]["actual_hours_#{week_array2[3]}"] : 0.0]
           end
         end
       end
