@@ -1130,7 +1130,7 @@ class ResourceManagementsController < ApplicationController
           sow_rate = res_alloc.last.sow_rate ? res_alloc.last.sow_rate : 0.0
           total_allocated_hours += total_forecast += member.capped_days_report((from..to), nil, false, "billable") * 8
           total_allocated_cost += total_forecast_cost += member.capped_cost_report((from..to), nil, false, "billable")
-          total_actual_hours += actual_hours += member.spent_time(from, to, "Billable", true).to_f + member.spent_time_on_admin(from, to, "Billable", true).to_f
+          total_actual_hours += actual_hours += member.spent_time(from, to, "Billable", true).to_f
           total_billable_amount += billable_amount += member.spent_cost(from, to, "Billable").to_f
           total_billable_hours += billable_hours = actual_hours
           total_actual_billable += actual_billable = billable_amount
@@ -1201,7 +1201,7 @@ class ResourceManagementsController < ApplicationController
           sow_rate = res_alloc.last.sow_rate ? res_alloc.last.sow_rate : 0.0
           total_allocated_hours += total_forecast += member.capped_days_report((beginning_of_month..end_of_month), nil, false, "billable") * 8
           total_allocated_cost += total_forecast_cost += member.capped_cost_report((beginning_of_month..end_of_month), nil, false, "billable")
-          total_actual_hours += actual_hours += member.spent_time(beginning_of_month, end_of_month, "Billable", true).to_f + member.spent_time_on_admin(beginning_of_month, end_of_month, "Billable", true).to_f
+          total_actual_hours += actual_hours += member.spent_time(beginning_of_month, end_of_month, "Billable", true).to_f
           total_billable_amount += billable_amount += member.spent_cost(beginning_of_month, end_of_month, "Billable").to_f
           total_billable_hours += billable_hours = actual_hours
           total_actual_billable += actual_billable = billable_amount
