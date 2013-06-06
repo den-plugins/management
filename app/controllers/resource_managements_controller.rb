@@ -457,7 +457,7 @@ class ResourceManagementsController < ApplicationController
       # header row
       csv << ["Project Billing Report for #{tick_month} #{year}"]
       csv << ['']
-      csv << ['Project', "Name", "Default Rate", "SOW Rate", "Allocated Hours", "Allocated Cost", "Actual Hours", "Billable Amount", "Billable Hours", "Actual Billable"]
+      csv << ['Project', "Name", "Role", "Project Allocation", "Default Rate", "SOW Rate", "Allocated Hours", "Allocated Cost", "Actual Hours", "Billable Amount", "Billable Hours", "Actual Billable"]
 
 
       @projects.each do |proj|
@@ -469,13 +469,13 @@ class ResourceManagementsController < ApplicationController
 
         members.each do |member|
           if @pb["#{member.id}"]
-            csv << ['', @pb["#{member.id}"][:name], @pb["#{member.id}"][:default_rate], @pb["#{member.id}"][:sow_rate],
+            csv << ['', @pb["#{member.id}"][:name], member.user.skill, @pb["#{member.id}"][:resource_allocation], @pb["#{member.id}"][:default_rate], @pb["#{member.id}"][:sow_rate],
                     "%.2f" % @pb["#{member.id}"][:allocated_hours], "%.2f" % @pb["#{member.id}"][:allocated_cost],
                     "%.2f" % @pb["#{member.id}"][:actual_hours], "%.2f" % @pb["#{member.id}"][:billable_amount],
                     "%.2f" % @pb["#{member.id}"][:billable_hours], "%.2f" % @pb["#{member.id}"][:actual_billable]]
           end
         end
-        csv << ['', '', '', '', "%.2f" % @per_project["#{proj.id}"][:total_allocated_hours],
+        csv << ['', '', '', '', '', '', "%.2f" % @per_project["#{proj.id}"][:total_allocated_hours],
                 "%.2f" % @per_project["#{proj.id}"][:total_allocated_cost],
                 "%.2f" % @per_project["#{proj.id}"][:total_actual_hours],
                 "%.2f" % @per_project["#{proj.id}"][:total_billable_amount],
@@ -1113,6 +1113,7 @@ class ResourceManagementsController < ApplicationController
 
     members.each do |member|
       user = member.user
+      percent_allocation = 0
       h_date, r_date = to_date_safe(user.hired_date), to_date_safe(user.resignation_date)
       unless (h_date && h_date >= to) || (r_date && r_date <= from)
         if user.rate_histories && rate = user.rate_histories.detect { |v| v.effective_date && v.effective_date <= to && v.end_date && v.end_date >= from }
@@ -1150,18 +1151,22 @@ class ResourceManagementsController < ApplicationController
                   alloc_array += "(#{start_date.strftime("%m/%d")} - #{end_date.strftime("%m/%d")}) "
                 end
                 old_rate = v.sow_rate
+                percent_allocation = v.resource_allocation
               end
               sow_rate = alloc_array
             else
               sow_rate = sow_rate
+              percent_allocation = res_alloc.last.resource_allocation
             end
           else
             sow_rate = sow_rate
+            percent_allocation = res_alloc.last.resource_allocation
           end
           @pb["#{member.id}"] = {:name => name, :default_rate => default_rate, :sow_rate => sow_rate,
                                  :allocated_hours => total_forecast, :allocated_cost => total_forecast_cost,
                                  :actual_hours => actual_hours, :billable_amount => billable_amount,
-                                 :billable_hours => billable_hours, :actual_billable => actual_billable}
+                                 :billable_hours => billable_hours, :actual_billable => actual_billable,
+                                 :resource_allocation => percent_allocation}
 
         end
       end
