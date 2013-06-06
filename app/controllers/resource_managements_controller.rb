@@ -545,7 +545,7 @@ class ResourceManagementsController < ApplicationController
 
         members.each do |member|
           res_alloc = member.resource_allocations.select { |alloc| alloc.start_date <= @end_of_month && alloc.end_date >= @beginning_of_month }
-          if res_alloc && !res_alloc.empty?
+          if member && res_alloc && !res_alloc.empty?
             csv << ["#{proj.name}", @pb["#{member.id}"][:name], "#{member.user.skill}",
                     @pb["#{member.id}"]["allocated_hours_#{week_array2[0]}"],
                     @pb["#{member.id}"]["actual_hours_#{week_array2[0]}"],
