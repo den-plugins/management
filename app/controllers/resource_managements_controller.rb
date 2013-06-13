@@ -687,6 +687,16 @@ class ResourceManagementsController < ApplicationController
     redirect_to :action => "default_rate", :controller => "resource_managements", :filter_by => params[:filter_by]
   end
 
+  def destroy_rate_history
+    if params[:id]
+      rate = RateHistory.find_by_id(params[:id])
+      rate.destroy
+    end
+    render :update do |page|
+      page.hide :facebox
+    end
+  end
+
   def show_rate_history
     if params[:cancel]
       render_updates(true)

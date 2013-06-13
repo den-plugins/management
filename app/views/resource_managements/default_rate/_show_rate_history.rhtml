@@ -13,6 +13,10 @@
         <td><%= f.default_rate %></td>
         <td><%= f.effective_date %></td>
         <td><%= f.end_date %></td>
+        <td align="right" style="width:30px;"><%= link_to_remote image_tag('delete.png', :size => "13x13"),
+                                 :url => { :controller => 'resource_managements' , :action => 'destroy_rate_history', :id => f.id },
+                                 :confirm => l(:text_are_you_sure)  %>
+        </td>
       </tr>
   <% end %>
   </tbody>
