@@ -1136,7 +1136,7 @@ class ResourceManagementsController < ApplicationController
 
         total_forecast, total_forecast_cost = 0.0, 0.0
         actual_hours, billable_amount = 0.0, 0.0
-        res_alloc = member.resource_allocations.select { |alloc| alloc.start_date <= to && alloc.end_date >= from }
+        res_alloc = member.resource_allocations.select { |alloc| alloc.start_date <= to && alloc.end_date >= from && alloc.resource_type.eql?(0) }
         if res_alloc && !res_alloc.empty?
           sow_rate = res_alloc.last.sow_rate ? res_alloc.last.sow_rate : 0.0
           total_allocated_hours += total_forecast += member.capped_days_report((from..to), nil, false, "billable") * 8
@@ -1157,8 +1157,6 @@ class ResourceManagementsController < ApplicationController
                 end_date = v.end_date > to ? to : v.end_date
                 unless old_rate == v.sow_rate
                   alloc_array += "#{v.sow_rate} (#{start_date.strftime("%m/%d")} - #{end_date.strftime("%m/%d")}) "
-                else
-                  alloc_array += "(#{start_date.strftime("%m/%d")} - #{end_date.strftime("%m/%d")}) "
                 end
                 old_rate = v.sow_rate
                 percent_allocation = v.resource_allocation
@@ -1211,7 +1209,7 @@ class ResourceManagementsController < ApplicationController
         actual_hours = 0.0
         billable_amount = 0.0
         project_name = "#{project.name}: #{bm}"
-        res_alloc = member.resource_allocations.select { |alloc| alloc.start_date <= end_of_month && alloc.end_date >= beginning_of_month }
+        res_alloc = member.resource_allocations.select { |alloc| alloc.start_date <= end_of_month && alloc.end_date >= beginning_of_month && alloc.resource_type.eql?(0)}
         if res_alloc && !res_alloc.empty?
           sow_rate = res_alloc.last.sow_rate ? res_alloc.last.sow_rate : 0.0
           total_allocated_hours += total_forecast += member.capped_days_report((beginning_of_month..end_of_month), nil, false, "billable") * 8
@@ -1230,8 +1228,6 @@ class ResourceManagementsController < ApplicationController
                 end_date = v.end_date > end_of_month ? end_of_month : v.end_date
                 unless old_rate == v.sow_rate
                   alloc_array += "#{v.sow_rate} (#{start_date.strftime("%m/%d")} - #{end_date.strftime("%m/%d")}) "
-                else
-                  alloc_array += "(#{start_date.strftime("%m/%d")} - #{end_date.strftime("%m/%d")}) "
                 end
                 old_rate = v.sow_rate
               end
