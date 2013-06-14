@@ -16,14 +16,8 @@
     </fieldset>
     <br/>
 
-    <% @den_project = Project.find_by_name("New DEN Development").members.project_team(&:user_id) %>
-    <% @valid_usernames = ["gcordero"] %>
-    <% @den_project.each do |v| %>
-      <% @valid_usernames << User.find(v.user_id).login %>
-    <% end %>
-
     <fieldset>
-      <% if @valid_usernames.include? User.current.login %>
+      <% if User.current.time_logs_admin? %>
         <%= link_to "Add time logs", contractor_logs_path %><br />
       <% end %>
       <%= link_to "Default Rate", {:controller => "resource_managements", :action => "default_rate"} %>
