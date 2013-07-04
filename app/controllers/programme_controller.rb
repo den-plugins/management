@@ -182,7 +182,7 @@ class ProgrammeController < ApplicationController
                        YAML.load(File.open("#{RAILS_ROOT}/config/billability.yml")) || {}
                      else
                        {}
-                     end
+                     end rescue {}
   end
 
   def load_fixed_cost_file
@@ -190,7 +190,7 @@ class ProgrammeController < ApplicationController
                      YAML.load(File.open("#{RAILS_ROOT}/config/fixed_cost.yml")) || {}
                    else
                      {}
-                   end
+                   end rescue {}
   end
 
 end
