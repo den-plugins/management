@@ -1,6 +1,12 @@
 <tbody>
 <% @users.each do |user| %>
     <% if @a["#{user.login}"] %>
+        <% revenue = @a["#{user.login}"][:revenue] %>
+        <% allocation_cost = @a["#{user.login}"][:allocation_cost] %>
+        <% project_allocation = @a["#{user.login}"][:project_allocation] %>
+        <% available_hours = @a["#{user.login}"][:available_hours] %>
+        <% billable_hours = @a["#{user.login}"][:billable_hours] %>
+        <% billed_amount = @a["#{user.login}"][:billed_amount] %>
         <tr class="<%= cycle 'odd', 'even' %>">
           <td><%= "#{@a["#{user.login}"][:lastname]}, #{@a["#{user.login}"][:firstname]}" %></td>
           <td><%= "#{@a["#{user.login}"][:skill]}" %></td>
@@ -14,15 +20,15 @@
           <td align="right"><%= "#{@a["#{user.login}"][:available_days]}" %></td>
           <td align="right"><%= "#{@a["#{user.login}"][:available_hours]}" %></td>
           <td align="right"><%= "#{@a["#{user.login}"][:default_rate]}" %></td>
-          <td align="right"><%= "#{@a["#{user.login}"][:revenue]}" %></td>
-          <td align="right"><%= "#{"%.2f" % (@a["#{user.login}"][:project_allocation])}" %></td>
-          <td align="right"><%= "#{"%.2f" % (@a["#{user.login}"][:allocation_cost])}" %></td>
-          <td align="right"><%= @a["#{user.login}"][:project_allocation] > 0 ? "#{"%.2f" % (@a["#{user.login}"][:allocation_cost]/@a["#{user.login}"][:project_allocation])}" : 0 %></td>
-          <td align="right"><%= "#{"%.2f" % (@a["#{user.login}"][:project_allocation] - @a["#{user.login}"][:available_hours])}" %></td>
-          <td align="right"><%= "#{"%.2f" % (@a["#{user.login}"][:billable_hours])}" %></td>
-          <td align="right"><%= "#{"%.2f" % (@a["#{user.login}"][:billed_amount])}" %></td>
-          <td align="right"><%= @a["#{user.login}"][:billable_hours] > 0 ? "#{"%.2f" % (@a["#{user.login}"][:billed_amount]/@a["#{user.login}"][:billable_hours])}" : 0 %></td>
-          <td align="right"><%= "#{"%.2f" % (@a["#{user.login}"][:billable_hours] - @a["#{user.login}"][:project_allocation])}" %></td>
+          <td align="right"><%= number_with_precision(revenue, :precision => 2, :delimiter => ',') %></td>
+          <td align="right"><%= number_with_precision(project_allocation, :precision => 2, :delimiter => ',') %></td>
+          <td align="right"><%= number_with_precision(allocation_cost, :precision => 2, :delimiter => ',') %></td>
+          <td align="right"><%= project_allocation > 0 ? number_with_precision(allocation_cost/project_allocation, :precision => 2, :delimiter => ',') : 0 %></td>
+          <td align="right"><%= number_with_precision(project_allocation - available_hours, :precision => 2, :delimiter => ',') %></td>
+          <td align="right"><%= number_with_precision(billable_hours, :precision => 2, :delimiter => ',') %></td>
+          <td align="right"><%= number_with_precision(billed_amount, :precision => 2, :delimiter => ',') %></td>
+          <td align="right"><%= billable_hours > 0 ? number_with_precision(billed_amount/billable_hours, :precision => 2, :delimiter => ',') : 0 %></td>
+          <td align="right"><%= number_with_precision(billable_hours - project_allocation, :precision => 2, :delimiter => ',') %></td>
         </tr>
     <% end %>
 <% end %>
