@@ -525,11 +525,11 @@ class ResourceManagementsController < ApplicationController
     @projects = all_proj.select {|v| v.project_type && v.project_type == "Admin" || v.project_type && v.project_type == "Development" &&
         v.planned_start_date && v.planned_start_date <= @end_of_month &&
         v.planned_end_date && v.planned_end_date >= @beginning_of_month}.sort_by {|v| v.name}
-    weeks = get_weeks_range(@beginning_of_month, @end_of_month)
+
     dates_header = Array.new(3, "")
     header = ['Project', "Name", "Role"]
 
-    weeks = get_weeks_range(@beginning_of_month, @end_of_month)
+    weeks = get_weeks_range(@beginning_of_month, @end_of_month, true) #include weekends
     weeks.each do |week|
       dates_header << ""
       dates_header << "#{week.first} - #{week.last}"
@@ -544,7 +544,7 @@ class ResourceManagementsController < ApplicationController
       csv << header
 
       @projects.each do |proj|
-        get_project_billing_details_weekly(proj, @beginning_of_month, @end_of_month)
+        get_project_billing_details_weekly(proj, @beginning_of_month, @end_of_month, true) #include weekends
 
         members = proj.members.sort_by { |x| [x.user.lastname, x.user.firstname] }
 
@@ -1252,8 +1252,8 @@ class ResourceManagementsController < ApplicationController
     end
   end
 
-  def get_project_billing_details_weekly(project, from, to)
-    weeks = get_weeks_range(@beginning_of_month, @end_of_month)
+  def get_project_billing_details_weekly(project, from, to, include_weekend=false)
+    weeks = get_weeks_range(@beginning_of_month, @end_of_month, include_weekend)
 
     members = project.members.sort_by { |x| [x.user.lastname, x.user.firstname] }
 
