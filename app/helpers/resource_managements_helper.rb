@@ -1,23 +1,38 @@
 module ResourceManagementsHelper
 
-  def get_weeks_range(from, to)
+  def get_weeks_range(from, to, include_weekend=false)
     if from && to
       start_date, end_date = from, to
       weeks = []
-      # if from/to falls on a weekend, mon/fri is set to self (date)
       until ((from..to).to_a & (start_date..end_date).to_a).empty?
-        mon = if from.wday.eql?(0) || from.wday.eql?(6)
-                       from
-                     else
-                       from.eql?(start_date) ? start_date : from.monday
-                     end
-        fri = if from.wday.eql?(0) || from.wday.eql?(6)
-                   from
-                 else
-                   from.weeks_ago(to).eql?(0) ? to : (mon.monday+4.days)
-                 end
-        from = mon.next_week
-        weeks << (mon .. fri)
+        if include_weekend
+          mon = if from.wday.eql?(0) || from.wday.eql?(6)
+                  from
+                else
+                  from.eql?(start_date) ? start_date : from.monday
+                end
+          sun = if mon.monday <= to && to <= mon.monday + 6.days
+                  to
+                else
+                  mon.monday + 6.days
+                end
+
+          weeks << (mon .. sun)
+          from = mon.next_week
+        else
+          mon = if from.wday.eql?(0) || from.wday.eql?(6)
+                         from
+                       else
+                         from.eql?(start_date) ? start_date : from.monday
+                       end
+          fri = if from.wday.eql?(0) || from.wday.eql?(6)
+                     from
+                   else
+                     from.weeks_ago(to).eql?(0) ? to : (mon.monday+4.days)
+                   end
+          from = mon.next_week
+          weeks << (mon .. fri)
+        end
       end
       weeks
     end

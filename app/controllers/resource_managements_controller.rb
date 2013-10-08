@@ -525,26 +525,26 @@ class ResourceManagementsController < ApplicationController
     @projects = all_proj.select {|v| v.project_type && v.project_type == "Admin" || v.project_type && v.project_type == "Development" &&
         v.planned_start_date && v.planned_start_date <= @end_of_month &&
         v.planned_end_date && v.planned_end_date >= @beginning_of_month}.sort_by {|v| v.name}
-    weeks = get_weeks_range(@beginning_of_month, @end_of_month)
-    week_array = []
-    week_array2 = []
+
+    dates_header = Array.new(3, "")
+    header = ['Project', "Name", "Role"]
+
+    weeks = get_weeks_range(@beginning_of_month, @end_of_month, true) #include weekends
     weeks.each do |week|
-      week_array << "#{week.first} - #{week.last}"
-      week_array2 << week.last
+      dates_header << ""
+      dates_header << "#{week.first} - #{week.last}"
+      header << "Allocated Hours"
+      header << "Actual Hours"
     end
+
     project_csv = FasterCSV.generate do |csv|
-      # header row
       csv << ["Weekly Project Billing Report for #{tick_month} #{year}"]
       csv << ['']
-      csv << ['', '', '', '', "#{week_array[0]}", '',"#{week_array[1]}", '', "#{week_array[2]}", '', "#{week_array[3]}",
-              '',  week_array[4] ? "#{week_array[4]}" : '']
-      csv << ['Project', "Name", "Role","Allocated Hours", "Actual Hours","Allocated Hours", "Actual Hours","Allocated Hours",
-              "Actual Hours","Allocated Hours", "Actual Hours" ,week_array[4] ? "Allocated Hours" : '',
-              week_array[4] ? "Actual Hours" : '']
-
+      csv << dates_header
+      csv << header
 
       @projects.each do |proj|
-        get_project_billing_details_weekly(proj, @beginning_of_month, @end_of_month)
+        get_project_billing_details_weekly(proj, @beginning_of_month, @end_of_month, true) #include weekends
 
         members = proj.members.sort_by { |x| [x.user.lastname, x.user.firstname] }
 
@@ -552,23 +552,18 @@ class ResourceManagementsController < ApplicationController
           res_alloc = member.resource_allocations.select { |alloc| alloc.start_date <= @end_of_month && alloc.end_date >= @beginning_of_month }
           if @pb && @pb["#{member.id}"] && member && proj && proj.project_type == "Development" && res_alloc && !res_alloc.empty? ||
               @pb && @pb["#{member.id}"] && member && proj && proj.project_type == "Admin"
-            csv << ["#{proj.name}", @pb["#{member.id}"][:name] ? @pb["#{member.id}"][:name] : "", "#{member.user.skill}",
-                    @pb["#{member.id}"]["allocated_hours_#{week_array2[0]}"],
-                    @pb["#{member.id}"]["actual_hours_#{week_array2[0]}"],
-                    @pb["#{member.id}"]["allocated_hours_#{week_array2[1]}"],
-                    @pb["#{member.id}"]["actual_hours_#{week_array2[1]}"],
-                    @pb["#{member.id}"]["allocated_hours_#{week_array2[2]}"],
-                    @pb["#{member.id}"]["actual_hours_#{week_array2[2]}"],
-                    @pb["#{member.id}"]["allocated_hours_#{week_array2[3]}"],
-                    @pb["#{member.id}"]["actual_hours_#{week_array2[3]}"],
-                    @pb["#{member.id}"]["allocated_hours_#{week_array2[4]}"] ? @pb["#{member.id}"]["allocated_hours_#{week_array2[4]}"] : '',
-                    @pb["#{member.id}"]["actual_hours_#{week_array2[4]}"] ? @pb["#{member.id}"]["actual_hours_#{week_array2[4]}"] : '']
+            data = ["#{proj.name}", @pb["#{member.id}"][:name] ? @pb["#{member.id}"][:name] : "", "#{member.user.skill}"]
+
+            weeks.each do |week|
+              data << @pb["#{member.id}"]["allocated_hours_#{week.last}"]
+              data << @pb["#{member.id}"]["actual_hours_#{week.last}"]
+            end
+            csv << data
           end
         end
       end
     end
     send_data(project_csv, :type => 'text/csv', :filename => "#{params[:month]}_#{params[:year]}_weekly_logged_details.csv")
-
   end
 
   def export
@@ -1257,8 +1252,8 @@ class ResourceManagementsController < ApplicationController
     end
   end
 
-  def get_project_billing_details_weekly(project, from, to)
-    weeks = get_weeks_range(@beginning_of_month, @end_of_month)
+  def get_project_billing_details_weekly(project, from, to, include_weekend=false)
+    weeks = get_weeks_range(@beginning_of_month, @end_of_month, include_weekend)
 
     members = project.members.sort_by { |x| [x.user.lastname, x.user.firstname] }
 
@@ -1273,7 +1268,7 @@ class ResourceManagementsController < ApplicationController
           res_alloc = member.resource_allocations.select { |alloc| alloc.start_date <= week.last && alloc.end_date >= week.first }
           if project.project_type == 'Development' && res_alloc && !res_alloc.empty? || project.project_type == 'Admin'
             total_forecast += member.capped_days_weekly_report((week.first..week.last), nil, false, "Both") * 8
-            actual_hours += member.spent_time(week.first, week.last, nil, true).to_f
+            actual_hours += member.spent_time(week.first, week.last, nil, true, true).to_f
           end
           @pb["#{member.id}"]["allocated_hours_#{week.last}"] = total_forecast
           @pb["#{member.id}"]["actual_hours_#{week.last}"] = actual_hours
