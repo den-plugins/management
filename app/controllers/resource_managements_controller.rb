@@ -392,7 +392,7 @@ class ResourceManagementsController < ApplicationController
   def export_resource_billing_detail
     month = params[:month] && !params[:month].empty? ? Date::ABBR_MONTHNAMES.index(params[:month]) : Date.today.month
     tick_month = params[:month] && !params[:month].empty? ? params[:month] : Date::ABBR_MONTHNAMES[Date.today.month]
-    year = params[:year]
+    year = params[:year] || params[:date][:year]
     @rb = Hash.new
     @per_user = Hash.new
     @overall_forcasted_hours = 0.0
@@ -436,13 +436,13 @@ class ResourceManagementsController < ApplicationController
         end
       end
     end
-    send_data(resource_csv, :type => 'text/csv', :filename => "#{params[:month]}_#{params[:year]}_resource_billing_details.csv")
+    send_data(resource_csv, :type => 'text/csv', :filename => "#{tick_month}_#{year}_resource_billing_details.csv")
   end
 
   def export_project_billing_detail
     month = params[:month] && !params[:month].empty? ? Date::ABBR_MONTHNAMES.index(params[:month]) : Date.today.month
     tick_month = params[:month] && !params[:month].empty? ? params[:month] : Date::ABBR_MONTHNAMES[Date.today.month]
-    year = params[:year]
+    year = params[:year] || params[:date][:year]
     @tick = "#{tick_month} #{year}"
     @pb = Hash.new
     @per_project = Hash.new
@@ -483,7 +483,7 @@ class ResourceManagementsController < ApplicationController
                 "%.2f" % @per_project["#{proj.id}"][:total_actual_billable]]
       end
     end
-    send_data(project_csv, :type => 'text/csv', :filename => "#{params[:month]}_#{params[:year]}_project_billing_details.csv")
+    send_data(project_csv, :type => 'text/csv', :filename => "#{tick_month}_#{year}_project_billing_details.csv")
   end
 
   def forecasts_billable_detail
@@ -513,7 +513,7 @@ class ResourceManagementsController < ApplicationController
   def export_weekly_actual_hours
     month = params[:month] && !params[:month].empty? ? Date::ABBR_MONTHNAMES.index(params[:month]) : Date.today.month
     tick_month = params[:month] && !params[:month].empty? ? params[:month] : Date::ABBR_MONTHNAMES[Date.today.month]
-    year = params[:year]
+    year = params[:year] || params[:date][:year]
     @tick = "#{tick_month} #{year}"
     @pb = Hash.new
     @per_project = Hash.new
@@ -563,7 +563,7 @@ class ResourceManagementsController < ApplicationController
         end
       end
     end
-    send_data(project_csv, :type => 'text/csv', :filename => "#{params[:month]}_#{params[:year]}_weekly_logged_details.csv")
+    send_data(project_csv, :type => 'text/csv', :filename => "#{tick_month}_#{year}_weekly_logged_details.csv")
   end
 
   def export

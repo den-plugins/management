@@ -42,6 +42,27 @@ function toggle_multi_select(id){
   }
 }
 
+function onsubmitBillabilityDetailForm(event, action) {
+  event.preventDefault();
+  var link = jQuery(action);
+  var code = link.attr('href');
+  var form = link.parents("form")[0];
+  var actions = {
+    "#view_resource_billing"      : "/resource_managements/resource_billing_detail",
+    "#view_project_billing"       : "/resource_managements/project_billing_detail",
+    "#csv_resource_billing"       : "/resource_managements/resource_billing_detail/export_resource_billing_detail",
+    "#csv_project_billing"        : "/resource_managements/project_billing_detail/export_project_billing_detail",
+    "#weekly_csv_project_billing" : "/resource_managements/project_billing_detail/export_weekly_actual_hours"
+  };
+
+  if (actions[code]) {
+    form.setAttribute('action', actions[code]);
+  } else {
+    form.setAttribute('action', actions["#view_resource_billing"]);
+  }
+  form.submit();
+}
+
 var charts = {};
 
 jQuery(document).ready(function($) {
