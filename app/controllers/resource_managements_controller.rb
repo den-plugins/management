@@ -536,6 +536,8 @@ class ResourceManagementsController < ApplicationController
       header << "Allocated Hours"
       header << "Actual Hours"
     end
+    header << 'Total Allocated Hours'
+    header << 'Total Actual Hours'
 
     project_csv = FasterCSV.generate do |csv|
       csv << ["Weekly Project Billing Report for #{tick_month} #{year}"]
@@ -543,6 +545,8 @@ class ResourceManagementsController < ApplicationController
       csv << dates_header
       csv << header
 
+      overall_total_allocated = 0.0
+      overall_total_actual = 0.0
       @projects.each do |proj|
         get_project_billing_details_weekly(proj, @beginning_of_month, @end_of_month, true) #include weekends
 
@@ -553,15 +557,28 @@ class ResourceManagementsController < ApplicationController
           if @pb && @pb["#{member.id}"] && member && proj && proj.project_type == "Development" && res_alloc && !res_alloc.empty? ||
               @pb && @pb["#{member.id}"] && member && proj && proj.project_type == "Admin"
             data = ["#{proj.name}", @pb["#{member.id}"][:name] ? @pb["#{member.id}"][:name] : "", "#{member.user.skill}"]
+            total_allocated = 0.0
+            total_actual = 0.0
 
             weeks.each do |week|
-              data << @pb["#{member.id}"]["allocated_hours_#{week.last}"]
-              data << @pb["#{member.id}"]["actual_hours_#{week.last}"]
+              allocated = @pb["#{member.id}"]["allocated_hours_#{week.last}"]
+              actual = @pb["#{member.id}"]["actual_hours_#{week.last}"]
+              data << allocated
+              data << actual
+
+              total_allocated += allocated.to_f
+              total_actual += actual.to_f
             end
+            overall_total_allocated += total_allocated
+            overall_total_actual += total_actual
+
+            data += [total_allocated, total_actual]
             csv << data
           end
         end
       end
+      overall_totals = Array.new(3 + (weeks.length * 2), '') + [overall_total_allocated, overall_total_actual]
+      csv << overall_totals
     end
     send_data(project_csv, :type => 'text/csv', :filename => "#{tick_month}_#{year}_weekly_logged_details.csv")
   end
