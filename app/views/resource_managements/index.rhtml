@@ -118,18 +118,29 @@
       <%= link_to_zoomed_chart 'forecast_billable', :style => 'display: none' %>
     </div>
 
-    <% form_tag({:action=> "resource_billing_detail"}, {:target => "_blank"}) do %>
-        <%= select_tag "month", options_for_select(Date::ABBR_MONTHNAMES, Date::ABBR_MONTHNAMES[Date.today.month]) %>
-        <%= select_year(Date.today, :start_year => 2001, :end_year => Date.today.year) %>
-        <%= submit_tag "View Resource Billing Detail" %>
-    <% end %>
-    <br />
+    <div class="box" id="billing_details_box">
+      <h3>Billing Details</h3>
+      <form target="_blank" onsubmit="return false;">
+          <h4>Resource Billing Detail</h4>
+          <%= select_tag "month", options_for_select(Date::ABBR_MONTHNAMES, Date::ABBR_MONTHNAMES[Date.today.month]) %>
+          <%= select_year(Date.today, :start_year => 2001, :end_year => Date.today.year) %>
+          <ul>
+            <li><a href="#view_resource_billing" onclick="onsubmitBillabilityDetailForm(event,this)">View Resource Billing Detail</a></li>
+            <li><a href="#csv_resource_billing" onclick="onsubmitBillabilityDetailForm(event,this)">Download CSV</a></li>
+          </ul>
+      </form>
 
-    <% form_tag({:action=> "project_billing_detail"}, {:target => "_blank"}) do %>
-        <%= select_tag "month", options_for_select(Date::ABBR_MONTHNAMES, Date::ABBR_MONTHNAMES[Date.today.month]) %>
-        <%= select_year(Date.today, :start_year => 2001, :end_year => Date.today.year) %>
-        <%= submit_tag "View Project Billing Detail" %>
-    <% end %>
+      <form target="_blank" onsubmit="return false;">
+          <h4>Project Billing Detail</h4>
+          <%= select_tag "month", options_for_select(Date::ABBR_MONTHNAMES, Date::ABBR_MONTHNAMES[Date.today.month]) %>
+          <%= select_year(Date.today, :start_year => 2001, :end_year => Date.today.year) %>
+          <ul>
+            <li><a href="#view_project_billing" onclick="onsubmitBillabilityDetailForm(event,this)">View Project Billing Detail</a></li>
+            <li><a href="#csv_project_billing" onclick="onsubmitBillabilityDetailForm(event,this)">Download CSV</a></li>
+            <li><a href="#weekly_csv_project_billing" onclick="onsubmitBillabilityDetailForm(event,this)">Download Weekly Report CSV</a></li>
+          </ul>
+      </form>
+    </div>
   </div>
 </div>
 
@@ -165,7 +176,7 @@
               legend: { show: false }
             }
           ),
-            plotLabels = jQuery(plot.target).find('.jqplot-data-label');
+              plotLabels = jQuery(plot.target).find('.jqplot-data-label');
           if(id !== 'zoom_chart') {
             this.plot = plot;
           }
