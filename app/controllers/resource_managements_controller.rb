@@ -392,7 +392,7 @@ class ResourceManagementsController < ApplicationController
   def export_resource_billing_detail
     month = params[:month] && !params[:month].empty? ? Date::ABBR_MONTHNAMES.index(params[:month]) : Date.today.month
     tick_month = params[:month] && !params[:month].empty? ? params[:month] : Date::ABBR_MONTHNAMES[Date.today.month]
-    year = params[:year]
+    year = params[:year] || params[:date][:year]
     @rb = Hash.new
     @per_user = Hash.new
     @overall_forcasted_hours = 0.0
@@ -436,13 +436,13 @@ class ResourceManagementsController < ApplicationController
         end
       end
     end
-    send_data(resource_csv, :type => 'text/csv', :filename => "#{params[:month]}_#{params[:year]}_resource_billing_details.csv")
+    send_data(resource_csv, :type => 'text/csv', :filename => "#{tick_month}_#{year}_resource_billing_details.csv")
   end
 
   def export_project_billing_detail
     month = params[:month] && !params[:month].empty? ? Date::ABBR_MONTHNAMES.index(params[:month]) : Date.today.month
     tick_month = params[:month] && !params[:month].empty? ? params[:month] : Date::ABBR_MONTHNAMES[Date.today.month]
-    year = params[:year]
+    year = params[:year] || params[:date][:year]
     @tick = "#{tick_month} #{year}"
     @pb = Hash.new
     @per_project = Hash.new
@@ -483,7 +483,7 @@ class ResourceManagementsController < ApplicationController
                 "%.2f" % @per_project["#{proj.id}"][:total_actual_billable]]
       end
     end
-    send_data(project_csv, :type => 'text/csv', :filename => "#{params[:month]}_#{params[:year]}_project_billing_details.csv")
+    send_data(project_csv, :type => 'text/csv', :filename => "#{tick_month}_#{year}_project_billing_details.csv")
   end
 
   def forecasts_billable_detail
@@ -513,7 +513,7 @@ class ResourceManagementsController < ApplicationController
   def export_weekly_actual_hours
     month = params[:month] && !params[:month].empty? ? Date::ABBR_MONTHNAMES.index(params[:month]) : Date.today.month
     tick_month = params[:month] && !params[:month].empty? ? params[:month] : Date::ABBR_MONTHNAMES[Date.today.month]
-    year = params[:year]
+    year = params[:year] || params[:date][:year]
     @tick = "#{tick_month} #{year}"
     @pb = Hash.new
     @per_project = Hash.new
@@ -536,6 +536,8 @@ class ResourceManagementsController < ApplicationController
       header << "Allocated Hours"
       header << "Actual Hours"
     end
+    header << 'Total Allocated Hours'
+    header << 'Total Actual Hours'
 
     project_csv = FasterCSV.generate do |csv|
       csv << ["Weekly Project Billing Report for #{tick_month} #{year}"]
@@ -543,6 +545,8 @@ class ResourceManagementsController < ApplicationController
       csv << dates_header
       csv << header
 
+      overall_total_allocated = 0.0
+      overall_total_actual = 0.0
       @projects.each do |proj|
         get_project_billing_details_weekly(proj, @beginning_of_month, @end_of_month, true) #include weekends
 
@@ -553,17 +557,30 @@ class ResourceManagementsController < ApplicationController
           if @pb && @pb["#{member.id}"] && member && proj && proj.project_type == "Development" && res_alloc && !res_alloc.empty? ||
               @pb && @pb["#{member.id}"] && member && proj && proj.project_type == "Admin"
             data = ["#{proj.name}", @pb["#{member.id}"][:name] ? @pb["#{member.id}"][:name] : "", "#{member.user.skill}"]
+            total_allocated = 0.0
+            total_actual = 0.0
 
             weeks.each do |week|
-              data << @pb["#{member.id}"]["allocated_hours_#{week.last}"]
-              data << @pb["#{member.id}"]["actual_hours_#{week.last}"]
+              allocated = @pb["#{member.id}"]["allocated_hours_#{week.last}"]
+              actual = @pb["#{member.id}"]["actual_hours_#{week.last}"]
+              data << allocated
+              data << actual
+
+              total_allocated += allocated.to_f
+              total_actual += actual.to_f
             end
+            overall_total_allocated += total_allocated
+            overall_total_actual += total_actual
+
+            data += [total_allocated, total_actual]
             csv << data
           end
         end
       end
+      overall_totals = Array.new(3 + (weeks.length * 2), '') + [overall_total_allocated, overall_total_actual]
+      csv << overall_totals
     end
-    send_data(project_csv, :type => 'text/csv', :filename => "#{params[:month]}_#{params[:year]}_weekly_logged_details.csv")
+    send_data(project_csv, :type => 'text/csv', :filename => "#{tick_month}_#{year}_weekly_logged_details.csv")
   end
 
   def export
@@ -1268,7 +1285,7 @@ class ResourceManagementsController < ApplicationController
           res_alloc = member.resource_allocations.select { |alloc| alloc.start_date <= week.last && alloc.end_date >= week.first }
           if project.project_type == 'Development' && res_alloc && !res_alloc.empty? || project.project_type == 'Admin'
             total_forecast += member.capped_days_weekly_report((week.first..week.last), nil, false, "Both") * 8
-            actual_hours += member.spent_time(week.first, week.last, nil, true).to_f
+            actual_hours += member.spent_time(week.first, week.last, nil, true, true).to_f
           end
           @pb["#{member.id}"]["allocated_hours_#{week.last}"] = total_forecast
           @pb["#{member.id}"]["actual_hours_#{week.last}"] = actual_hours
