@@ -3,7 +3,7 @@ module ProgrammeHelper
   def code_by_budget_and_forecast(budget, forecast)
     if budget && forecast
       case budget <=> forecast
-        when -1; "red"
+        when -1; "tred"
         when  1: "green"
         when  0: "yellow"
       end
@@ -31,9 +31,13 @@ module ProgrammeHelper
     return "not-applicable" if project.category.eql?("Internal Project")
     if project.planned_start_date && project.planned_start_date
       if display_by_billing_model(project).eql?("fixed")
+        puts "project : #{project}"
         project_id = "fixed_cost_#{project.id}"
+        puts "project_id : #{project_id}"
         budget = (@fixed_costs[project_id] ? @fixed_costs[project_id]["cost_budget"] : nil)
         forecast = (@fixed_costs[project_id] ? @fixed_costs[project_id]["cost_forecast"] : nil)
+        puts "budget : #{budget}"
+        puts "forecast : #{forecast}"
         code = code_by_budget_and_forecast(budget, forecast) || "nocolor"
       elsif display_by_billing_model(project).eql?("billability")
         project_id = "billability_#{project.id}"
@@ -44,6 +48,30 @@ module ProgrammeHelper
       code = "nocolor"
     end
     code
+  end
+  
+  def color_code_for_contract_status(project)
+    # Get Project Contract Status
+    project_contract = ProjectContract.find(:first, :conditions => "project_id = #{project}", :order => "effective_to DESC")
+    
+    effective_date = project_contract.effective_to if project_contract
+    contract_about_to_expire_in_two_weeks = (effective_date + 14.days) if effective_date
+    
+    if effective_date.nil?
+      contract_status_color_code = 'nocolor'
+    else
+      if (Date.today < effective_date)
+        contract_status_color_code = 'green'
+      elsif (contract_about_to_expire_in_two_weeks == Date.today)
+        contract_status_color_code = 'yellow'
+      elsif (Date.today > effective_date)
+        contract_status_color_code = 'red'
+      else
+        contract_status_color_code = 'nocolor'
+      end
+    end
+    
+    contract_status_color_code
   end
 
   def color_code_for_issue_average(project)
