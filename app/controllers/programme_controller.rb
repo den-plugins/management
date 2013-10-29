@@ -3,6 +3,7 @@ class ProgrammeController < ApplicationController
   helper :efficiency
   include SortHelper
   include EfficiencyHelper
+  include ProjectBillabilityHelper
 
   menu_item :dashboard, :only => :index
   menu_item :interactive, :only => :interactive
@@ -31,7 +32,7 @@ class ProgrammeController < ApplicationController
     @fixed_cost_projects = @devt_projects.select(&:fixed_cost?)
     @t_and_m_projects = @devt_projects.select(&:t_and_m?)
 
-    load_billability_file
+    @billabilities = load_billability_file
     load_fixed_cost_file
 
     if request.xhr?
@@ -64,7 +65,7 @@ class ProgrammeController < ApplicationController
     @fixed_cost_projects = @devt_projects.select(&:fixed_cost?)
     @t_and_m_projects = @devt_projects.select(&:t_and_m?)
 
-    load_billability_file
+    @billabilities = load_billability_file
     load_fixed_cost_file
 
     if request.xhr?
@@ -115,7 +116,7 @@ class ProgrammeController < ApplicationController
     @fixed_cost_projects = @devt_projects.select(&:fixed_cost?).sort_by { |s| s.name.downcase }
     @t_and_m_projects = @devt_projects.select(&:t_and_m?).sort_by { |s| s.name.downcase }
 
-    load_billability_file
+    @billabilities = load_billability_file
     load_fixed_cost_file
 
     if request.xhr?
@@ -175,14 +176,6 @@ class ProgrammeController < ApplicationController
       return false
     end
     true
-  end
-
-  def load_billability_file
-    @billabilities = if File.exists?("#{RAILS_ROOT}/config/billability.yml")
-                       YAML.load(File.open("#{RAILS_ROOT}/config/billability.yml")) || {}
-                     else
-                       {}
-                     end rescue {}
   end
 
   def load_fixed_cost_file
