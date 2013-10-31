@@ -25,7 +25,7 @@
     <td><span class="circle <%= status_color %>"></span></td>
     <td><span class="circle <%= color_code_for_risk_average project %>"></span></td>
     <td><span class="circle <%= color_code_for_issue_average project %>"></span></td>
-    <td class=""></td>
+    <td><span class="circle <%= color_code_for_contract_status project.id %>"></span></td>
     <td class="center"><span><%= (m=project.manager) ? initials(m.firstname, m.lastname) : "?" %></span></td>
   </tr>
   <% end %>

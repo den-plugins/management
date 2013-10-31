@@ -5,8 +5,8 @@
         <% allocation_cost = @a["#{user.login}"][:allocation_cost] %>
         <% project_allocation = @a["#{user.login}"][:project_allocation] %>
         <% available_hours = @a["#{user.login}"][:available_hours] %>
-        <% billable_hours = @a["#{user.login}"][:billable_hours] %>
-        <% billed_amount = @a["#{user.login}"][:billed_amount] %>
+        <% billable_hours = number_with_precision(@a["#{user.login}"][:billable_hours], :precision => 2, :delimiter => '').to_f %>
+        <% billed_amount = number_with_precision(@a["#{user.login}"][:billed_amount], :precision => 2, :delimiter => '').to_f %>
         <tr class="<%= cycle 'odd', 'even' %>">
           <td><%= "#{@a["#{user.login}"][:lastname]}, #{@a["#{user.login}"][:firstname]}" %></td>
           <td><%= "#{@a["#{user.login}"][:skill]}" %></td>
