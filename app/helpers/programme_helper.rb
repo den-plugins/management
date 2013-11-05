@@ -54,20 +54,23 @@ module ProgrammeHelper
     # Get Project Contract Status
     project_contract = ProjectContract.find(:first, :conditions => "project_id = #{project}", :order => "effective_to DESC")
     
-    effective_date = project_contract.effective_to if project_contract
-    contract_about_to_expire_in_two_weeks = (effective_date + 14.days) if effective_date
+    if project_contract
+      effective_date = project_contract.effective_to
+      project_contract_status = project_contract.contract_status
+      contract_about_to_expire_in_two_weeks = (effective_date + 14.days) if effective_date
+    end
     
     if effective_date.nil?
       contract_status_color_code = 'nocolor'
     else
       if (Date.today < effective_date)
         contract_status_color_code = 'green'
-      elsif (contract_about_to_expire_in_two_weeks == Date.today)
+      elsif (contract_about_to_expire_in_two_weeks && (contract_about_to_expire_in_two_weeks == Date.today))
         contract_status_color_code = 'yellow'
-      elsif (Date.today > effective_date)
-        contract_status_color_code = 'red'
+      elsif (Date.today > effective_date && project_contract_status == 2)
+        @contract_status_color_code = 'red'
       else
-        contract_status_color_code = 'nocolor'
+        @contract_status_color_code = 'nocolor'
       end
     end
     
