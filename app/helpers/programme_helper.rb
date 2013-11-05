@@ -68,9 +68,9 @@ module ProgrammeHelper
       elsif (contract_about_to_expire_in_two_weeks && (contract_about_to_expire_in_two_weeks == Date.today))
         contract_status_color_code = 'yellow'
       elsif (Date.today > effective_date && project_contract_status == 2)
-        @contract_status_color_code = 'red'
+        contract_status_color_code = 'red'
       else
-        @contract_status_color_code = 'nocolor'
+        contract_status_color_code = 'nocolor'
       end
     end
     
