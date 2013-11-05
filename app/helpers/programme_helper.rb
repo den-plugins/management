@@ -61,15 +61,15 @@ module ProgrammeHelper
     end
     
     if effective_date.nil?
-      contract_status_color_code = 'nocolor'
+      contract_status_color_code = 'red'
     else
-      if (Date.today < effective_date)
+      if (project_contract_status == 1 && Date.today < effective_date)
         contract_status_color_code = 'green'
-      elsif (contract_about_to_expire_in_two_weeks && (contract_about_to_expire_in_two_weeks == Date.today))
+      elsif (project_contract_status ==1 && (contract_about_to_expire_in_two_weeks && (contract_about_to_expire_in_two_weeks == Date.today)))
         contract_status_color_code = 'yellow'
-      elsif (Date.today > effective_date && project_contract_status == 2)
+      elsif (Date.today > effective_date && project_contract_status == 1)
         contract_status_color_code = 'red'
-      else
+      elsif (project_contract_status == 2)
         contract_status_color_code = 'nocolor'
       end
     end
