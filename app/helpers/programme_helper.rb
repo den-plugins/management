@@ -67,31 +67,35 @@ module ProgrammeHelper
   
   def color_code_for_contract_status(project)
     internal_project = Project.find(project)
-    return "not-applicable" if internal_project.category.eql?("Internal Project")
-    # Get Project Contract Status
-    project_contract = ProjectContract.find(:first, :conditions => "project_id = #{project}", :order => "effective_to DESC")
     
-    if project_contract
-      effective_date = project_contract.effective_to
-      project_contract_status = project_contract.contract_status
-      contract_about_to_expire_in_two_weeks = (effective_date + 14.days) if effective_date
-    end
-    
-    if effective_date.nil?
-      contract_status_color_code = 'red'
+    if internal_project.category.eql?("Internal Project")
+      contract_status_color_code = 'not-applicable' 
     else
-      if (project_contract_status == 1 && Date.today < effective_date)
-        contract_status_color_code = 'green'
-      elsif (project_contract_status ==1 && (contract_about_to_expire_in_two_weeks && (contract_about_to_expire_in_two_weeks == Date.today)))
-        contract_status_color_code = 'yellow'
-      elsif (Date.today > effective_date && project_contract_status == 1)
-        contract_status_color_code = 'red'
-      elsif (project_contract_status == 2)
-        contract_status_color_code = 'nocolor'
+      # Get Project Contract Status
+      project_contract = ProjectContract.find(:first, :conditions => "project_id = #{project}", :order => "effective_to DESC")
+      
+      if project_contract
+        effective_date = project_contract.effective_to
+        project_contract_status = project_contract.contract_status
+        contract_about_to_expire_in_two_weeks = (effective_date + 14.days) if effective_date
       end
-    end
+      
+      if effective_date.nil?
+        contract_status_color_code = 'red'
+      else
+        if (project_contract_status == 1 && Date.today < effective_date)
+          contract_status_color_code = 'green' # In Progress
+        elsif (project_contract_status ==1 && (contract_about_to_expire_in_two_weeks && (contract_about_to_expire_in_two_weeks == Date.today)))
+          contract_status_color_code = 'yellow' # About to expire in 2 weeks.
+        elsif (Date.today > effective_date && project_contract_status == 1)
+          contract_status_color_code = 'red' # Expired
+        elsif (project_contract_status == 2)
+          contract_status_color_code = 'nocolor' #Completed
+        end
+      end
     
-    contract_status_color_code
+      contract_status_color_code
+    end
   end
 
   def color_code_for_issue_average(project)
