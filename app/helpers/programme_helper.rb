@@ -50,7 +50,24 @@ module ProgrammeHelper
     code
   end
   
+  def color_code_by_project_category(project)
+    # Get Project Category
+    @contract_status_color_code = ''
+    project = Project.find(project)
+    project.custom_field_values.each do |value|
+	    if (value == 'Internal Project').to_s
+	      @contract_status_color_code = 'not-applicable'
+	    else
+	      @contract_status_color_code = nil
+	    end
+    end
+    
+    @contract_status_color_code
+  end
+  
   def color_code_for_contract_status(project)
+    internal_project = Project.find(project)
+    return "not-applicable" if internal_project.category.eql?("Internal Project")
     # Get Project Contract Status
     project_contract = ProjectContract.find(:first, :conditions => "project_id = #{project}", :order => "effective_to DESC")
     
