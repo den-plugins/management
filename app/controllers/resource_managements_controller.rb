@@ -382,8 +382,7 @@ class ResourceManagementsController < ApplicationController
     @overall_actual_hours = 0.0
     @beginning_of_month = Date.new(year.to_i, month, 1)
     @end_of_month = @beginning_of_month.end_of_month
-    @projects = Project.development.select { |v| v.planned_start_date && v.planned_start_date <= @end_of_month &&
-        v.planned_end_date && v.planned_end_date >= @beginning_of_month && v.accounting_type == 'Billable' }
+    @projects = Project.development.select { |v| v.accounting_type == 'Billable' }
     @projects.each do |proj|
       get_project_billing_details(proj, @beginning_of_month, @end_of_month)
     end
@@ -450,8 +449,7 @@ class ResourceManagementsController < ApplicationController
     @overall_actual_hours = 0.0
     @beginning_of_month = Date.new(year.to_i, month, 1)
     @end_of_month = @beginning_of_month.end_of_month
-    @projects = Project.development.select { |v| v.planned_start_date && v.planned_start_date <= @end_of_month &&
-        v.planned_end_date && v.planned_end_date >= @beginning_of_month && v.accounting_type == 'Billable' }
+    @projects = Project.development.select { |v| v.accounting_type == 'Billable' }
 
     project_csv = FasterCSV.generate do |csv|
       # header row
@@ -522,9 +520,7 @@ class ResourceManagementsController < ApplicationController
     @beginning_of_month = Date.new(year.to_i, month, 1)
     @end_of_month = @beginning_of_month.end_of_month
     all_proj = Project.all
-    @projects = all_proj.select {|v| v.project_type && v.project_type == "Admin" || v.project_type && v.project_type == "Development" &&
-        v.planned_start_date && v.planned_start_date <= @end_of_month &&
-        v.planned_end_date && v.planned_end_date >= @beginning_of_month}.sort_by {|v| v.name}
+    @projects = all_proj.select {|v| v.project_type && v.project_type == "Admin" || v.project_type && v.project_type == "Development" }.sort_by {|v| v.name}
 
     dates_header = Array.new(3, "")
     header = ['Project', "Name", "Role"]
