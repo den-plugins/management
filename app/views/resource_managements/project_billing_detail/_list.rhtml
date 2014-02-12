@@ -1,12 +1,12 @@
 <tbody>
 <tr>
-  <td><strong><%= @proj.name %>: <%= Project.find_by_id(@proj.id).billing_model %></strong>
+  <td class="left"><strong><%= @proj.name %>: <%= Project.find_by_id(@proj.id).billing_model %></strong>
   <% members = @proj.members.sort_by {|x| [x.user.lastname, x.user.firstname] } %>
 </tr>
 <% members.each do |member| %>
 <% if @pb["#{member.id}"] %>
         <tr class="<%= cycle 'odd', 'even' %>">
-          <td style="width:300px;"><%= @pb["#{member.id}"][:name] %></td>
+          <td class="left" style="width:300px;">&nbsp;<%= @pb["#{member.id}"][:name] %></td>
           <td><%= member.user.skill %></td>
           <td><%= @pb["#{member.id}"][:resource_allocation] %></td>
           <td><%= @pb["#{member.id}"][:default_rate] %></td>
